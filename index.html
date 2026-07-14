@@ -1001,28 +1001,27 @@
             }
 
             grid.innerHTML = products.map(product => {
-                const discount = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
-                return `
-                    <div class="product-card">
-                        <div class="product-image">
-                            ${discount > 0 ? `<span class="discount-badge">-${discount}%</span>` : ''}
-                            <img src="${product.image || 'https://via.placeholder.com/300'}" alt="${product.name}" loading="lazy">
-                        </div>
-                        <div class="product-info">
-                            <div class="product-category">${product.category || 'সাধারণ'}</div>
-                            <h3 class="product-title">${product.name}</h3>
-                            <div class="product-price">
-                                <span class="current-price">৳${product.price}</span>
-                                ${product.oldPrice ? `<span class="old-price">৳${product.oldPrice}</span>` : ''}
-                            </div>
-                            <button class="add-cart-btn" onclick="addToCart('${product.id}', '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.image || ''}')">
-                                <i class="fas fa-cart-plus"></i> কার্টে যোগ করুন
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+    const discount = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
+    return `
+        <div class="product-card" onclick="viewProduct('${product.id}')" style="cursor:pointer;">
+            <div class="product-image">
+                ${discount > 0 ? `<span class="discount-badge">-${discount}%</span>` : ''}
+                <img src="${product.image || 'https://via.placeholder.com/300'}" alt="${product.name}" loading="lazy">
+            </div>
+            <div class="product-info">
+                <div class="product-category">${product.category || 'সাধারণ'}</div>
+                <h3 class="product-title">${product.name}</h3>
+                <div class="product-price">
+                    <span class="current-price">৳${product.price}</span>
+                    ${product.oldPrice ? `<span class="old-price">৳${product.oldPrice}</span>` : ''}
+                </div>
+                <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('${product.id}', '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.image || ''}')">
+                    <i class="fas fa-cart-plus"></i> কার্টে যোগ করুন
+                </button>
+            </div>
+        </div>
+    `;
+}).join('');
 
         // ===== FILTER CATEGORY =====
         function filterCategory(category) {
@@ -1162,7 +1161,10 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2500);
         }
-
+        // ===== VIEW PRODUCT DETAILS =====
+        function viewProduct(productId) {
+            window.location.href = 'product-details.html?id=' + productId;
+        }
         // ===== INIT =====
         loadProducts();
         updateCartCount();
