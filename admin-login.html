@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অ্যাডমিন লগইন - স্মার্ট কেনাকাটা</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --dark: #0f172a;
+            --dark-2: #1e293b;
+            --white: #ffffff;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-500: #64748b;
+            --gray-700: #334155;
+            --red: #ef4444;
+        }
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Effects */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .login-container {
+            background: white;
+            padding: 45px 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-home {
+            position: absolute;
+            top: -50px;
+            left: 0;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .back-home:hover {
+            color: var(--primary);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .login-header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        /* Google Login Button */
+        .google-btn {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .google-btn:hover {
+            border-color: var(--primary);
+            background: var(--gray-100);
+            transform: translateY(-2px);
+        }
+
+        .google-btn img {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            color: var(--gray-500);
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--gray-200);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--gray-500);
+            font-size: 16px;
+        }
+
+        /* Login Button */
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Error/Success Message */
+        .message {
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message.error {
+            background: #fee;
+            color: var(--red);
+            border: 1px solid #fcc;
+        }
+
+        .message.success {
+            background: #e6f9f0;
+            color: var(--primary-dark);
+            border: 1px solid #b8e6cd;
+        }
+
+        .message.show {
+            display: flex;
+        }
+
+        /* Security Notice */
+        .security-notice {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.03) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--gray-700);
+        }
+
+        .security-notice i {
+            color: var(--primary);
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 35px 25px;
+            }
+            .login-header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <a href="index.html" class="back-home">
+            <i class="fas fa-arrow-left"></i> হোমে ফিরে যান
+        </a>
+
+        <div class="login-header">
+            <div class="logo-icon">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <h1>অ্যাডমিন লগইন</h1>
+            <p>স্মার্ট কেনাকাটা কন্ট্রোল প্যানেল</p>
+        </div>
+
+        <!-- Message Box -->
+        <div class="message" id="messageBox">
+            <i class="fas fa-info-circle"></i>
+            <span id="messageText"></span>
+        </div>
+
+        <!-- Google Sign-in -->
+        <button class="google-btn" onclick="loginWithGoogle()">
+            <img src="https://www.google.com/favicon.ico" alt="Google">
+            Google দিয়ে সাইন-ইন করুন
+        </button>
+
+        <div class="divider">অথবা</div>
+
+        <!-- Email/Password Form -->
+        <form onsubmit="loginWithEmail(event)">
+            <div class="form-group">
+                <label>ইমেইল ঠিকানা</label>
+                <input type="email" id="email" placeholder="admin@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>পাসওয়ার্ড</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="আপনার পাসওয়ার্ড" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>লগইন করুন</span>
+            </button>
+        </form>
+
+        <div class="security-notice">
+            <i class="fas fa-shield-halved"></i>
+            <span><strong>নিরাপত্তা:</strong> শুধুমাত্র অনুমোদিত অ্যাডমিন এই প্যানেল ব্যবহার করতে পারবেন।</span>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ===== FIREBASE CONFIG =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfnRJ3xyh3rkFD01XS-Zsm-LM1VSPuaJY",
+            authDomain: "smart-kenakata.firebaseapp.com",
+            projectId: "smart-kenakata",
+            storageBucket: "smart-kenakata.firebasestorage.app",
+            messagingSenderId: "892479175235",
+            appId: "1:892479175235:web:56a53187e4cd5ba662f2f6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // ===== ADMIN CONFIGURATION =====
+        // শুধু এই email admin access পাবে
+        const ADMIN_EMAILS = [
+            'mdmahedulislammehedi@gmail.com'
+            // ভবিষ্যতে আরো admin add করতে চাইলে এখানে email যোগ করুন
+            // 'another@email.com',
+        ];
+
+        // ===== CHECK IF ALREADY LOGGED IN =====
+        auth.onAuthStateChanged((user) => {
+            if (user && ADMIN_EMAILS.includes(user.email)) {
+                // Already logged in as admin
+                showMessage('success', '✅ আপনি ইতিমধ্যে লগইন করা আছেন! রিডাইরেক্ট হচ্ছে...');
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1500);
+            }
+        });
+
+        // ===== GOOGLE LOGIN =====
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
+            
+            hideMessage();
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    
+                    // Check if user is authorized admin
+                    if (ADMIN_EMAILS.includes(user.email)) {
+                        showMessage('success', '✅ লগইন সফল! রিডাইরেক্ট হচ্ছে...');
+                        setTimeout(() => {
+                            window.location.href = 'admin.html';
+                        }, 1500);
+                    } else {
+                        // Not authorized - sign out
+                        auth.signOut();
+                        showMessage('error', '❌ আপনি অ্যাডমিন নন! এই ইমেইল অনুমোদিত নয়।');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Google login error:', error);
+                    if (error.code === 'auth/popup-closed-by-user') {
+                        showMessage('error', '⚠️ লগইন বাতিল করা হয়েছে।');
+                    } else {
+                        showMessage('error', '❌ লগইন ব্যর্থ: ' + error.message);
+                    }
+                });
+        }
+
+        // ===== EMAIL/PASSWORD LOGIN =====
+        function loginWithEmail(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('loginBtn');
+            
+            hideMessage();
+            
+            // Check if email is authorized
+            if (!ADMIN_EMAILS.includes(email)) {
+                showMessage('error', '❌ এই ইমেইল অ্যাডমিন হিসেবে অনুমোদিত নয়!');
+                return;
+            }
+            
+            // Show loading
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> <span>লগইন হচ্ছে...</span>';
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    showMessage('success', '✅ লগইন সফল! রিডাইরেক্ট হচ্ছে...');
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1500);
+                })
+                .catch((error) => {
+                    console.error('Login error:', error);
+                    
+                    let errorMsg = '❌ লগইন ব্যর্থ! ';
+                    
+                    switch(error.code) {
+                        case 'auth/wrong-password':
+                        case 'auth/invalid-credential':
+                            errorMsg += 'পাসওয়ার্ড ভুল।';
+                            break;
+                        case 'auth/user-not-found':
+                            errorMsg += 'এই ইমেইলে কোন অ্যাকাউন্ট নেই।';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMsg += 'ইমেইল সঠিক নয়।';
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMsg += 'অনেকবার চেষ্টা করা হয়েছে। পরে চেষ্টা করুন।';
+                            break;
+                        default:
+                            errorMsg += error.message;
+                    }
+                    
+                    showMessage('error', errorMsg);
+                    
+                    // Reset button
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span>লগইন করুন</span>';
+                });
+        }
+
+        // ===== TOGGLE PASSWORD =====
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // ===== MESSAGE HELPERS =====
+        function showMessage(type, text) {
+            const box = document.getElementById('messageBox');
+            const textEl = document.getElementById('messageText');
+            
+            box.className = 'message ' + type + ' show';
+            textEl.textContent = text;
+            
+            // Auto hide error messages after 5 seconds
+            if (type === 'error') {
+                setTimeout(() => hideMessage(), 5000);
+            }
+        }
+
+        function hideMessage() {
+            document.getElementById('messageBox').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
