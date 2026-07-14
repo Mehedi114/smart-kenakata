@@ -15,12 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ===== RESET & BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --primary: #10b981;
@@ -31,7 +26,6 @@
             --gray-50: #f8fafc;
             --gray-100: #f1f5f9;
             --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
             --gray-500: #64748b;
             --gray-700: #334155;
             --red: #ef4444;
@@ -46,14 +40,13 @@
             overflow-x: hidden;
         }
 
-        /* ===== TOP BAR ===== */
+        /* TOP BAR */
         .top-bar {
             background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 100%);
             color: var(--white);
             padding: 10px 0;
             font-size: 14px;
         }
-
         .top-bar-content {
             max-width: 1400px;
             margin: 0 auto;
@@ -64,13 +57,9 @@
             gap: 20px;
             flex-wrap: wrap;
         }
+        .top-bar-content i { color: var(--primary); margin-right: 5px; }
 
-        .top-bar-content i {
-            color: var(--primary);
-            margin-right: 5px;
-        }
-
-        /* ===== NAVBAR ===== */
+        /* NAVBAR */
         .navbar {
             background: var(--white);
             padding: 15px 0;
@@ -79,7 +68,6 @@
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-
         .nav-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -89,14 +77,12 @@
             justify-content: space-between;
             gap: 20px;
         }
-
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
             text-decoration: none;
         }
-
         .logo-icon {
             width: 45px;
             height: 45px;
@@ -108,32 +94,14 @@
             color: white;
             font-size: 20px;
         }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo-text h1 {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--dark);
-            line-height: 1;
-        }
-
-        .logo-text span {
-            font-size: 11px;
-            color: var(--gray-500);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+        .logo-text h1 { font-size: 22px; font-weight: 700; color: var(--dark); line-height: 1; }
+        .logo-text span { font-size: 11px; color: var(--gray-500); letter-spacing: 1px; text-transform: uppercase; }
 
         .search-box {
             flex: 1;
             max-width: 600px;
             position: relative;
         }
-
         .search-box input {
             width: 100%;
             padding: 12px 50px 12px 20px;
@@ -142,13 +110,8 @@
             font-size: 15px;
             font-family: inherit;
             outline: none;
-            transition: border-color 0.3s;
         }
-
-        .search-box input:focus {
-            border-color: var(--primary);
-        }
-
+        .search-box input:focus { border-color: var(--primary); }
         .search-btn {
             position: absolute;
             right: 5px;
@@ -161,15 +124,9 @@
             height: 40px;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
         }
 
-        .nav-icons {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
+        .nav-icons { display: flex; align-items: center; gap: 15px; }
         .icon-btn {
             width: 45px;
             height: 45px;
@@ -182,13 +139,10 @@
             cursor: pointer;
             position: relative;
             transition: all 0.3s;
+            text-decoration: none;
+            color: var(--dark);
         }
-
-        .icon-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
+        .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
         .cart-badge {
             position: absolute;
             top: -5px;
@@ -205,13 +159,11 @@
             font-weight: 700;
         }
 
-        /* ===== NAV MENU ===== */
         .nav-menu {
             background: white;
             border-top: 1px solid var(--gray-100);
             border-bottom: 1px solid var(--gray-100);
         }
-
         .nav-menu-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -220,22 +172,17 @@
             gap: 30px;
             overflow-x: auto;
         }
-
         .nav-menu a {
             color: var(--gray-700);
             text-decoration: none;
             font-weight: 500;
             font-size: 15px;
             white-space: nowrap;
-            transition: color 0.3s;
+            cursor: pointer;
         }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--primary); }
 
-        .nav-menu a:hover,
-        .nav-menu a.active {
-            color: var(--primary);
-        }
-
-        /* ===== HERO ===== */
+        /* HERO */
         .hero {
             background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 100%);
             color: white;
@@ -243,7 +190,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .hero::before {
             content: '';
             position: absolute;
@@ -254,14 +200,7 @@
             background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
             border-radius: 50%;
         }
-
-        .hero-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
+        .hero-content { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
         .hero-badge {
             display: inline-flex;
             align-items: center;
@@ -274,7 +213,6 @@
             font-weight: 600;
             margin-bottom: 25px;
         }
-
         .hero-badge::before {
             content: '';
             width: 8px;
@@ -283,31 +221,10 @@
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .hero h1 {
-            font-size: 68px;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 25px;
-        }
-
-        .hero p {
-            font-size: 18px;
-            color: rgba(255,255,255,0.7);
-            max-width: 600px;
-            margin-bottom: 35px;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .hero h1 { font-size: 68px; font-weight: 800; line-height: 1.1; margin-bottom: 25px; }
+        .hero p { font-size: 18px; color: rgba(255,255,255,0.7); max-width: 600px; margin-bottom: 35px; }
+        .hero-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
 
         .btn-primary {
             background: var(--primary);
@@ -322,15 +239,9 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            transition: all 0.3s;
             text-decoration: none;
         }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
+        .btn-primary:hover { background: var(--primary-dark); }
         .btn-outline {
             background: transparent;
             color: white;
@@ -344,16 +255,10 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            transition: all 0.3s;
             text-decoration: none;
         }
+        .btn-outline:hover { border-color: var(--primary); background: rgba(16, 185, 129, 0.1); }
 
-        .btn-outline:hover {
-            border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        /* ===== STATS ===== */
         .stats {
             max-width: 1400px;
             margin: 60px auto 0;
@@ -362,46 +267,15 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 30px;
-            position: relative;
-            z-index: 1;
         }
+        .stat-item h3 { font-size: 42px; font-weight: 800; color: var(--primary); margin-bottom: 5px; }
+        .stat-item p { color: rgba(255,255,255,0.6); font-size: 14px; }
 
-        .stat-item h3 {
-            font-size: 42px;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .stat-item p {
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
-            margin: 0;
-        }
-
-        /* ===== CATEGORIES (PREMIUM) ===== */
-        .categories {
-            padding: 80px 20px;
-            background: var(--gray-50);
-        }
-
-        .section-header {
-            max-width: 1400px;
-            margin: 0 auto 50px;
-            text-align: center;
-        }
-
-        .section-title {
-            font-size: 40px;
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .section-subtitle {
-            color: var(--gray-500);
-            font-size: 16px;
-        }
+        /* CATEGORIES */
+        .categories { padding: 80px 20px; background: var(--gray-50); }
+        .section-header { max-width: 1400px; margin: 0 auto 50px; text-align: center; }
+        .section-title { font-size: 40px; font-weight: 800; color: var(--dark); margin-bottom: 10px; }
+        .section-subtitle { color: var(--gray-500); font-size: 16px; }
 
         .categories-grid {
             max-width: 1400px;
@@ -410,7 +284,6 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 25px;
         }
-
         .category-card {
             background: white;
             padding: 30px 20px;
@@ -422,7 +295,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .category-card::before {
             content: '';
             position: absolute;
@@ -432,31 +304,13 @@
             height: 100%;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             transition: left 0.5s;
-            z-index: 0;
         }
-
-        .category-card:hover::before {
-            left: 0;
-        }
-
-        .category-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
-        }
-
-        .category-card:hover .category-icon,
-        .category-card:hover .category-name,
-        .category-card:hover .category-count {
-            color: white;
-            position: relative;
-            z-index: 1;
-        }
-
-        .category-card:hover .category-icon-wrapper {
-            background: rgba(255,255,255,0.2);
-            position: relative;
-            z-index: 1;
-        }
+        .category-card:hover::before { left: 0; }
+        .category-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2); }
+        .category-card:hover .category-icon, 
+        .category-card:hover .category-name, 
+        .category-card:hover .category-count { color: white; position: relative; z-index: 1; }
+        .category-card:hover .category-icon-wrapper { background: rgba(255,255,255,0.2); position: relative; z-index: 1; }
 
         .category-icon-wrapper {
             width: 80px;
@@ -471,38 +325,12 @@
             position: relative;
             z-index: 1;
         }
+        .category-icon { font-size: 36px; position: relative; z-index: 1; }
+        .category-name { font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 5px; position: relative; z-index: 1; }
+        .category-count { font-size: 13px; color: var(--gray-500); position: relative; z-index: 1; }
 
-        .category-icon {
-            font-size: 36px;
-            transition: color 0.4s;
-            position: relative;
-            z-index: 1;
-        }
-
-        .category-name {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 5px;
-            transition: color 0.4s;
-            position: relative;
-            z-index: 1;
-        }
-
-        .category-count {
-            font-size: 13px;
-            color: var(--gray-500);
-            transition: color 0.4s;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ===== PRODUCTS ===== */
-        .products-section {
-            padding: 80px 20px;
-            background: white;
-        }
-
+        /* PRODUCTS */
+        .products-section { padding: 80px 20px; background: white; }
         .products-grid {
             max-width: 1400px;
             margin: 0 auto;
@@ -510,21 +338,14 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 25px;
         }
-
         .product-card {
             background: white;
             border-radius: 16px;
             overflow: hidden;
             transition: all 0.3s;
             border: 1px solid var(--gray-200);
-            cursor: pointer;
         }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            border-color: var(--primary);
-        }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: var(--primary); }
 
         .product-image {
             position: relative;
@@ -532,7 +353,6 @@
             padding-top: 100%;
             overflow: hidden;
         }
-
         .product-image img {
             position: absolute;
             top: 0;
@@ -542,11 +362,7 @@
             object-fit: cover;
             transition: transform 0.5s;
         }
-
-        .product-card:hover .product-image img {
-            transform: scale(1.1);
-        }
-
+        .product-card:hover .product-image img { transform: scale(1.1); }
         .discount-badge {
             position: absolute;
             top: 12px;
@@ -559,40 +375,8 @@
             font-weight: 700;
             z-index: 1;
         }
-
-        .wishlist-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 38px;
-            height: 38px;
-            background: white;
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-            z-index: 1;
-        }
-
-        .wishlist-btn:hover {
-            background: var(--red);
-            color: white;
-        }
-
-        .product-info {
-            padding: 20px;
-        }
-
-        .product-category {
-            font-size: 12px;
-            color: var(--gray-500);
-            margin-bottom: 5px;
-        }
-
+        .product-info { padding: 20px; }
+        .product-category { font-size: 12px; color: var(--gray-500); margin-bottom: 5px; }
         .product-title {
             font-size: 16px;
             font-weight: 600;
@@ -602,49 +386,52 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            min-height: 48px;
         }
-
-        .product-rating {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 10px;
+        .product-price { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .current-price { font-size: 20px; font-weight: 700; color: var(--primary); }
+        .old-price { font-size: 14px; color: var(--gray-500); text-decoration: line-through; }
+        .add-cart-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
         }
+        .add-cart-btn:hover { background: var(--primary); }
 
-        .stars {
-            color: var(--yellow);
-            font-size: 14px;
+        /* LOADING */
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
         }
-
-        .review-count {
-            color: var(--gray-500);
-            font-size: 13px;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .product-price {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .current-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .old-price {
-            font-size: 14px;
-            color: var(--gray-500);
-            text-decoration: line-through;
-        }
-
-        /* ===== FEATURES ===== */
-        .features {
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
             padding: 60px 20px;
-            background: var(--gray-50);
+            color: var(--gray-500);
         }
+        .empty-state i { font-size: 60px; margin-bottom: 15px; color: var(--gray-300); }
 
+        /* FEATURES */
+        .features { padding: 60px 20px; background: var(--gray-50); }
         .features-grid {
             max-width: 1400px;
             margin: 0 auto;
@@ -652,7 +439,6 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 25px;
         }
-
         .feature-card {
             background: white;
             padding: 30px;
@@ -660,7 +446,6 @@
             text-align: center;
             border: 1px solid var(--gray-200);
         }
-
         .feature-icon {
             width: 60px;
             height: 60px;
@@ -673,86 +458,11 @@
             margin: 0 auto 15px;
             font-size: 26px;
         }
+        .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 5px; }
+        .feature-card p { font-size: 13px; color: var(--gray-500); }
 
-        .feature-card h3 {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 5px;
-        }
-
-        .feature-card p {
-            font-size: 13px;
-            color: var(--gray-500);
-        }
-
-        /* ===== NEWSLETTER ===== */
-        .newsletter {
-            padding: 80px 20px;
-            background: white;
-        }
-
-        .newsletter-box {
-            max-width: 900px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 100%);
-            border-radius: 24px;
-            padding: 60px 40px;
-            text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .newsletter-box::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .newsletter-box h2 {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        .newsletter-box p {
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .newsletter-form {
-            display: flex;
-            gap: 10px;
-            max-width: 500px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .newsletter-form input {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-family: inherit;
-            outline: none;
-        }
-
-        /* ===== FOOTER ===== */
-        footer {
-            background: var(--dark);
-            color: white;
-            padding: 60px 20px 30px;
-        }
-
+        /* FOOTER */
+        footer { background: var(--dark); color: white; padding: 60px 20px 30px; }
         .footer-content {
             max-width: 1400px;
             margin: 0 auto;
@@ -761,26 +471,9 @@
             gap: 40px;
             margin-bottom: 40px;
         }
-
-        .footer-brand .logo {
-            margin-bottom: 20px;
-        }
-
-        .footer-brand .logo-text h1 {
-            color: white;
-        }
-
-        .footer-brand p {
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 10px;
-        }
-
+        .footer-brand .logo-text h1 { color: white; }
+        .footer-brand p { color: rgba(255,255,255,0.6); margin: 20px 0; font-size: 14px; }
+        .social-links { display: flex; gap: 10px; }
         .social-links a {
             width: 40px;
             height: 40px;
@@ -791,52 +484,22 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            transition: all 0.3s;
         }
-
-        .social-links a:hover {
-            background: var(--primary);
-        }
-
-        .footer-col h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .footer-col ul {
-            list-style: none;
-        }
-
-        .footer-col ul li {
-            margin-bottom: 10px;
-        }
-
+        .social-links a:hover { background: var(--primary); }
+        .footer-col h3 { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 10px; }
         .footer-col ul li a {
             color: rgba(255,255,255,0.6);
             text-decoration: none;
             font-size: 14px;
-            transition: color 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
-        .footer-col ul li a:hover {
-            color: var(--primary);
-        }
-
-        .footer-col ul li i {
-            color: var(--primary);
-            width: 16px;
-        }
-
-        .payment-methods {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
+        .footer-col ul li a:hover { color: var(--primary); }
+        .footer-col ul li i { color: var(--primary); width: 16px; }
+        .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .payment-badge {
             background: rgba(255,255,255,0.05);
             padding: 10px;
@@ -845,7 +508,6 @@
             font-size: 13px;
             font-weight: 600;
         }
-
         .footer-bottom {
             max-width: 1400px;
             margin: 0 auto;
@@ -856,7 +518,7 @@
             font-size: 14px;
         }
 
-        /* ===== WHATSAPP FLOAT ===== */
+        /* WHATSAPP */
         .whatsapp-float {
             position: fixed;
             bottom: 25px;
@@ -873,14 +535,9 @@
             text-decoration: none;
             box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
             z-index: 999;
-            transition: transform 0.3s;
         }
 
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-        }
-
-        /* ===== TOAST ===== */
+        /* TOAST */
         .toast {
             position: fixed;
             bottom: 100px;
@@ -897,17 +554,117 @@
             align-items: center;
             gap: 10px;
         }
+        .toast.show { transform: translateX(0); }
+        .toast i { color: var(--primary); font-size: 20px; }
 
-        .toast.show {
-            transform: translateX(0);
+        /* CART SIDEBAR */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 400px;
+            max-width: 100%;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.1);
+            z-index: 10000;
+            transition: right 0.3s;
+            display: flex;
+            flex-direction: column;
         }
-
-        .toast i {
-            color: var(--primary);
-            font-size: 20px;
+        .cart-sidebar.open { right: 0; }
+        .cart-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        .cart-header h2 { font-size: 20px; }
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .cart-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .cart-item-info { flex: 1; }
+        .cart-item-info h4 { font-size: 14px; margin-bottom: 5px; }
+        .cart-item-info .price { color: var(--primary); font-weight: 700; }
+        .qty-controls { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .remove-btn {
+            background: none;
+            border: none;
+            color: var(--red);
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .cart-total .amount { color: var(--primary); font-size: 24px; }
+        .checkout-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+        }
+        .cart-overlay.show { display: block; }
+        .empty-cart { text-align: center; padding: 40px; color: var(--gray-500); }
+        .empty-cart i { font-size: 60px; color: var(--gray-300); margin-bottom: 15px; }
 
-        /* ===== RESPONSIVE ===== */
+        /* RESPONSIVE */
         @media (max-width: 1024px) {
             .hero h1 { font-size: 48px; }
             .categories-grid { grid-template-columns: repeat(3, 1fr); }
@@ -916,26 +673,17 @@
             .stats { grid-template-columns: repeat(2, 1fr); }
             .footer-content { grid-template-columns: 1fr 1fr; }
         }
-
         @media (max-width: 768px) {
-            .top-bar-content { font-size: 12px; }
             .search-box { display: none; }
-            .hero { padding: 50px 20px; }
             .hero h1 { font-size: 36px; }
-            .hero p { font-size: 16px; }
             .section-title { font-size: 28px; }
             .categories-grid { grid-template-columns: repeat(2, 1fr); }
             .products-grid { grid-template-columns: repeat(2, 1fr); }
-            .newsletter-box { padding: 40px 20px; }
-            .newsletter-form { flex-direction: column; }
             .footer-content { grid-template-columns: 1fr; }
-            .stats { grid-template-columns: 1fr 1fr; gap: 20px; }
             .stat-item h3 { font-size: 32px; }
         }
-
         @media (max-width: 480px) {
             .logo-text h1 { font-size: 18px; }
-            .logo-text span { font-size: 9px; }
             .hero h1 { font-size: 28px; }
             .categories-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
             .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -944,7 +692,7 @@
 </head>
 <body>
 
-    <!-- ===== TOP BAR ===== -->
+    <!-- TOP BAR -->
     <div class="top-bar">
         <div class="top-bar-content">
             <span><i class="fas fa-truck"></i> সারাদেশে ফ্রি ডেলিভারি — ৫০০৳+ অর্ডারে</span>
@@ -952,13 +700,11 @@
         </div>
     </div>
 
-    <!-- ===== NAVBAR ===== -->
+    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="#" class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-shopping-bag"></i>
-                </div>
+                <div class="logo-icon"><i class="fas fa-shopping-bag"></i></div>
                 <div class="logo-text">
                     <h1>স্মার্ট কেনাকাটা</h1>
                     <span>Trusted Online Shop</span>
@@ -971,157 +717,119 @@
             </div>
 
             <div class="nav-icons">
-                <button class="icon-btn" title="কার্ট">
+                <button class="icon-btn" onclick="openCart()" title="কার্ট">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-badge" id="cartCount">0</span>
                 </button>
-                <button class="icon-btn" title="অ্যাকাউন্ট">
+                <a href="admin-login.html" class="icon-btn" title="অ্যাডমিন">
                     <i class="fas fa-user"></i>
-                </button>
+                </a>
             </div>
         </div>
 
         <div class="nav-menu">
             <div class="nav-menu-container">
-                <a href="#" class="active">হোম</a>
-                <a href="#categories">ইলেকট্রনিক্স</a>
-                <a href="#categories">ফ্যাশন</a>
-                <a href="#categories">বিউটি</a>
-                <a href="#categories">হোম ও লিভিং</a>
-                <a href="#products">সব পণ্য</a>
+                <a onclick="filterCategory('all')" class="active">হোম</a>
+                <a onclick="filterCategory('ইলেকট্রনিক্স')">ইলেকট্রনিক্স</a>
+                <a onclick="filterCategory('ফ্যাশন')">ফ্যাশন</a>
+                <a onclick="filterCategory('বিউটি')">বিউটি</a>
+                <a onclick="filterCategory('হোম ও লিভিং')">হোম ও লিভিং</a>
+                <a onclick="filterCategory('all')">সব পণ্য</a>
             </div>
         </div>
     </nav>
 
-    <!-- ===== HERO ===== -->
+    <!-- HERO -->
     <section class="hero">
         <div class="hero-content">
             <div class="hero-badge">বিশেষ অফার চলছে</div>
             <h1>সেরা পণ্য,<br>সেরা দামে!</h1>
-            <p>বাংলাদেশের সবচেয়ে বিশ্বস্ত অনলাইন শপে আপনাকে স্বাগতম — ইলেকট্রনিক্স, ফ্যাশন, বিউটি ও আরও অনেক কিছু</p>
+            <p>বাংলাদেশের সবচেয়ে বিশ্বস্ত অনলাইন শপে আপনাকে স্বাগতম</p>
             <div class="hero-buttons">
-                <a href="#products" class="btn-primary">
-                    <i class="fas fa-shopping-bag"></i> শপিং শুরু করুন
-                </a>
-                <a href="#categories" class="btn-outline">
-                    সব ক্যাটাগরি <i class="fas fa-arrow-right"></i>
-                </a>
+                <a href="#products" class="btn-primary"><i class="fas fa-shopping-bag"></i> শপিং শুরু করুন</a>
+                <a href="#categories" class="btn-outline">সব ক্যাটাগরি <i class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="stats">
-                <div class="stat-item">
-                    <h3>১০,০০০+</h3>
-                    <p>সন্তুষ্ট গ্রাহক</p>
-                </div>
-                <div class="stat-item">
-                    <h3>৫,০০০+</h3>
-                    <p>পণ্য সংগ্রহ</p>
-                </div>
-                <div class="stat-item">
-                    <h3>৬৪</h3>
-                    <p>জেলায় ডেলিভারি</p>
-                </div>
-                <div class="stat-item">
-                    <h3>২৪/৭</h3>
-                    <p>সাপোর্ট</p>
-                </div>
+                <div class="stat-item"><h3>১০,০০০+</h3><p>সন্তুষ্ট গ্রাহক</p></div>
+                <div class="stat-item"><h3>৫,০০০+</h3><p>পণ্য সংগ্রহ</p></div>
+                <div class="stat-item"><h3>৬৪</h3><p>জেলায় ডেলিভারি</p></div>
+                <div class="stat-item"><h3>২৪/৭</h3><p>সাপোর্ট</p></div>
             </div>
         </div>
     </section>
 
-    <!-- ===== CATEGORIES (PREMIUM UNIQUE STYLE) ===== -->
+    <!-- CATEGORIES -->
     <section class="categories" id="categories">
         <div class="section-header">
             <h2 class="section-title">ক্যাটাগরি সমূহ</h2>
             <p class="section-subtitle">পছন্দের ক্যাটাগরি বেছে নিন</p>
         </div>
-
         <div class="categories-grid">
-            <div class="category-card">
-                <div class="category-icon-wrapper">
-                    <span class="category-icon">📱</span>
-                </div>
+            <div class="category-card" onclick="filterCategory('ইলেকট্রনিক্স')">
+                <div class="category-icon-wrapper"><span class="category-icon">📱</span></div>
                 <h3 class="category-name">ইলেকট্রনিক্স</h3>
-                <p class="category-count">১২০+ পণ্য</p>
+                <p class="category-count">পণ্য দেখুন</p>
             </div>
-
-            <div class="category-card">
-                <div class="category-icon-wrapper">
-                    <span class="category-icon">👕</span>
-                </div>
+            <div class="category-card" onclick="filterCategory('ফ্যাশন')">
+                <div class="category-icon-wrapper"><span class="category-icon">👕</span></div>
                 <h3 class="category-name">ফ্যাশন</h3>
-                <p class="category-count">২৫০+ পণ্য</p>
+                <p class="category-count">পণ্য দেখুন</p>
             </div>
-
-            <div class="category-card">
-                <div class="category-icon-wrapper">
-                    <span class="category-icon">💄</span>
-                </div>
+            <div class="category-card" onclick="filterCategory('বিউটি')">
+                <div class="category-icon-wrapper"><span class="category-icon">💄</span></div>
                 <h3 class="category-name">বিউটি</h3>
-                <p class="category-count">৮০+ পণ্য</p>
+                <p class="category-count">পণ্য দেখুন</p>
             </div>
-
-            <div class="category-card">
-                <div class="category-icon-wrapper">
-                    <span class="category-icon">🏠</span>
-                </div>
+            <div class="category-card" onclick="filterCategory('হোম ও লিভিং')">
+                <div class="category-icon-wrapper"><span class="category-icon">🏠</span></div>
                 <h3 class="category-name">হোম ও লিভিং</h3>
-                <p class="category-count">১৫০+ পণ্য</p>
+                <p class="category-count">পণ্য দেখুন</p>
             </div>
-
-            <div class="category-card">
-                <div class="category-icon-wrapper">
-                    <span class="category-icon">🧸</span>
-                </div>
+            <div class="category-card" onclick="filterCategory('খেলনা')">
+                <div class="category-icon-wrapper"><span class="category-icon">🧸</span></div>
                 <h3 class="category-name">খেলনা</h3>
-                <p class="category-count">৭০+ পণ্য</p>
+                <p class="category-count">পণ্য দেখুন</p>
             </div>
-
-            <div class="category-card">
-                <div class="category-icon-wrapper">
-                    <span class="category-icon">📚</span>
-                </div>
+            <div class="category-card" onclick="filterCategory('বই ও শিক্ষা')">
+                <div class="category-icon-wrapper"><span class="category-icon">📚</span></div>
                 <h3 class="category-name">বই ও শিক্ষা</h3>
-                <p class="category-count">৩০০+ পণ্য</p>
+                <p class="category-count">পণ্য দেখুন</p>
             </div>
-
-            <div class="category-card">
-                <div class="category-icon-wrapper">
-                    <span class="category-icon">🛒</span>
-                </div>
+            <div class="category-card" onclick="filterCategory('গ্রোসারি')">
+                <div class="category-icon-wrapper"><span class="category-icon">🛒</span></div>
                 <h3 class="category-name">গ্রোসারি</h3>
-                <p class="category-count">২০০+ পণ্য</p>
+                <p class="category-count">পণ্য দেখুন</p>
             </div>
-
-            <div class="category-card">
-                <div class="category-icon-wrapper">
-                    <span class="category-icon">📦</span>
-                </div>
+            <div class="category-card" onclick="filterCategory('all')">
+                <div class="category-icon-wrapper"><span class="category-icon">📦</span></div>
                 <h3 class="category-name">সব দেখুন</h3>
-                <p class="category-count">১২০০+ পণ্য</p>
+                <p class="category-count">সকল পণ্য</p>
             </div>
         </div>
     </section>
 
-    <!-- ===== PRODUCTS ===== -->
+    <!-- PRODUCTS -->
     <section class="products-section" id="products">
         <div class="section-header">
-            <h2 class="section-title">জনপ্রিয় পণ্য</h2>
+            <h2 class="section-title" id="productsTitle">জনপ্রিয় পণ্য</h2>
             <p class="section-subtitle">সবচেয়ে বেশি বিক্রিত পণ্যসমূহ</p>
         </div>
-
         <div class="products-grid" id="productsGrid">
-            <!-- Products will be inserted by JavaScript -->
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>পণ্য লোড হচ্ছে...</p>
+            </div>
         </div>
     </section>
 
-    <!-- ===== FEATURES ===== -->
+    <!-- FEATURES -->
     <section class="features">
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-truck-fast"></i></div>
                 <h3>দ্রুত ডেলিভারি</h3>
-                <p>ঢাকায় ২৪ ঘণ্টায় ও সারাদেশে ৩-৫ কর্মদিবসে</p>
+                <p>ঢাকায় ২৪ ঘণ্টায় ও সারাদেশে ৩-৫ দিন</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
@@ -1141,29 +849,15 @@
         </div>
     </section>
 
-    <!-- ===== NEWSLETTER ===== -->
-    <section class="newsletter">
-        <div class="newsletter-box">
-            <h2>আপডেট পেতে সাবস্ক্রাইব করুন</h2>
-            <p>নতুন পণ্য ও অফারের খবর সবার আগে পান</p>
-            <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
-                <input type="email" placeholder="আপনার ইমেইল দিন" required>
-                <button type="submit" class="btn-primary">সাবস্ক্রাইব</button>
-            </form>
-        </div>
-    </section>
-
-    <!-- ===== FOOTER ===== -->
+    <!-- FOOTER -->
     <footer>
         <div class="footer-content">
             <div class="footer-brand">
                 <a href="#" class="logo">
                     <div class="logo-icon"><i class="fas fa-shopping-bag"></i></div>
-                    <div class="logo-text">
-                        <h1>স্মার্ট কেনাকাটা</h1>
-                    </div>
+                    <div class="logo-text"><h1>স্মার্ট কেনাকাটা</h1></div>
                 </a>
-                <p>বাংলাদেশের বিশ্বস্ত অনলাইন শপিং প্ল্যাটফর্ম। সেরা পণ্য, সেরা দামে আপনার দোরগোড়ায়।</p>
+                <p>বাংলাদেশের বিশ্বস্ত অনলাইন শপিং প্ল্যাটফর্ম।</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-instagram"></i></a>
@@ -1171,27 +865,22 @@
                     <a href="#"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
-
             <div class="footer-col">
                 <h3>দ্রুত লিংক</h3>
                 <ul>
                     <li><a href="#">হোম</a></li>
                     <li><a href="#categories">ক্যাটাগরি</a></li>
                     <li><a href="#products">পণ্য</a></li>
-                    <li><a href="#">কার্ট</a></li>
                 </ul>
             </div>
-
             <div class="footer-col">
                 <h3>যোগাযোগ</h3>
                 <ul>
                     <li><a href="#"><i class="fas fa-phone"></i> ০১৯৩২২১১১২৩</a></li>
                     <li><a href="#"><i class="fas fa-envelope"></i> info@smartkenakata.com</a></li>
                     <li><a href="#"><i class="fas fa-location-dot"></i> মিরপুর-১০, ঢাকা</a></li>
-                    <li><a href="#"><i class="fas fa-clock"></i> সকাল ৯টা — রাত ১১টা</a></li>
                 </ul>
             </div>
-
             <div class="footer-col">
                 <h3>পেমেন্ট মেথড</h3>
                 <div class="payment-methods">
@@ -1202,160 +891,268 @@
                 </div>
             </div>
         </div>
-
         <div class="footer-bottom">
             <p>© ২০২৬ স্মার্ট কেনাকাটা। সর্বস্বত্ব সংরক্ষিত।</p>
         </div>
     </footer>
 
-    <!-- ===== WHATSAPP FLOAT ===== -->
+    <!-- WHATSAPP FLOAT -->
     <a href="https://wa.me/8801932211123" class="whatsapp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- ===== TOAST ===== -->
-    <div class="toast" id="toast">
-        <i class="fas fa-check-circle"></i>
-        <span id="toastMessage">কার্টে যোগ করা হয়েছে!</span>
+    <!-- CART SIDEBAR -->
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>🛒 আপনার কার্ট</h2>
+            <button class="close-cart" onclick="closeCart()">✕</button>
+        </div>
+        <div class="cart-body" id="cartBody">
+            <!-- Cart items load here -->
+        </div>
+        <div class="cart-footer" id="cartFooter" style="display:none;">
+            <div class="cart-total">
+                <span>মোট:</span>
+                <span class="amount" id="cartTotal">৳0</span>
+            </div>
+            <button class="checkout-btn" onclick="goToCheckout()">
+                <i class="fas fa-arrow-right"></i> চেকআউট করুন
+            </button>
+        </div>
     </div>
 
-    <script>
-        // ===== PRODUCTS DATA =====
-        const products = [
-            {
-                id: 1,
-                name: 'স্মার্ট ওয়াচ আল্ট্রা প্রো',
-                category: 'ইলেকট্রনিক্স',
-                price: 1299,
-                oldPrice: 2500,
-                discount: 48,
-                rating: 4.5,
-                reviews: 234,
-                image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&auto=format&fit=crop'
-            },
-            {
-                id: 2,
-                name: 'ওয়্যারলেস ব্লুটুথ হেডফোন',
-                category: 'ইলেকট্রনিক্স',
-                price: 899,
-                oldPrice: 1800,
-                discount: 50,
-                rating: 4.0,
-                reviews: 189,
-                image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop'
-            },
-            {
-                id: 3,
-                name: 'প্রিমিয়াম পুরুষদের টি-শার্ট',
-                category: 'ফ্যাশন',
-                price: 499,
-                oldPrice: 950,
-                discount: 47,
-                rating: 4.5,
-                reviews: 312,
-                image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&auto=format&fit=crop'
-            },
-            {
-                id: 4,
-                name: 'ডিজাইনার মহিলাদের থ্রি-পিস',
-                category: 'ফ্যাশন',
-                price: 1800,
-                oldPrice: 3500,
-                discount: 49,
-                rating: 4.5,
-                reviews: 156,
-                image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&auto=format&fit=crop'
-            },
-            {
-                id: 5,
-                name: 'লাক্সারি লিপস্টিক সেট',
-                category: 'বিউটি',
-                price: 650,
-                oldPrice: 1200,
-                discount: 46,
-                rating: 4.0,
-                reviews: 278,
-                image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400&auto=format&fit=crop'
-            },
-            {
-                id: 6,
-                name: 'প্রিমিয়াম মোবাইল কভার',
-                category: 'ইলেকট্রনিক্স',
-                price: 299,
-                oldPrice: 600,
-                discount: 50,
-                rating: 4.0,
-                reviews: 445,
-                image: 'https://images.unsplash.com/photo-1601593346740-925612772716?w=400&auto=format&fit=crop'
-            },
-            {
-                id: 7,
-                name: 'LED ডেকোরেটিভ লাইট',
-                category: 'হোম ও লিভিং',
-                price: 450,
-                oldPrice: 900,
-                discount: 50,
-                rating: 4.0,
-                reviews: 167,
-                image: 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&auto=format&fit=crop'
-            },
-            {
-                id: 8,
-                name: 'নন-স্টিক রান্নার সেট',
-                category: 'হোম ও লিভিং',
-                price: 1200,
-                oldPrice: 2400,
-                discount: 50,
-                rating: 4.5,
-                reviews: 98,
-                image: 'https://images.unsplash.com/photo-1584990347449-a7d2933e5a5f?w=400&auto=format&fit=crop'
-            }
-        ];
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">সফল হয়েছে!</span>
+    </div>
 
-        // ===== RENDER PRODUCTS =====
-        function renderProducts() {
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ===== FIREBASE CONFIG =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfnRJ3xyh3rkFD01XS-Zsm-LM1VSPuaJY",
+            authDomain: "smart-kenakata.firebaseapp.com",
+            projectId: "smart-kenakata",
+            storageBucket: "smart-kenakata.firebasestorage.app",
+            messagingSenderId: "892479175235",
+            appId: "1:892479175235:web:56a53187e4cd5ba662f2f6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ===== GLOBAL VARIABLES =====
+        let allProducts = [];
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        // ===== LOAD PRODUCTS FROM FIREBASE =====
+        function loadProducts() {
             const grid = document.getElementById('productsGrid');
-            grid.innerHTML = products.map(product => `
-                <div class="product-card" onclick="showToast('${product.name} দেখা হচ্ছে...')">
-                    <div class="product-image">
-                        <span class="discount-badge">-${product.discount}%</span>
-                        <button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(${product.id})">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <img src="${product.image}" alt="${product.name}" loading="lazy">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-category">${product.category}</div>
-                        <h3 class="product-title">${product.name}</h3>
-                        <div class="product-rating">
-                            <span class="stars">${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))}</span>
-                            <span class="review-count">(${product.reviews})</span>
+            
+            db.collection('products').orderBy('createdAt', 'desc').get()
+                .then((snapshot) => {
+                    allProducts = [];
+                    snapshot.forEach(doc => {
+                        allProducts.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    if (allProducts.length === 0) {
+                        grid.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-box-open"></i>
+                                <h3>এখনো কোন পণ্য যোগ করা হয়নি</h3>
+                                <p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    displayProducts(allProducts);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>পণ্য লোড করতে সমস্যা হচ্ছে</h3>
+                            <p>${error.message}</p>
                         </div>
-                        <div class="product-price">
-                            <span class="current-price">৳${product.price.toLocaleString('bn-BD')}</span>
-                            <span class="old-price">৳${product.oldPrice.toLocaleString('bn-BD')}</span>
+                    `;
+                });
+        }
+
+        // ===== DISPLAY PRODUCTS =====
+        function displayProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            
+            if (products.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>কোন পণ্য পাওয়া যায়নি</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = products.map(product => {
+                const discount = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
+                return `
+                    <div class="product-card">
+                        <div class="product-image">
+                            ${discount > 0 ? `<span class="discount-badge">-${discount}%</span>` : ''}
+                            <img src="${product.image || 'https://via.placeholder.com/300'}" alt="${product.name}" loading="lazy">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-category">${product.category || 'সাধারণ'}</div>
+                            <h3 class="product-title">${product.name}</h3>
+                            <div class="product-price">
+                                <span class="current-price">৳${product.price}</span>
+                                ${product.oldPrice ? `<span class="old-price">৳${product.oldPrice}</span>` : ''}
+                            </div>
+                            <button class="add-cart-btn" onclick="addToCart('${product.id}', '${product.name.replace(/'/g, "\\'")}', ${product.price}, '${product.image || ''}')">
+                                <i class="fas fa-cart-plus"></i> কার্টে যোগ করুন
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===== FILTER CATEGORY =====
+        function filterCategory(category) {
+            const title = document.getElementById('productsTitle');
+            
+            if (category === 'all') {
+                title.textContent = 'সকল পণ্য';
+                displayProducts(allProducts);
+            } else {
+                title.textContent = category;
+                const filtered = allProducts.filter(p => p.category === category);
+                displayProducts(filtered);
+            }
+
+            // Update active menu
+            document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+            event?.target?.classList.add('active');
+
+            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ===== SEARCH =====
+        document.getElementById('searchInput')?.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) {
+                displayProducts(allProducts);
+                return;
+            }
+            const filtered = allProducts.filter(p => 
+                p.name.toLowerCase().includes(query) || 
+                (p.category && p.category.toLowerCase().includes(query))
+            );
+            displayProducts(filtered);
+        });
+
+        // ===== CART FUNCTIONS =====
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        function addToCart(id, name, price, image) {
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ id, name, price, image, quantity: 1 });
+            }
+            saveCart();
+            showToast('✅ কার্টে যোগ করা হয়েছে!');
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            saveCart();
+            renderCart();
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (!item) return;
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id !== id);
+            }
+            saveCart();
+            renderCart();
+        }
+
+        function openCart() {
+            document.getElementById('cartSidebar').classList.add('open');
+            document.getElementById('cartOverlay').classList.add('show');
+            renderCart();
+        }
+
+        function closeCart() {
+            document.getElementById('cartSidebar').classList.remove('open');
+            document.getElementById('cartOverlay').classList.remove('show');
+        }
+
+        function renderCart() {
+            const body = document.getElementById('cartBody');
+            const footer = document.getElementById('cartFooter');
+            
+            if (cart.length === 0) {
+                body.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>আপনার কার্ট খালি</h3>
+                        <p>শপিং শুরু করুন</p>
+                    </div>
+                `;
+                footer.style.display = 'none';
+                return;
+            }
+
+            body.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <img src="${item.image || 'https://via.placeholder.com/80'}" alt="${item.name}">
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <p class="price">৳${item.price}</p>
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
+                            <span>${item.quantity}</span>
+                            <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
+                            <button class="remove-btn" onclick="removeFromCart('${item.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             `).join('');
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('cartTotal').textContent = '৳' + total;
+            footer.style.display = 'block';
         }
 
-        // ===== CART =====
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        
-        function updateCartCount() {
-            document.getElementById('cartCount').textContent = cart.length;
-        }
-
-        function addToCart(productId) {
-            cart.push(productId);
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-            showToast('কার্টে যোগ করা হয়েছে!');
-        }
-
-        function toggleWishlist(productId) {
-            showToast('উইশলিস্টে যোগ করা হয়েছে!');
+        function goToCheckout() {
+            if (cart.length === 0) {
+                showToast('⚠️ কার্ট খালি!');
+                return;
+            }
+            window.location.href = 'checkout.html';
         }
 
         // ===== TOAST =====
@@ -1366,27 +1163,8 @@
             setTimeout(() => toast.classList.remove('show'), 2500);
         }
 
-        // ===== SEARCH =====
-        document.getElementById('searchInput')?.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.product-card');
-            cards.forEach((card, i) => {
-                const product = products[i];
-                const match = product.name.toLowerCase().includes(query) || 
-                             product.category.toLowerCase().includes(query);
-                card.style.display = match ? '' : 'none';
-            });
-        });
-
-        // ===== NEWSLETTER =====
-        function subscribeNewsletter(e) {
-            e.preventDefault();
-            showToast('সাবস্ক্রিপশন সফল হয়েছে!');
-            e.target.reset();
-        }
-
         // ===== INIT =====
-        renderProducts();
+        loadProducts();
         updateCartCount();
     </script>
 </body>
