@@ -1,0 +1,605 @@
+/* ===== MOBILE OPTIMIZATION FIX ===== */
+
+/* Mobile Responsive Fixes */
+@media (max-width: 768px) {
+    
+    /* NAVBAR FIX */
+    .nav-container {
+        padding: 0 12px !important;
+        gap: 8px !important;
+    }
+    
+    .logo {
+        gap: 6px !important;
+        flex-shrink: 1;
+        min-width: 0;
+    }
+    
+    .logo-icon {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 16px !important;
+        flex-shrink: 0;
+    }
+    
+    .logo-text {
+        min-width: 0;
+        overflow: hidden;
+    }
+    
+    .logo-text h1 {
+        font-size: 16px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .logo-text span {
+        font-size: 9px !important;
+        display: none;
+    }
+    
+    /* NAV ICONS FIX */
+    .nav-icons {
+        gap: 6px !important;
+        flex-shrink: 0;
+    }
+    
+    .icon-btn {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 14px !important;
+    }
+    
+    .cart-badge {
+        width: 16px !important;
+        height: 16px !important;
+        font-size: 9px !important;
+        top: -3px !important;
+        right: -3px !important;
+    }
+    
+    /* NAV MENU FIX - স্পেসিং ঠিক করা */
+    .nav-menu-container {
+        padding: 10px 12px !important;
+        gap: 15px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    
+    .nav-menu-container::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .nav-menu a {
+        font-size: 13px !important;
+        white-space: nowrap !important;
+        padding: 6px 12px !important;
+        background: #f1f5f9;
+        border-radius: 20px;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+    
+    .nav-menu a.active {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        color: white !important;
+    }
+    
+    /* TOP BAR FIX */
+    .top-bar {
+        padding: 8px 0 !important;
+        font-size: 12px !important;
+    }
+    
+    .top-bar-content {
+        gap: 10px !important;
+        padding: 0 15px !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    /* HERO SECTION FIX */
+    .hero {
+        padding: 40px 15px !important;
+    }
+    
+    .hero h1 {
+        font-size: 32px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .hero p {
+        font-size: 14px !important;
+    }
+    
+    .hero-badge {
+        font-size: 12px !important;
+        padding: 6px 15px !important;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-primary, .btn-outline {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px !important;
+        font-size: 14px !important;
+    }
+    
+    /* STATS FIX */
+    .stats {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 15px !important;
+        margin-top: 30px !important;
+        padding-top: 25px !important;
+    }
+    
+    .stat-item h3 {
+        font-size: 24px !important;
+    }
+    
+    .stat-item p {
+        font-size: 12px !important;
+    }
+    
+    /* CATEGORIES FIX */
+    .categories {
+        padding: 40px 15px !important;
+    }
+    
+    .section-header {
+        margin-bottom: 25px !important;
+    }
+    
+    .section-title {
+        font-size: 22px !important;
+    }
+    
+    .section-subtitle {
+        font-size: 13px !important;
+    }
+    
+    .categories-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+    
+    .category-card {
+        padding: 20px 10px !important;
+        border-radius: 15px !important;
+    }
+    
+    .category-icon-wrapper {
+        width: 55px !important;
+        height: 55px !important;
+        margin-bottom: 12px !important;
+        border-radius: 15px !important;
+    }
+    
+    .category-icon {
+        font-size: 26px !important;
+    }
+    
+    .category-name {
+        font-size: 13px !important;
+    }
+    
+    .category-count {
+        font-size: 11px !important;
+    }
+    
+    /* PRODUCTS FIX */
+    .products-section {
+        padding: 40px 15px !important;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+    
+    .product-card {
+        border-radius: 12px !important;
+    }
+    
+    .product-info {
+        padding: 12px !important;
+    }
+    
+    .product-category {
+        font-size: 10px !important;
+    }
+    
+    .product-title {
+        font-size: 13px !important;
+        min-height: 36px !important;
+        -webkit-line-clamp: 2 !important;
+    }
+    
+    .current-price {
+        font-size: 16px !important;
+    }
+    
+    .old-price {
+        font-size: 12px !important;
+    }
+    
+    .add-cart-btn {
+        padding: 8px !important;
+        font-size: 12px !important;
+    }
+    
+    .discount-badge {
+        padding: 3px 8px !important;
+        font-size: 11px !important;
+        top: 8px !important;
+        left: 8px !important;
+    }
+    
+    /* WISHLIST HEART BUTTON */
+    .wishlist-heart {
+        width: 32px !important;
+        height: 32px !important;
+        top: 8px !important;
+        right: 8px !important;
+    }
+    
+    /* FEATURES FIX */
+    .features {
+        padding: 40px 15px !important;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+    
+    .feature-card {
+        padding: 20px 15px !important;
+    }
+    
+    .feature-icon {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 22px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .feature-card h3 {
+        font-size: 14px !important;
+    }
+    
+    .feature-card p {
+        font-size: 11px !important;
+    }
+    
+    /* FOOTER FIX */
+    footer {
+        padding: 40px 15px 20px !important;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr !important;
+        gap: 30px !important;
+    }
+    
+    .footer-col h3 {
+        font-size: 15px !important;
+    }
+    
+    .footer-col ul li a {
+        font-size: 13px !important;
+    }
+    
+    /* CHATBOT FIX - Full Width Mobile */
+    #chatbot-wrapper {
+        right: 15px !important;
+        bottom: 15px !important;
+    }
+    
+    #chatbot-toggle {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 20px !important;
+    }
+    
+    #chatbot-window {
+        width: calc(100vw - 20px) !important;
+        max-width: 380px;
+        height: 75vh !important;
+        max-height: 600px;
+        right: -50px !important;
+        bottom: 65px !important;
+    }
+    
+    .chatbot-header {
+        padding: 15px !important;
+    }
+    
+    .chatbot-avatar {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 18px !important;
+    }
+    
+    .chatbot-info h3 {
+        font-size: 14px !important;
+    }
+    
+    .chatbot-status {
+        font-size: 11px !important;
+    }
+    
+    .message-bubble {
+        font-size: 13px !important;
+        max-width: 80% !important;
+    }
+    
+    .chatbot-quick-replies button {
+        font-size: 12px !important;
+        padding: 6px 12px !important;
+    }
+    
+    #chatbot-input {
+        font-size: 13px !important;
+        padding: 10px 14px !important;
+    }
+    
+    .chatbot-send {
+        width: 38px !important;
+        height: 38px !important;
+    }
+    
+    /* WHATSAPP FLOAT FIX */
+    .whatsapp-float {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 24px !important;
+        bottom: 80px !important;
+        right: 15px !important;
+    }
+    
+    /* THEME TOGGLE FIX */
+    #theme-toggle {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 16px !important;
+        bottom: 140px !important;
+        right: 15px !important;
+    }
+    
+    /* INSTALL BUTTON FIX */
+    #install-app-btn {
+        bottom: 15px !important;
+        left: 15px !important;
+        padding: 10px 15px !important;
+        font-size: 12px !important;
+    }
+    
+    /* CART SIDEBAR FIX */
+    .cart-sidebar {
+        width: 100% !important;
+    }
+    
+    /* CATEGORY PAGE FIX */
+    .category-header {
+        padding: 30px 15px !important;
+    }
+    
+    .category-title h1 {
+        font-size: 22px !important;
+    }
+    
+    .category-icon-big {
+        width: 55px !important;
+        height: 55px !important;
+        font-size: 26px !important;
+    }
+    
+    .quick-categories {
+        gap: 8px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .quick-cat {
+        padding: 8px 15px !important;
+        font-size: 12px !important;
+    }
+    
+    .filter-bar {
+        padding: 12px !important;
+    }
+    
+    .search-input {
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+    }
+    
+    .sort-select {
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+    }
+    
+    /* PRODUCT DETAILS FIX */
+    .product-container {
+        padding: 15px !important;
+    }
+    
+    .product-info h1 {
+        font-size: 20px !important;
+    }
+    
+    .current-price {
+        font-size: 24px !important;
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .btn {
+        padding: 12px !important;
+        font-size: 13px !important;
+    }
+    
+    /* CHECKOUT FIX */
+    .main-container {
+        padding: 15px !important;
+        margin: 15px auto !important;
+    }
+    
+    .page-title h1 {
+        font-size: 22px !important;
+    }
+    
+    .checkout-form-card, .order-summary {
+        padding: 18px !important;
+    }
+    
+    .card-title {
+        font-size: 15px !important;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 11px 14px !important;
+        font-size: 13px !important;
+    }
+    
+    .place-order-btn {
+        padding: 14px !important;
+        font-size: 14px !important;
+    }
+    
+    /* NEWSLETTER/PAGES FIX */
+    .newsletter-box {
+        padding: 30px 20px !important;
+    }
+    
+    .newsletter-box h2 {
+        font-size: 22px !important;
+    }
+    
+    /* WISHLIST PAGE FIX */
+    .wishlist-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+    
+    .header-title h1 {
+        font-size: 22px !important;
+    }
+    
+    .heart-big {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 24px !important;
+    }
+    
+    /* ADMIN FIX */
+    .admin-container {
+        padding: 15px !important;
+    }
+    
+    .stat-card {
+        padding: 15px !important;
+    }
+    
+    .stat-icon {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 20px !important;
+    }
+    
+    .stat-info h3 {
+        font-size: 20px !important;
+    }
+    
+    /* TOAST FIX */
+    .toast {
+        left: 15px !important;
+        right: 15px !important;
+        bottom: 15px !important;
+        max-width: none !important;
+        font-size: 13px !important;
+    }
+    
+    /* PAGE TABS FIX */
+    .tabs-container {
+        overflow-x: auto !important;
+        scrollbar-width: none;
+    }
+    
+    .tabs-container::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .tab-btn {
+        padding: 12px 8px !important;
+        font-size: 13px !important;
+        white-space: nowrap;
+    }
+    
+    .page-hero {
+        padding: 30px 15px !important;
+    }
+    
+    .page-hero h1 {
+        font-size: 22px !important;
+    }
+    
+    .page-hero p {
+        font-size: 13px !important;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 400px) {
+    .logo-text h1 {
+        font-size: 14px !important;
+    }
+    
+    .categories-grid {
+        gap: 10px !important;
+    }
+    
+    .category-card {
+        padding: 15px 8px !important;
+    }
+    
+    .category-name {
+        font-size: 12px !important;
+    }
+    
+    .hero h1 {
+        font-size: 26px !important;
+    }
+    
+    .products-grid {
+        gap: 10px !important;
+    }
+    
+    .product-info {
+        padding: 10px !important;
+    }
+}
+
+/* Fix bottom fixed elements overlap */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 20px;
+    }
+    
+    /* Reduce chatbot window height when keyboard open */
+    @supports (-webkit-touch-callout: none) {
+        #chatbot-window {
+            height: 70vh !important;
+        }
+    }
+}
