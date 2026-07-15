@@ -11,6 +11,102 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+                /* NOTIFICATION POPUP */
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-left: 5px solid #10b981;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            min-width: 320px;
+            max-width: 400px;
+            z-index: 100000;
+            transform: translateX(500px);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        .notification-popup.show {
+            transform: translateX(0);
+        }
+        .notification-popup.order {
+            border-left-color: #3b82f6;
+        }
+        .notification-popup.message {
+            border-left-color: #f59e0b;
+        }
+        .notification-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+        .notification-icon.order { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .notification-icon.message { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .notification-content { flex: 1; }
+        .notification-content h4 {
+            font-size: 15px;
+            margin-bottom: 5px;
+            color: #0f172a;
+        }
+        .notification-content p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+        }
+        .notification-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+        }
+        .notification-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #10b981;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: livePulse 1.5s infinite;
+        }
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary: #10b981; --primary-dark: #059669;
@@ -222,7 +318,7 @@
         
         <div class="page-header">
             <div class="page-title">
-                <h1>👋 স্বাগতম, অ্যাডমিন!</h1>
+                <h1>👋 স্বাগতম, অ্যাডমিন! <span class="live-indicator"><span class="live-dot"></span> লাইভ</span></h1>
                 <p>আপনার শপ পরিচালনা করুন</p>
             </div>
             <div class="admin-info">
@@ -499,6 +595,10 @@
             loadProducts();
             loadOrders();
             loadMessages();
+                        // Start real-time notifications
+            initNotificationSound();
+            requestNotificationPermission();
+            setTimeout(() => startRealtimeListeners(), 2000);
         });
 
         function logout() {
@@ -958,6 +1058,154 @@ function deleteReview(id) {
             loadAdminReviews();
         });
 }      
+
+            // ===== REAL-TIME NOTIFICATIONS =====
+        let lastOrderCount = 0;
+        let lastMessageCount = 0;
+        let notificationSound = null;
+        let isFirstLoad = true;
+
+        // Initialize notification sound
+        function initNotificationSound() {
+            // Create audio using base64 (no external file needed)
+            notificationSound = new Audio('data:audio/wav;base64,UklGRi4EAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQoEAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA=');
+            notificationSound.volume = 0.7;
+        }
+
+        function playNotificationSound() {
+            try {
+                if (notificationSound) {
+                    notificationSound.currentTime = 0;
+                    notificationSound.play().catch(e => console.log('Sound blocked:', e));
+                }
+            } catch (e) {}
+        }
+
+        function showNotificationPopup(type, title, message, link) {
+            const popup = document.createElement('div');
+            popup.className = 'notification-popup ' + type;
+            
+            const iconClass = type === 'order' ? 'fa-shopping-cart' : 'fa-envelope';
+            const icon = type === 'order' ? '🛒' : '💬';
+            
+            popup.innerHTML = `
+                <div class="notification-icon ${type}">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+                <div class="notification-content">
+                    <h4>${icon} ${title}</h4>
+                    <p>${message}</p>
+                    ${link ? `<a href="#" onclick="${link}; return false;" class="notification-btn">দেখুন →</a>` : ''}
+                </div>
+                <button class="notification-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            setTimeout(() => popup.classList.add('show'), 100);
+            
+            // Auto remove after 6 seconds
+            setTimeout(() => {
+                popup.classList.remove('show');
+                setTimeout(() => popup.remove(), 400);
+            }, 6000);
+            
+            // Play sound
+            playNotificationSound();
+            
+            // Browser notification
+            showBrowserNotification(title, message);
+        }
+
+        function showBrowserNotification(title, message) {
+            if (!("Notification" in window)) return;
+            
+            if (Notification.permission === "granted") {
+                new Notification(title, {
+                    body: message,
+                    icon: 'https://cdn-icons-png.flaticon.com/512/891/891462.png',
+                    badge: 'https://cdn-icons-png.flaticon.com/512/891/891462.png',
+                    tag: 'smart-kenakata'
+                });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        }
+
+        // Request notification permission on load
+        function requestNotificationPermission() {
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission().then(perm => {
+                    if (perm === 'granted') {
+                        showToast('success', '✅ নোটিফিকেশন সক্রিয় করা হয়েছে!');
+                    }
+                });
+            }
+        }
+
+        // ===== REAL-TIME LISTENER =====
+        function startRealtimeListeners() {
+            // Listen for new orders
+            db.collection('orders').onSnapshot(snapshot => {
+                const currentCount = snapshot.size;
+                
+                if (!isFirstLoad && currentCount > lastOrderCount) {
+                    // New order detected!
+                    const newOrders = currentCount - lastOrderCount;
+                    
+                    // Get the latest order
+                    const latestOrder = snapshot.docs.sort((a, b) => 
+                        (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0)
+                    )[0];
+                    
+                    const order = latestOrder.data();
+                    
+                    showNotificationPopup(
+                        'order',
+                        'নতুন অর্ডার এসেছে!',
+                        `${order.customerName || 'গ্রাহক'} - ৳${order.total || 0}`,
+                        `showSection('orders', document.querySelectorAll('.menu-item')[3])`
+                    );
+                    
+                    // Reload orders and stats
+                    loadOrders();
+                    loadDashboardStats();
+                }
+                
+                lastOrderCount = currentCount;
+            });
+
+            // Listen for new messages
+            db.collection('messages').onSnapshot(snapshot => {
+                const currentCount = snapshot.size;
+                
+                if (!isFirstLoad && currentCount > lastMessageCount) {
+                    // New message detected!
+                    const latestMessage = snapshot.docs.sort((a, b) =>
+                        (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0)
+                    )[0];
+                    
+                    const message = latestMessage.data();
+                    
+                    showNotificationPopup(
+                        'message',
+                        'নতুন বার্তা এসেছে!',
+                        `${message.name || 'কেউ'}: ${(message.subject || 'বার্তা')}`,
+                        `showSection('messages', document.querySelectorAll('.menu-item')[4])`
+                    );
+                    
+                    loadMessages();
+                    loadDashboardStats();
+                }
+                
+                lastMessageCount = currentCount;
+                
+                // Mark first load complete
+                if (isFirstLoad) {
+                    setTimeout(() => { isFirstLoad = false; }, 3000);
+                }
+            });
+        }    
         
         function showToast(type, message) {
             const toast = document.getElementById('toast');
