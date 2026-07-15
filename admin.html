@@ -197,6 +197,10 @@
                 <span class="menu-badge" id="unreadMsgBadge" style="display:none;">0</span>
             </button>
             
+            <button class="menu-item" onclick="showSection('coupons', this)">
+    <i class="fas fa-tags"></i>
+    <span>কুপন কোড</span>
+</button>
             <div class="menu-divider"></div>
             
             <a href="index.html" class="menu-item" target="_blank">
@@ -374,6 +378,64 @@
                 <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
             </div>
         </div>
+        <!-- COUPONS SECTION -->
+<div class="section" id="coupons-section">
+    <div class="section-title">
+        <h2>🎁 কুপন কোড ম্যানেজমেন্ট</h2>
+        <button class="btn btn-primary btn-sm" onclick="loadCoupons()">
+            <i class="fas fa-sync"></i> রিফ্রেশ
+        </button>
+    </div>
+
+    <!-- Add Coupon Form -->
+    <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
+        <h3 style="margin-bottom:15px; font-size:16px;">➕ নতুন কুপন তৈরি করুন</h3>
+        <form onsubmit="addCoupon(event)">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>কুপন কোড *</label>
+                    <input type="text" id="couponCode" placeholder="যেমন: NEW20" required style="text-transform:uppercase;">
+                </div>
+                <div class="form-group">
+                    <label>ডিসকাউন্ট টাইপ *</label>
+                    <select id="couponType" required>
+                        <option value="percentage">শতাংশ (%)</option>
+                        <option value="fixed">নির্দিষ্ট টাকা (৳)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ডিসকাউন্ট পরিমাণ *</label>
+                    <input type="number" id="couponAmount" placeholder="20" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>সর্বনিম্ন অর্ডার (৳)</label>
+                    <input type="number" id="couponMinOrder" placeholder="500" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label>মেয়াদ শেষ</label>
+                    <input type="date" id="couponExpiry">
+                </div>
+                <div class="form-group">
+                    <label>ব্যবহারের সীমা</label>
+                    <input type="number" id="couponLimit" placeholder="100" value="100" min="1">
+                </div>
+                <div class="form-group full">
+                    <label>বিবরণ</label>
+                    <input type="text" id="couponDesc" placeholder="যেমন: নতুন গ্রাহকদের জন্য ২০% ছাড়">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="addCouponBtn">
+                <i class="fas fa-plus"></i> কুপন তৈরি করুন
+            </button>
+        </form>
+    </div>
+
+    <!-- Coupons List -->
+    <h3 style="margin-bottom:15px;">📋 সক্রিয় কুপন সমূহ</h3>
+    <div id="couponsList">
+        <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
+    </div>
+</div>
 
     </main>
 
@@ -441,6 +503,7 @@
             if (sectionName === 'products') loadProducts();
             if (sectionName === 'orders') loadOrders();
             if (sectionName === 'messages') loadMessages();
+            if (sectionName === 'coupons') loadCoupons();
         }
 
         async function loadDashboardStats() {
@@ -689,7 +752,136 @@
                     loadDashboardStats();
                 });
         }
+// ===== COUPON FUNCTIONS =====
+function addCoupon(event) {
+    event.preventDefault();
+    const btn = document.getElementById('addCouponBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> তৈরি হচ্ছে...';
+    
+    const coupon = {
+        code: document.getElementById('couponCode').value.trim().toUpperCase(),
+        type: document.getElementById('couponType').value,
+        amount: parseInt(document.getElementById('couponAmount').value),
+        minOrder: parseInt(document.getElementById('couponMinOrder').value) || 0,
+        expiry: document.getElementById('couponExpiry').value || null,
+        limit: parseInt(document.getElementById('couponLimit').value) || 100,
+        used: 0,
+        description: document.getElementById('couponDesc').value.trim(),
+        active: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
 
+    // Check if code already exists
+    db.collection('coupons').where('code', '==', coupon.code).get()
+        .then(snapshot => {
+            if (!snapshot.empty) {
+                showToast('error', '❌ এই কুপন কোড আগে থেকেই আছে!');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-plus"></i> কুপন তৈরি করুন';
+                return;
+            }
+            
+            return db.collection('coupons').add(coupon);
+        })
+        .then(result => {
+            if (result) {
+                showToast('success', '✅ কুপন সফলভাবে তৈরি হয়েছে!');
+                event.target.reset();
+                loadCoupons();
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-plus"></i> কুপন তৈরি করুন';
+        })
+        .catch(error => {
+            showToast('error', '❌ ' + error.message);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-plus"></i> কুপন তৈরি করুন';
+        });
+}
+
+function loadCoupons() {
+    const container = document.getElementById('couponsList');
+    container.innerHTML = '<div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>';
+    
+    db.collection('coupons').get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-tags"></i><h3>কোন কুপন নেই</h3><p>উপর থেকে নতুন কুপন তৈরি করুন</p></div>';
+                return;
+            }
+            
+            const coupons = [];
+            snapshot.forEach(doc => coupons.push({ id: doc.id, ...doc.data() }));
+            coupons.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            
+            let html = '<div style="display:grid; gap:15px;">';
+            coupons.forEach(c => {
+                const isExpired = c.expiry && new Date(c.expiry) < new Date();
+                const isUsedUp = c.used >= c.limit;
+                const isActive = c.active && !isExpired && !isUsedUp;
+                const statusColor = isActive ? '#10b981' : '#ef4444';
+                const statusText = isExpired ? '⏰ মেয়াদ শেষ' : isUsedUp ? '❌ শেষ হয়ে গেছে' : (c.active ? '✅ সক্রিয়' : '⏸️ নিষ্ক্রিয়');
+                
+                html += `
+                    <div style="background:white; border:2px dashed ${statusColor}; border-radius:12px; padding:20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+                            <div>
+                                <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+                                    <h3 style="font-size:24px; color:${statusColor}; letter-spacing:2px;">
+                                        <i class="fas fa-tag"></i> ${c.code}
+                                    </h3>
+                                    <span style="background:${statusColor}; color:white; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">
+                                        ${statusText}
+                                    </span>
+                                </div>
+                                <p style="color:#64748b; font-size:14px; margin-top:8px;">${c.description || 'কোন বিবরণ নেই'}</p>
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="deleteCoupon('${c.id}', '${c.code}')">
+                                <i class="fas fa-trash"></i> ডিলিট
+                            </button>
+                        </div>
+                        
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-top:15px; padding-top:15px; border-top:1px solid #e2e8f0;">
+                            <div>
+                                <p style="font-size:11px; color:#64748b; text-transform:uppercase;">ডিসকাউন্ট</p>
+                                <p style="font-size:16px; font-weight:700; color:#10b981;">
+                                    ${c.type === 'percentage' ? c.amount + '%' : '৳' + c.amount}
+                                </p>
+                            </div>
+                            <div>
+                                <p style="font-size:11px; color:#64748b; text-transform:uppercase;">মিন. অর্ডার</p>
+                                <p style="font-size:16px; font-weight:700;">৳${c.minOrder}</p>
+                            </div>
+                            <div>
+                                <p style="font-size:11px; color:#64748b; text-transform:uppercase;">ব্যবহার</p>
+                                <p style="font-size:16px; font-weight:700;">${c.used}/${c.limit}</p>
+                            </div>
+                            <div>
+                                <p style="font-size:11px; color:#64748b; text-transform:uppercase;">মেয়াদ</p>
+                                <p style="font-size:14px; font-weight:600;">${c.expiry || 'নেই'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        })
+        .catch(error => {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error</h3><p>' + error.message + '</p></div>';
+        });
+}
+
+function deleteCoupon(id, code) {
+    if (!confirm('"' + code + '" কুপন ডিলিট করবেন?')) return;
+    db.collection('coupons').doc(id).delete()
+        .then(() => {
+            showToast('success', '✅ কুপন ডিলিট হয়েছে!');
+            loadCoupons();
+        });
+}
+        
         function showToast(type, message) {
             const toast = document.getElementById('toast');
             toast.className = 'toast ' + type;
