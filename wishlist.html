@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>উইশলিস্ট - স্মার্ট কেনাকাটা</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #10b981; --primary-dark: #059669;
+            --dark: #0f172a; --dark-2: #1e293b;
+            --white: #ffffff; --gray-50: #f8fafc;
+            --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+            --gray-500: #64748b; --gray-700: #334155;
+            --red: #ef4444; --pink: #ec4899;
+        }
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: var(--gray-50); color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .navbar { background: white; padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-icon { width: 45px; height: 45px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; }
+        .logo-text h1 { font-size: 22px; font-weight: 700; color: var(--dark); line-height: 1; }
+        .logo-text span { font-size: 11px; color: var(--gray-500); letter-spacing: 1px; text-transform: uppercase; }
+        .nav-icons { display: flex; gap: 10px; }
+        .icon-btn { width: 45px; height: 45px; border-radius: 12px; border: 2px solid var(--gray-200); background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; text-decoration: none; color: var(--dark); position: relative; }
+        .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 100%);
+            color: white;
+            padding: 60px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .heart-big {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ec4899, #db2777);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            animation: heartbeat 2s infinite;
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .header-title h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        .header-title p {
+            color: rgba(255,255,255,0.7);
+            font-size: 16px;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        .wishlist-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid var(--gray-200);
+            position: relative;
+        }
+        .wishlist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: var(--pink);
+        }
+
+        .wishlist-image {
+            position: relative;
+            background: var(--gray-100);
+            padding-top: 100%;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .wishlist-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .wishlist-card:hover .wishlist-image img {
+            transform: scale(1.1);
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--red);
+            font-size: 18px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            z-index: 2;
+            transition: all 0.3s;
+        }
+        .remove-btn:hover {
+            background: var(--red);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--red);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .wishlist-info {
+            padding: 20px;
+        }
+        .product-category {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-bottom: 5px;
+        }
+        .product-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 48px;
+            cursor: pointer;
+        }
+        .product-title:hover { color: var(--primary); }
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .current-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .old-price {
+            font-size: 14px;
+            color: var(--gray-500);
+            text-decoration: line-through;
+        }
+        .add-cart-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--dark);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+        .add-cart-btn:hover {
+            background: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+            background: white;
+            border-radius: 16px;
+        }
+        .empty-state i {
+            font-size: 100px;
+            color: var(--pink);
+            margin-bottom: 25px;
+            animation: heartbeat 2s infinite;
+        }
+        .empty-state h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        .empty-state p {
+            color: var(--gray-500);
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        .btn-shop {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s;
+        }
+        .btn-shop:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .stats-bar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .stats-bar-info { color: var(--gray-700); }
+        .stats-bar-info strong { color: var(--pink); }
+        .clear-all-btn {
+            padding: 8px 15px;
+            background: var(--red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: #25D366;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            text-decoration: none;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+            z-index: 999;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            background: var(--dark);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast i { color: var(--primary); font-size: 20px; }
+
+        @media (max-width: 1024px) {
+            .wishlist-grid { grid-template-columns: repeat(3, 1fr); }
+            .header-title h1 { font-size: 32px; }
+        }
+        @media (max-width: 768px) {
+            .page-header { padding: 40px 20px; }
+            .header-title h1 { font-size: 24px; }
+            .heart-big { width: 60px; height: 60px; font-size: 30px; }
+            .wishlist-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            .logo-text h1 { font-size: 18px; }
+        }
+        @media (max-width: 480px) {
+            .header-content { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-shopping-bag"></i></div>
+                <div class="logo-text">
+                    <h1>স্মার্ট কেনাকাটা</h1>
+                    <span>Trusted Online Shop</span>
+                </div>
+            </a>
+            <div class="nav-icons">
+                <a href="index.html" class="icon-btn" title="হোম">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="checkout.html" class="icon-btn" title="কার্ট">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="header-content">
+            <div class="heart-big">
+                <i class="fas fa-heart"></i>
+            </div>
+            <div class="header-title">
+                <h1>আমার উইশলিস্ট</h1>
+                <p>আপনার পছন্দের পণ্য এখানে সংরক্ষিত</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="stats-bar" id="statsBar" style="display:none;">
+            <div class="stats-bar-info">
+                💝 আপনার উইশলিস্টে <strong id="wishlistCount">0</strong> টি পণ্য আছে
+            </div>
+            <button class="clear-all-btn" onclick="clearAllWishlist()">
+                <i class="fas fa-trash"></i> সব মুছুন
+            </button>
+        </div>
+
+        <div id="wishlistContainer">
+            <div class="empty-state">
+                <i class="fas fa-heart"></i>
+                <h2>আপনার উইশলিস্ট খালি!</h2>
+                <p>পছন্দের পণ্যে ❤️ ক্লিক করে উইশলিস্টে যোগ করুন</p>
+                <a href="index.html" class="btn-shop">
+                    <i class="fas fa-shopping-bag"></i> শপিং শুরু করুন
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <a href="https://wa.me/8801932211123" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">সফল!</span>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfnRJ3xyh3rkFD01XS-Zsm-LM1VSPuaJY",
+            authDomain: "smart-kenakata.firebaseapp.com",
+            projectId: "smart-kenakata",
+            storageBucket: "smart-kenakata.firebasestorage.app",
+            messagingSenderId: "892479175235",
+            appId: "1:892479175235:web:56a53187e4cd5ba662f2f6"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        async function loadWishlist() {
+            const container = document.getElementById('wishlistContainer');
+            const statsBar = document.getElementById('statsBar');
+            
+            if (wishlist.length === 0) {
+                statsBar.style.display = 'none';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-heart"></i>
+                        <h2>আপনার উইশলিস্ট খালি!</h2>
+                        <p>পছন্দের পণ্যে ❤️ ক্লিক করে উইশলিস্টে যোগ করুন</p>
+                        <a href="index.html" class="btn-shop">
+                            <i class="fas fa-shopping-bag"></i> শপিং শুরু করুন
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            statsBar.style.display = 'flex';
+            document.getElementById('wishlistCount').textContent = wishlist.length;
+
+            container.innerHTML = '<div class="empty-state"><div class="spinner" style="width:50px; height:50px; border:4px solid #e2e8f0; border-top-color:#10b981; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 20px;"></div><p>লোড হচ্ছে...</p></div><style>@keyframes spin{to{transform:rotate(360deg);}}</style>';
+
+            try {
+                const products = [];
+                for (const id of wishlist) {
+                    const doc = await db.collection('products').doc(id).get();
+                    if (doc.exists) {
+                        products.push({ id: doc.id, ...doc.data() });
+                    }
+                }
+
+                if (products.length === 0) {
+                    wishlist = [];
+                    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                    loadWishlist();
+                    return;
+                }
+
+                let html = '<div class="wishlist-grid">';
+                products.forEach(product => {
+                    const discount = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
+                    const safeName = (product.name || '').replace(/'/g, "\\'");
+                    const safeImage = (product.image || '').replace(/'/g, "\\'");
+
+                    html += `
+                        <div class="wishlist-card">
+                            <div class="wishlist-image" onclick="viewProduct('${product.id}')">
+                                ${discount > 0 ? `<span class="discount-badge">-${discount}%</span>` : ''}
+                                <button class="remove-btn" onclick="event.stopPropagation(); removeFromWishlist('${product.id}')" title="উইশলিস্ট থেকে সরান">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <img src="${product.image || 'https://via.placeholder.com/300'}" alt="${product.name}">
+                            </div>
+                            <div class="wishlist-info">
+                                <div class="product-category">${product.category || 'সাধারণ'}</div>
+                                <h3 class="product-title" onclick="viewProduct('${product.id}')">${product.name}</h3>
+                                <div class="product-price">
+                                    <span class="current-price">৳${product.price}</span>
+                                    ${product.oldPrice ? `<span class="old-price">৳${product.oldPrice}</span>` : ''}
+                                </div>
+                                <button class="add-cart-btn" onclick="moveToCart('${product.id}', '${safeName}', ${product.price}, '${safeImage}')">
+                                    <i class="fas fa-cart-plus"></i> কার্টে যোগ করুন
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = '<div class="empty-state"><h2>Error</h2><p>' + error.message + '</p></div>';
+            }
+        }
+
+        function removeFromWishlist(id) {
+            wishlist = wishlist.filter(item => item !== id);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            showToast('💔 উইশলিস্ট থেকে সরানো হয়েছে');
+            loadWishlist();
+        }
+
+        function clearAllWishlist() {
+            if (!confirm('সব পণ্য উইশলিস্ট থেকে মুছবেন?')) return;
+            wishlist = [];
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            showToast('✅ সব মুছে ফেলা হয়েছে');
+            loadWishlist();
+        }
+
+        function moveToCart(id, name, price, image) {
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ id, name, price, image, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            // Remove from wishlist
+            wishlist = wishlist.filter(item => item !== id);
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            
+            showToast('🛒 কার্টে যোগ করা হয়েছে!');
+            loadWishlist();
+        }
+
+        function viewProduct(id) {
+            window.location.href = 'product-details.html?id=' + id;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        loadWishlist();
+    </script>
+    
+    <script src="chatbot.js"></script>
+</body>
+</html>
