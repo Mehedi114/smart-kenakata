@@ -480,22 +480,9 @@
             window.location.href = 'product-details.html?id=' + productId;
         }
 
-        function filterCategory(category, event) {
-            const title = document.getElementById('productsTitle');
-            
-            if (category === 'all') {
-                title.textContent = 'সকল পণ্য';
-                displayProducts(allProducts);
-            } else {
-                title.textContent = category;
-                const filtered = allProducts.filter(p => p.category === category);
-                displayProducts(filtered);
-            }
-
-            document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
-            if (event && event.target) event.target.classList.add('active');
-
-            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+                function filterCategory(category, event) {
+            // Redirect to category page
+            window.location.href = 'category.html?cat=' + encodeURIComponent(category);
         }
 
         document.getElementById('searchInput').addEventListener('input', function(e) {
