@@ -1,0 +1,40 @@
+{
+  "name": "স্মার্ট কেনাকাটা - Smart Kenakata",
+  "short_name": "স্মার্ট কেনাকাটা",
+  "description": "বাংলাদেশের সেরা অনলাইন শপ",
+  "start_url": "/smart-kenakata/",
+  "scope": "/smart-kenakata/",
+  "display": "standalone",
+  "background_color": "#10b981",
+  "theme_color": "#10b981",
+  "orientation": "portrait",
+  "lang": "bn",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/891/891462.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/891/891462.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "business"],
+  "shortcuts": [
+    {
+      "name": "শপিং",
+      "url": "/smart-kenakata/",
+      "icons": [{"src": "https://cdn-icons-png.flaticon.com/512/891/891462.png", "sizes": "96x96"}]
+    },
+    {
+      "name": "কার্ট",
+      "url": "/smart-kenakata/checkout.html",
+      "icons": [{"src": "https://cdn-icons-png.flaticon.com/512/891/891462.png", "sizes": "96x96"}]
+    }
+  ]
+}
