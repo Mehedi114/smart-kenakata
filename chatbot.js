@@ -1,116 +1,65 @@
-// ===== AI CHATBOT FOR SMART KENAKATA =====
-// Bengali E-commerce Chatbot
+// ===== AI CHATBOT WITH GEMINI AI =====
+// Real AI-powered Bengali E-commerce Chatbot
 
 (function() {
     'use strict';
 
-    // ===== BOT KNOWLEDGE BASE =====
-    const botResponses = {
-        // Greetings
-        greeting: [
-            'হ্যালো! 👋 স্মার্ট কেনাকাটায় স্বাগতম!',
-            'আসসালামু আলাইকুম! 🙏 কীভাবে সাহায্য করতে পারি?',
-            'হাই! 😊 আমি আপনাকে কীভাবে সাহায্য করতে পারি?'
-        ],
-        
-        // Product related
-        products: 'আমাদের কাছে আছে:\n📱 ইলেকট্রনিক্স\n👕 ফ্যাশন\n💄 বিউটি\n🏠 হোম ও লিভিং\n🧸 খেলনা\n📚 বই\n🛒 গ্রোসারি\n\nকোনটা দেখতে চান?',
-        
-        // Delivery
-        delivery: '🚚 ডেলিভারি তথ্য:\n\n📍 ঢাকার ভিতরে: ২৪ ঘণ্টা (৳৬০)\n📍 ঢাকার বাইরে: ৩-৫ দিন (৳১২০)\n\n✨ ৫০০৳+ অর্ডারে ফ্রি ডেলিভারি!',
-        
-        // Payment
-        payment: '💳 পেমেন্ট মেথড:\n\n💵 ক্যাশ অন ডেলিভারি\n📱 বিকাশ\n📱 নগদ\n🚀 রকেট\n\nসবগুলো সহজ এবং নিরাপদ!',
-        
-        // Order process
-        howToOrder: '🛍️ অর্ডার করা খুব সহজ:\n\n1️⃣ পণ্য সিলেক্ট করুন\n2️⃣ "কার্টে যোগ করুন" ক্লিক করুন\n3️⃣ কার্ট থেকে চেকআউটে যান\n4️⃣ ঠিকানা ও পেমেন্ট দিন\n5️⃣ অর্ডার কনফার্ম!\n\nএখনই শুরু করুন 🚀',
-        
-        // Return policy
-        returnPolicy: '↩️ রিটার্ন পলিসি:\n\n✅ ৭ দিনের মধ্যে রিটার্ন\n✅ প্যাকেজিং অক্ষত থাকতে হবে\n✅ ১০০% রিফান্ড গ্যারান্টি\n✅ দ্রুত রিফান্ড প্রসেস\n\nকোন সমস্যা? কল করুন: ০১৯৩২২১১১২৩',
-        
-        // Contact
-        contact: '📞 যোগাযোগ:\n\n☎️ ফোন: ০১৯৩২২১১১২৩\n💬 WhatsApp: ০১৯৩২২১১১২৩\n📧 ইমেইল: info@smartkenakata.com\n📍 ঠিকানা: মিরপুর-১০, ঢাকা\n\n⏰ সময়: সকাল ৯টা - রাত ১১টা',
-        
-        // Discount
-        discount: '🎁 ছাড় ও অফার:\n\n🔥 নতুন গ্রাহকদের ২০% ছাড়\n💰 ৫০০৳+ অর্ডারে ফ্রি ডেলিভারি\n🎯 প্রতিদিন বিশেষ অফার\n💎 প্রিমিয়াম পণ্যে বিশেষ ছাড়\n\nএখনই কেনাকাটা করুন!',
-        
-        // About
-        about: '🏢 স্মার্ট কেনাকাটা:\n\nবাংলাদেশের সবচেয়ে বিশ্বস্ত অনলাইন শপিং প্ল্যাটফর্ম। ১০,০০০+ সন্তুষ্ট গ্রাহক আমাদের সাথে আছেন।\n\n✨ সেরা দাম, সেরা মান!',
-        
-        // Thanks
-        thanks: [
-            'আপনাকে ধন্যবাদ! 🙏 আরও কিছু জানতে চান?',
-            'স্বাগতম! 😊 আরও কোন সাহায্য দরকার?',
-            'ধন্যবাদ! ❤️ আপনার শপিং শুভ হোক!'
-        ],
-        
-        // Bye
-        bye: [
-            'বিদায়! 👋 আবার আসবেন!',
-            'আল্লাহ হাফেজ! 🙏 আবার দেখা হবে!',
-            'ধন্যবাদ! 😊 শুভ কেনাকাটা!'
-        ],
-        
-        // Default (unknown)
-        default: 'দুঃখিত, আমি ঠিক বুঝতে পারিনি। 😅\n\nআপনি এগুলো জিজ্ঞেস করতে পারেন:\n• পণ্য সম্পর্কে\n• ডেলিভারি\n• পেমেন্ট\n• অর্ডার করার উপায়\n• রিটার্ন পলিসি\n• যোগাযোগ\n\nঅথবা সরাসরি কল করুন: ০১৯৩২২১১১২৩'
-    };
+    // ⚠️ এখানে আপনার Gemini API Key বসান
+    const GEMINI_API_KEY = 'AQ.Ab8RN6JeK4f8K293umKBNdXJHMeUfxddPu33yUYmSTLqszsUaQ';
+    
+    // Gemini API URL
+    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    
+    // ===== BOT CONTEXT (আপনার সাইটের information) =====
+    const BOT_CONTEXT = `তুমি "স্মার্ট কেনাকাটা" নামে একটি বাংলাদেশী অনলাইন শপিং প্ল্যাটফর্মের AI সহায়ক। তোমার নাম "স্মার্ট সহায়ক"।
 
-    // ===== KEYWORDS =====
-    const keywords = {
-        greeting: ['হ্যালো', 'hi', 'hello', 'hey', 'আসসালামু', 'সালাম', 'হাই', 'hey there', 'স্বাগত'],
-        products: ['পণ্য', 'product', 'কি আছে', 'কী আছে', 'ক্যাটাগরি', 'category', 'জিনিস', 'items', 'ইলেকট্রনিক্স', 'ফ্যাশন', 'বিউটি'],
-        delivery: ['ডেলিভারি', 'delivery', 'কতদিন', 'কত দিন', 'পাঠাবে', 'পৌঁছাবে', 'শিপিং', 'shipping', 'ঢাকা'],
-        payment: ['পেমেন্ট', 'payment', 'বিকাশ', 'নগদ', 'রকেট', 'cash', 'টাকা', 'দাম দিব', 'কিভাবে দিব'],
-        howToOrder: ['অর্ডার', 'order', 'কিনব', 'কিভাবে', 'কীভাবে', 'কিনতে', 'কেনার'],
-        returnPolicy: ['রিটার্ন', 'return', 'ফেরত', 'রিফান্ড', 'refund', 'পাল্টানো', 'exchange'],
-        contact: ['যোগাযোগ', 'contact', 'ফোন', 'phone', 'নম্বর', 'number', 'কল', 'call', 'ইমেইল', 'email', 'address', 'ঠিকানা'],
-        discount: ['ছাড়', 'discount', 'অফার', 'offer', 'কুপন', 'coupon', 'সেল', 'sale', 'কমে'],
-        about: ['আপনারা কারা', 'কারা', 'about', 'সম্পর্কে', 'কোম্পানি', 'company'],
-        thanks: ['ধন্যবাদ', 'thanks', 'thank you', 'thx', 'ধইন্যা'],
-        bye: ['বিদায়', 'bye', 'goodbye', 'আল্লাহ হাফেজ', 'হাফেজ', 'চলি', 'পরে কথা']
-    };
+গুরুত্বপূর্ণ তথ্য:
+- ওয়েবসাইট: স্মার্ট কেনাকাটা (Smart Kenakata)
+- ভাষা: বাংলা প্রাধান্য, তবে ইংরেজি/হিন্দি সব ভাষায় reply দিতে পারো
+- ধরন: Multi-vendor Reseller E-commerce
+- ক্যাটাগরি: ইলেকট্রনিক্স, ফ্যাশন, বিউটি, হোম ও লিভিং, খেলনা, বই, গ্রোসারি
+- ডেলিভারি: ঢাকায় ২৪ ঘণ্টা (৳৬০), ঢাকার বাইরে ৩-৫ দিন (৳১২০)
+- ৫০০৳+ অর্ডারে ফ্রি ডেলিভারি
+- পেমেন্ট: বিকাশ, নগদ, রকেট, ক্যাশ অন ডেলিভারি
+- ফোন: ০১৯৩২২১১১২৩
+- ইমেইল: info@smartkenakata.com
+- ঠিকানা: মিরপুর-১০, ঢাকা
+- সময়: সকাল ৯টা - রাত ১১টা
+- রিটার্ন পলিসি: ৭ দিন
 
-    // ===== GET BOT RESPONSE =====
-    function getBotResponse(userMessage) {
-        const msg = userMessage.toLowerCase().trim();
-        
-        // Check for keywords
-        for (const [category, words] of Object.entries(keywords)) {
-            for (const word of words) {
-                if (msg.includes(word.toLowerCase())) {
-                    const response = botResponses[category];
-                    if (Array.isArray(response)) {
-                        return response[Math.floor(Math.random() * response.length)];
-                    }
-                    return response;
-                }
-            }
-        }
-        
-        return botResponses.default;
-    }
+নিয়ম:
+1. Friendly এবং helpful ভাবে reply দাও
+2. Emoji ব্যবহার করো
+3. Reply সংক্ষিপ্ত রাখো (৩-৫ লাইন)
+4. যদি product সম্পর্কে জিজ্ঞেস করে, homepage visit করতে বলো
+5. যদি order status জিজ্ঞেস করে, WhatsApp এ যোগাযোগ করতে বলো
+6. Bengali তে reply দাও যদি user Bengali তে লেখে
+7. English এ reply দাও যদি user English এ লেখে
+8. কখনো "আমি AI" বলবে না - "স্মার্ট সহায়ক" বলবে
+9. যদি অপ্রাসঙ্গিক প্রশ্ন হয়, ভদ্রভাবে shopping related কথা বলতে বলো`;
+
+    let chatHistory = [];
 
     // ===== CREATE CHATBOT HTML =====
     const chatbotHTML = `
         <div id="chatbot-wrapper">
-            <!-- Chat Button -->
             <button id="chatbot-toggle" onclick="toggleChatbot()">
                 <i class="fas fa-comments" id="chat-icon-open"></i>
                 <i class="fas fa-times" id="chat-icon-close" style="display:none;"></i>
-                <span class="chatbot-badge" id="chatbot-badge">1</span>
+                <span class="chatbot-badge" id="chatbot-badge">
+                    <i class="fas fa-sparkles"></i>
+                </span>
             </button>
 
-            <!-- Chat Window -->
             <div id="chatbot-window">
-                <!-- Header -->
                 <div class="chatbot-header">
                     <div class="chatbot-avatar">
                         <i class="fas fa-robot"></i>
                     </div>
                     <div class="chatbot-info">
-                        <h3>স্মার্ট সহায়ক 🤖</h3>
+                        <h3>স্মার্ট সহায়ক <span class="ai-badge">AI</span></h3>
                         <span class="chatbot-status">
-                            <span class="status-dot"></span> অনলাইন এখনই
+                            <span class="status-dot"></span> Powered by Gemini AI
                         </span>
                     </div>
                     <button class="chatbot-close" onclick="toggleChatbot()">
@@ -118,31 +67,25 @@
                     </button>
                 </div>
 
-                <!-- Messages -->
-                <div class="chatbot-messages" id="chatbot-messages">
-                    <!-- Messages will appear here -->
-                </div>
+                <div class="chatbot-messages" id="chatbot-messages"></div>
 
-                <!-- Quick Replies -->
                 <div class="chatbot-quick-replies" id="quickReplies">
-                    <button onclick="sendQuickReply('পণ্য দেখান')">🛍️ পণ্য দেখান</button>
+                    <button onclick="sendQuickReply('হ্যালো, তুমি কে?')">👋 হ্যালো</button>
+                    <button onclick="sendQuickReply('তোমাদের পণ্য কী কী আছে?')">🛍️ পণ্য</button>
                     <button onclick="sendQuickReply('ডেলিভারি চার্জ কত?')">🚚 ডেলিভারি</button>
-                    <button onclick="sendQuickReply('পেমেন্ট মেথড')">💳 পেমেন্ট</button>
-                    <button onclick="sendQuickReply('অর্ডার কিভাবে করব?')">📦 অর্ডার</button>
-                    <button onclick="sendQuickReply('যোগাযোগ')">📞 যোগাযোগ</button>
+                    <button onclick="sendQuickReply('পেমেন্ট কীভাবে করব?')">💳 পেমেন্ট</button>
+                    <button onclick="sendQuickReply('কোন অফার আছে?')">🎁 অফার</button>
                 </div>
 
-                <!-- Input -->
                 <div class="chatbot-input-wrapper">
-                    <input type="text" id="chatbot-input" placeholder="আপনার প্রশ্ন লিখুন..." onkeypress="handleKeyPress(event)">
-                    <button onclick="sendMessage()" class="chatbot-send">
+                    <input type="text" id="chatbot-input" placeholder="আপনার প্রশ্ন লিখুন (যেকোনো ভাষায়)..." onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()" class="chatbot-send" id="sendBtn">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
 
-                <!-- Footer -->
                 <div class="chatbot-footer">
-                    Powered by 🤖 AI | স্মার্ট কেনাকাটা
+                    <i class="fas fa-bolt"></i> Powered by Google Gemini AI
                 </div>
             </div>
         </div>
@@ -160,8 +103,7 @@
             }
 
             #chatbot-toggle {
-                width: 60px;
-                height: 60px;
+                width: 60px; height: 60px;
                 border-radius: 50%;
                 background: linear-gradient(135deg, #10b981, #059669);
                 color: white;
@@ -182,36 +124,35 @@
                 50% { transform: scale(1.05); }
             }
 
-            #chatbot-toggle:hover {
-                transform: scale(1.1);
-            }
+            #chatbot-toggle:hover { transform: scale(1.1); }
 
             .chatbot-badge {
                 position: absolute;
-                top: -5px;
-                right: -5px;
-                background: #ef4444;
+                top: -3px; right: -3px;
+                background: linear-gradient(135deg, #f59e0b, #ef4444);
                 color: white;
-                width: 22px;
-                height: 22px;
+                width: 24px; height: 24px;
                 border-radius: 50%;
-                font-size: 12px;
-                font-weight: 700;
+                font-size: 11px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 border: 2px solid white;
+                animation: sparkle 2s infinite;
+            }
+
+            @keyframes sparkle {
+                0%, 100% { transform: rotate(0deg) scale(1); }
+                50% { transform: rotate(180deg) scale(1.1); }
             }
 
             #chatbot-window {
                 position: absolute;
-                bottom: 75px;
-                right: 0;
-                width: 380px;
-                height: 550px;
+                bottom: 75px; right: 0;
+                width: 380px; height: 580px;
                 background: white;
                 border-radius: 20px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
                 display: none;
                 flex-direction: column;
                 overflow: hidden;
@@ -223,9 +164,7 @@
                 to { opacity: 1; transform: translateY(0); }
             }
 
-            #chatbot-window.open {
-                display: flex;
-            }
+            #chatbot-window.open { display: flex; }
 
             .chatbot-header {
                 background: linear-gradient(135deg, #10b981, #059669);
@@ -234,27 +173,49 @@
                 display: flex;
                 align-items: center;
                 gap: 12px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .chatbot-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -20%;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+                border-radius: 50%;
             }
 
             .chatbot-avatar {
-                width: 45px;
-                height: 45px;
-                background: rgba(255, 255, 255, 0.2);
+                width: 45px; height: 45px;
+                background: rgba(255, 255, 255, 0.25);
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-size: 22px;
+                position: relative;
             }
 
-            .chatbot-info {
-                flex: 1;
-            }
-
+            .chatbot-info { flex: 1; position: relative; }
             .chatbot-info h3 {
                 font-size: 17px;
                 font-weight: 700;
                 margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .ai-badge {
+                background: rgba(255,255,255,0.25);
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 1px;
             }
 
             .chatbot-status {
@@ -266,8 +227,7 @@
             }
 
             .status-dot {
-                width: 8px;
-                height: 8px;
+                width: 8px; height: 8px;
                 background: #4ade80;
                 border-radius: 50%;
                 animation: pulse-dot 2s infinite;
@@ -281,26 +241,23 @@
             .chatbot-close {
                 background: rgba(255, 255, 255, 0.2);
                 border: none;
-                width: 32px;
-                height: 32px;
+                width: 32px; height: 32px;
                 border-radius: 50%;
                 color: white;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: background 0.3s;
+                position: relative;
             }
 
-            .chatbot-close:hover {
-                background: rgba(255, 255, 255, 0.3);
-            }
+            .chatbot-close:hover { background: rgba(255, 255, 255, 0.3); }
 
             .chatbot-messages {
                 flex: 1;
                 overflow-y: auto;
                 padding: 20px;
-                background: #f8fafc;
+                background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
             }
 
             .message {
@@ -315,13 +272,10 @@
                 to { opacity: 1; transform: translateY(0); }
             }
 
-            .message.user {
-                justify-content: flex-end;
-            }
+            .message.user { justify-content: flex-end; }
 
             .message-avatar {
-                width: 32px;
-                height: 32px;
+                width: 32px; height: 32px;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
@@ -343,18 +297,19 @@
 
             .message-bubble {
                 max-width: 75%;
-                padding: 10px 15px;
+                padding: 12px 15px;
                 border-radius: 18px;
                 font-size: 14px;
-                line-height: 1.5;
+                line-height: 1.6;
                 white-space: pre-line;
+                word-wrap: break-word;
             }
 
             .message.bot .message-bubble {
                 background: white;
                 color: #0f172a;
                 border-top-left-radius: 4px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             }
 
             .message.user .message-bubble {
@@ -377,13 +332,12 @@
                 border-radius: 18px;
                 border-top-left-radius: 4px;
                 width: fit-content;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
             }
 
             .typing-indicator span {
-                width: 8px;
-                height: 8px;
-                background: #94a3b8;
+                width: 8px; height: 8px;
+                background: #10b981;
                 border-radius: 50%;
                 animation: typing 1.4s infinite;
             }
@@ -407,7 +361,7 @@
             }
 
             .chatbot-quick-replies button {
-                background: #f1f5f9;
+                background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
                 border: 1px solid #e2e8f0;
                 padding: 8px 15px;
                 border-radius: 20px;
@@ -417,12 +371,14 @@
                 white-space: nowrap;
                 color: #334155;
                 transition: all 0.3s;
+                font-weight: 500;
             }
 
             .chatbot-quick-replies button:hover {
-                background: #10b981;
+                background: linear-gradient(135deg, #10b981, #059669);
                 color: white;
                 border-color: #10b981;
+                transform: translateY(-2px);
             }
 
             .chatbot-input-wrapper {
@@ -445,13 +401,10 @@
                 transition: border-color 0.3s;
             }
 
-            #chatbot-input:focus {
-                border-color: #10b981;
-            }
+            #chatbot-input:focus { border-color: #10b981; }
 
             .chatbot-send {
-                width: 42px;
-                height: 42px;
+                width: 42px; height: 42px;
                 background: linear-gradient(135deg, #10b981, #059669);
                 color: white;
                 border: none;
@@ -461,32 +414,28 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: transform 0.3s;
+                transition: all 0.3s;
             }
 
-            .chatbot-send:hover {
-                transform: scale(1.1);
-            }
+            .chatbot-send:hover:not(:disabled) { transform: scale(1.1); }
+            .chatbot-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
             .chatbot-footer {
-                padding: 8px;
-                background: #f8fafc;
+                padding: 10px;
+                background: linear-gradient(90deg, #10b981, #059669);
                 text-align: center;
                 font-size: 11px;
-                color: #64748b;
-                border-top: 1px solid #e2e8f0;
+                color: white;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
             }
 
-            /* Scrollbar */
             .chatbot-messages::-webkit-scrollbar,
             .chatbot-quick-replies::-webkit-scrollbar {
-                height: 6px;
-                width: 6px;
-            }
-
-            .chatbot-messages::-webkit-scrollbar-track,
-            .chatbot-quick-replies::-webkit-scrollbar-track {
-                background: transparent;
+                height: 6px; width: 6px;
             }
 
             .chatbot-messages::-webkit-scrollbar-thumb,
@@ -495,47 +444,34 @@
                 border-radius: 10px;
             }
 
-            /* Mobile Responsive */
             @media (max-width: 480px) {
-                #chatbot-wrapper {
-                    right: 20px;
-                    bottom: 20px;
-                }
-
+                #chatbot-wrapper { right: 20px; bottom: 20px; }
                 #chatbot-window {
                     width: calc(100vw - 30px);
-                    height: 70vh;
+                    height: 75vh;
                     right: -80px;
                     bottom: 75px;
                 }
-
                 #chatbot-toggle {
-                    width: 55px;
-                    height: 55px;
+                    width: 55px; height: 55px;
                     font-size: 22px;
                 }
             }
         </style>
     `;
 
-    // ===== INITIALIZE CHATBOT =====
+    // ===== INITIALIZE =====
     function initChatbot() {
-        // Add CSS
         document.head.insertAdjacentHTML('beforeend', chatbotCSS);
-        
-        // Add HTML
         document.body.insertAdjacentHTML('beforeend', chatbotHTML);
         
-        // Show welcome message after 2 seconds
+        // Welcome message
         setTimeout(() => {
-            addBotMessage(botResponses.greeting[0]);
-            setTimeout(() => {
-                addBotMessage('আমি আপনার প্রশ্নের উত্তর দিতে পারি! নিচের বাটন থেকে সিলেক্ট করুন অথবা টাইপ করুন 👇');
-            }, 1000);
-        }, 2000);
+            addBotMessage('হ্যালো! 👋 আমি স্মার্ট সহায়ক, স্মার্ট কেনাকাটার AI সহায়ক!\n\nআমাকে যেকোনো ভাষায় (বাংলা/English/Hindi) প্রশ্ন করতে পারেন। আমি সব কিছুতে সাহায্য করব! 🤖✨');
+        }, 1500);
     }
 
-    // ===== TOGGLE CHATBOT =====
+    // ===== TOGGLE =====
     window.toggleChatbot = function() {
         const window_el = document.getElementById('chatbot-window');
         const iconOpen = document.getElementById('chat-icon-open');
@@ -578,7 +514,6 @@
     }
 
     function addBotMessage(text) {
-        // Show typing indicator
         const messagesDiv = document.getElementById('chatbot-messages');
         const typingDiv = document.createElement('div');
         typingDiv.className = 'message bot';
@@ -592,37 +527,136 @@
         messagesDiv.appendChild(typingDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
         
-        // Remove typing and show message after delay
         setTimeout(() => {
             typingDiv.remove();
             addMessage(text, 'bot');
-        }, 1000);
+        }, 800);
+    }
+
+    // ===== SHOW TYPING =====
+    function showTyping() {
+        const messagesDiv = document.getElementById('chatbot-messages');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message bot';
+        typingDiv.id = 'live-typing';
+        typingDiv.innerHTML = `
+            <div class="message-avatar"><i class="fas fa-robot"></i></div>
+            <div class="typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        messagesDiv.appendChild(typingDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function hideTyping() {
+        const el = document.getElementById('live-typing');
+        if (el) el.remove();
+    }
+
+    // ===== CALL GEMINI AI =====
+    async function getAIResponse(userMessage) {
+        try {
+            // Build conversation history
+            const contents = [
+                {
+                    role: 'user',
+                    parts: [{ text: BOT_CONTEXT }]
+                },
+                {
+                    role: 'model',
+                    parts: [{ text: 'বুঝেছি! আমি স্মার্ট সহায়ক হিসেবে গ্রাহকদের সাহায্য করব।' }]
+                }
+            ];
+
+            // Add previous conversation
+            chatHistory.forEach(msg => {
+                contents.push({
+                    role: msg.role,
+                    parts: [{ text: msg.text }]
+                });
+            });
+
+            // Add current message
+            contents.push({
+                role: 'user',
+                parts: [{ text: userMessage }]
+            });
+
+            const response = await fetch(GEMINI_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: contents,
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 500
+                    }
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.candidates && data.candidates[0]) {
+                const reply = data.candidates[0].content.parts[0].text;
+                
+                // Save to history
+                chatHistory.push({ role: 'user', text: userMessage });
+                chatHistory.push({ role: 'model', text: reply });
+                
+                // Keep only last 10 messages
+                if (chatHistory.length > 10) {
+                    chatHistory = chatHistory.slice(-10);
+                }
+                
+                return reply;
+            } else if (data.error) {
+                console.error('Gemini API Error:', data.error);
+                return '⚠️ দুঃখিত, একটু সমস্যা হচ্ছে। অনুগ্রহ করে আবার চেষ্টা করুন অথবা সরাসরি কল করুন: ০১৯৩২২১১১২৩';
+            } else {
+                return '😅 বুঝতে পারিনি। আবার বলুন প্লিজ!';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            return '❌ ইন্টারনেট সমস্যা মনে হচ্ছে। একটু পর আবার চেষ্টা করুন।';
+        }
     }
 
     // ===== SEND MESSAGE =====
-    window.sendMessage = function() {
+    window.sendMessage = async function() {
         const input = document.getElementById('chatbot-input');
+        const sendBtn = document.getElementById('sendBtn');
         const message = input.value.trim();
         
         if (!message) return;
         
         addMessage(message, 'user');
         input.value = '';
+        input.disabled = true;
+        sendBtn.disabled = true;
         
-        // Get bot response
-        setTimeout(() => {
-            const response = getBotResponse(message);
-            addBotMessage(response);
-        }, 500);
+        showTyping();
+        
+        try {
+            const response = await getAIResponse(message);
+            hideTyping();
+            addMessage(response, 'bot');
+        } catch (error) {
+            hideTyping();
+            addMessage('❌ সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'bot');
+        }
+        
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.focus();
     };
 
     // ===== QUICK REPLY =====
     window.sendQuickReply = function(text) {
-        addMessage(text, 'user');
-        setTimeout(() => {
-            const response = getBotResponse(text);
-            addBotMessage(response);
-        }, 500);
+        document.getElementById('chatbot-input').value = text;
+        sendMessage();
     };
 
     // ===== KEY PRESS =====
@@ -632,7 +666,7 @@
         }
     };
 
-    // Initialize when DOM is ready
+    // Initialize
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initChatbot);
     } else {
