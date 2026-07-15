@@ -5,7 +5,7 @@
     'use strict';
 
     // ⚠️ এখানে আপনার Gemini API Key বসান
-    const GEMINI_API_KEY = 'AQ.Ab8RN6JeK4f8K293umKBNdXJHMeUfxddPu33yUYmSTLqszsUaQ';
+    const GEMINI_API_KEY = 'AQ.Ab8RN6L8rE2NW6-kXbTk7F46I8H5P4qUh8oXq3VgadbdIuDENQ';
     
     // Gemini API URL
     const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
