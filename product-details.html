@@ -553,7 +553,74 @@
                 <p>পণ্য লোড হচ্ছে...</p>
             </div>
         </div>
-
+<!-- Reviews Section -->
+<div class="related-section" id="reviewsSection" style="display:none;">
+    <h2 style="display:flex; align-items:center; gap:10px;">
+        ⭐ গ্রাহক রিভিউ
+        <span id="totalReviews" style="font-size:16px; color:#64748b; font-weight:400;"></span>
+    </h2>
+    
+    <!-- Rating Summary -->
+    <div id="ratingSummary" style="background:linear-gradient(135deg, #f8fafc, #e2e8f0); padding:25px; border-radius:16px; margin:20px 0; display:flex; align-items:center; gap:30px; flex-wrap:wrap;">
+        <div style="text-align:center;">
+            <div style="font-size:48px; font-weight:800; color:#10b981;" id="avgRating">0.0</div>
+            <div id="avgStars" style="color:#fbbf24; font-size:20px; margin:5px 0;">☆☆☆☆☆</div>
+            <div style="font-size:14px; color:#64748b;" id="totalCount">০ রিভিউ</div>
+        </div>
+        <div style="flex:1; min-width:200px;">
+            <p style="font-size:14px; color:#64748b; margin-bottom:10px;">আপনার অভিজ্ঞতা শেয়ার করুন!</p>
+            <button onclick="showReviewForm()" style="padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border:none; border-radius:10px; font-family:inherit; font-weight:600; cursor:pointer; font-size:14px;">
+                ✍️ রিভিউ লিখুন
+            </button>
+        </div>
+    </div>
+    
+    <!-- Review Form (Hidden) -->
+    <div id="reviewFormContainer" style="display:none; background:white; padding:25px; border-radius:16px; border:2px solid #10b981; margin-bottom:20px;">
+        <h3 style="margin-bottom:15px;">✍️ আপনার রিভিউ লিখুন</h3>
+        <form onsubmit="submitReview(event)">
+            <div style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:8px; font-weight:600; font-size:14px;">রেটিং দিন *</label>
+                <div id="ratingStars" style="display:flex; gap:10px; font-size:35px; cursor:pointer;">
+                    <span onclick="setRating(1)" data-rating="1" style="color:#cbd5e1;">☆</span>
+                    <span onclick="setRating(2)" data-rating="2" style="color:#cbd5e1;">☆</span>
+                    <span onclick="setRating(3)" data-rating="3" style="color:#cbd5e1;">☆</span>
+                    <span onclick="setRating(4)" data-rating="4" style="color:#cbd5e1;">☆</span>
+                    <span onclick="setRating(5)" data-rating="5" style="color:#cbd5e1;">☆</span>
+                </div>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-weight:600; font-size:14px;">আপনার নাম *</label>
+                    <input type="text" id="reviewerName" required style="width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit; font-size:14px;">
+                </div>
+                <div>
+                    <label style="display:block; margin-bottom:8px; font-weight:600; font-size:14px;">মোবাইল নম্বর *</label>
+                    <input type="tel" id="reviewerPhone" required maxlength="11" style="width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit; font-size:14px;">
+                </div>
+            </div>
+            
+            <div style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:8px; font-weight:600; font-size:14px;">আপনার মতামত *</label>
+                <textarea id="reviewComment" required rows="4" style="width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit; font-size:14px; resize:vertical;"></textarea>
+            </div>
+            
+            <div style="display:flex; gap:10px;">
+                <button type="submit" id="submitReviewBtn" style="padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border:none; border-radius:10px; font-family:inherit; font-weight:600; cursor:pointer;">
+                    <i class="fas fa-paper-plane"></i> রিভিউ পোস্ট করুন
+                </button>
+                <button type="button" onclick="hideReviewForm()" style="padding:12px 25px; background:#e2e8f0; color:#0f172a; border:none; border-radius:10px; font-family:inherit; font-weight:600; cursor:pointer;">
+                    বাতিল
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Reviews List -->
+    <div id="reviewsList" style="display:grid; gap:15px;"></div>
+</div>
+        
         <!-- Related Products -->
         <div class="related-section" id="relatedSection" style="display:none;">
             <h2>🔥 আরও দেখুন</h2>
@@ -632,6 +699,7 @@
                 currentProduct = { id: doc.id, ...doc.data() };
                 renderProduct();
                 loadRelated();
+                loadReviews();
             } catch (error) {
                 console.error(error);
                 document.getElementById('productContent').innerHTML = `
@@ -827,6 +895,140 @@
             }, 500);
         }
 
+     // ===== REVIEWS SYSTEM =====
+let selectedRating = 0;
+
+function loadReviews() {
+    if (!productId) return;
+    
+    db.collection('reviews').where('productId', '==', productId).get()
+        .then(snapshot => {
+            const reviews = [];
+            snapshot.forEach(doc => reviews.push({ id: doc.id, ...doc.data() }));
+            reviews.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            
+            document.getElementById('reviewsSection').style.display = 'block';
+            
+            // Calculate average rating
+            if (reviews.length > 0) {
+                const avgRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
+                const fullStars = Math.floor(avgRating);
+                const emptyStars = 5 - fullStars;
+                
+                document.getElementById('avgRating').textContent = avgRating;
+                document.getElementById('avgStars').innerHTML = '★'.repeat(fullStars) + '☆'.repeat(emptyStars);
+                document.getElementById('totalCount').textContent = reviews.length + ' রিভিউ';
+                document.getElementById('totalReviews').textContent = '(' + reviews.length + ')';
+            } else {
+                document.getElementById('avgRating').textContent = '0.0';
+                document.getElementById('avgStars').innerHTML = '☆☆☆☆☆';
+                document.getElementById('totalCount').textContent = 'কোন রিভিউ নেই';
+            }
+            
+            // Display reviews
+            const listDiv = document.getElementById('reviewsList');
+            if (reviews.length === 0) {
+                listDiv.innerHTML = '<div style="text-align:center; padding:40px; color:#64748b;"><i class="fas fa-comment-slash" style="font-size:40px; margin-bottom:10px;"></i><p>এই পণ্যের জন্য এখনো কোন রিভিউ নেই। প্রথম রিভিউটি আপনি দিন!</p></div>';
+                return;
+            }
+            
+            let html = '';
+            reviews.forEach(r => {
+                const date = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('bn-BD') : 'N/A';
+                const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                const initial = (r.name || 'U')[0].toUpperCase();
+                
+                html += `
+                    <div style="background:white; padding:20px; border-radius:12px; border:1px solid #e2e8f0;">
+                        <div style="display:flex; gap:15px; align-items:flex-start;">
+                            <div style="width:45px; height:45px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0;">
+                                ${initial}
+                            </div>
+                            <div style="flex:1;">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:5px;">
+                                    <div>
+                                        <h4 style="margin:0; font-size:16px;">${r.name}</h4>
+                                        <div style="color:#fbbf24; font-size:16px; margin:5px 0;">${stars}</div>
+                                    </div>
+                                    <span style="font-size:12px; color:#64748b;">📅 ${date}</span>
+                                </div>
+                                <p style="margin-top:10px; color:#334155; line-height:1.6;">${r.comment}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            listDiv.innerHTML = html;
+        });
+}
+
+function showReviewForm() {
+    document.getElementById('reviewFormContainer').style.display = 'block';
+    document.getElementById('reviewFormContainer').scrollIntoView({ behavior: 'smooth' });
+}
+
+function hideReviewForm() {
+    document.getElementById('reviewFormContainer').style.display = 'none';
+    selectedRating = 0;
+    updateStars(0);
+}
+
+function setRating(rating) {
+    selectedRating = rating;
+    updateStars(rating);
+}
+
+function updateStars(rating) {
+    const stars = document.querySelectorAll('#ratingStars span');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.textContent = '★';
+            star.style.color = '#fbbf24';
+        } else {
+            star.textContent = '☆';
+            star.style.color = '#cbd5e1';
+        }
+    });
+}
+
+async function submitReview(event) {
+    event.preventDefault();
+    
+    if (selectedRating === 0) {
+        showToast('❌ রেটিং দিতে হবে!');
+        return;
+    }
+    
+    const btn = document.getElementById('submitReviewBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> পোস্ট হচ্ছে...';
+    
+    const review = {
+        productId: productId,
+        productName: currentProduct.name,
+        rating: selectedRating,
+        name: document.getElementById('reviewerName').value.trim(),
+        phone: document.getElementById('reviewerPhone').value.trim(),
+        comment: document.getElementById('reviewComment').value.trim(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    try {
+        await db.collection('reviews').add(review);
+        showToast('✅ রিভিউ সফলভাবে পোস্ট হয়েছে!');
+        event.target.reset();
+        selectedRating = 0;
+        updateStars(0);
+        hideReviewForm();
+        loadReviews();
+    } catch (error) {
+        showToast('❌ ' + error.message);
+    }
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> রিভিউ পোস্ট করুন';
+}   
+        
         // ===== COPY LINK =====
         function copyLink() {
             navigator.clipboard.writeText(window.location.href).then(() => {
