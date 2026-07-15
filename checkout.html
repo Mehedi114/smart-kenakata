@@ -5,650 +5,127 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>চেকআউট - স্মার্ট কেনাকাটা</title>
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
-            --primary: #10b981;
-            --primary-dark: #059669;
-            --dark: #0f172a;
-            --dark-2: #1e293b;
-            --white: #ffffff;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-500: #64748b;
+            --primary: #10b981; --primary-dark: #059669;
+            --dark: #0f172a; --dark-2: #1e293b;
+            --white: #ffffff; --gray-50: #f8fafc;
+            --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1; --gray-500: #64748b;
             --gray-700: #334155;
-            --red: #ef4444;
-            --yellow: #f59e0b;
+            --red: #ef4444; --yellow: #f59e0b;
         }
-
         body {
             font-family: 'Hind Siliguri', sans-serif;
-            background: var(--gray-50);
-            color: var(--dark);
+            background: var(--gray-50); color: var(--dark);
             line-height: 1.6;
         }
-
-        /* NAVBAR */
-        .navbar {
-            background: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            width: 45px;
-            height: 45px;
-            background: var(--primary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-        }
-
-        .logo-text h1 {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--dark);
-            line-height: 1;
-        }
-
-        .logo-text span {
-            font-size: 11px;
-            color: var(--gray-500);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .back-btn {
-            padding: 10px 20px;
-            background: var(--gray-100);
-            color: var(--dark);
-            border: none;
-            border-radius: 10px;
-            font-family: inherit;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .back-btn:hover {
-            background: var(--gray-200);
-        }
-
-        /* MAIN */
-        .main-container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .page-title {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 8px;
-        }
-
-        .page-title p {
-            color: var(--gray-500);
-        }
-
-        /* STEPS */
-        .steps {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .step {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .step-number {
-            width: 35px;
-            height: 35px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-
-        .step-text {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        /* LAYOUT */
-        .checkout-grid {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 30px;
-        }
-
-        .checkout-form-card,
-        .order-summary {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .order-summary {
-            position: sticky;
-            top: 90px;
-            height: fit-content;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--gray-100);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-title i {
-            color: var(--primary);
-        }
-
-        /* FORM */
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-700);
-        }
-
-        .form-group label .required {
-            color: var(--red);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 13px 16px;
-            border: 2px solid var(--gray-200);
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: var(--primary);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        /* DELIVERY OPTIONS */
-        .delivery-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .delivery-option {
-            padding: 15px;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .delivery-option:hover {
-            border-color: var(--primary);
-        }
-
-        .delivery-option.selected {
-            border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        .delivery-option i {
-            font-size: 22px;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-
-        .delivery-option h4 {
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .delivery-option p {
-            font-size: 13px;
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        /* PAYMENT METHODS */
-        .payment-methods {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .payment-option {
-            padding: 18px 15px;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .payment-option:hover {
-            border-color: var(--primary);
-        }
-
-        .payment-option.selected {
-            border-color: var(--primary);
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        .payment-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            color: white;
-        }
-
+        .navbar { background: white; padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-icon { width: 45px; height: 45px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; }
+        .logo-text h1 { font-size: 22px; font-weight: 700; color: var(--dark); line-height: 1; }
+        .logo-text span { font-size: 11px; color: var(--gray-500); letter-spacing: 1px; text-transform: uppercase; }
+        .back-btn { padding: 10px 20px; background: var(--gray-100); color: var(--dark); border: none; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 14px; }
+        .back-btn:hover { background: var(--gray-200); }
+        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .page-title { text-align: center; margin-bottom: 30px; }
+        .page-title h1 { font-size: 32px; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
+        .page-title p { color: var(--gray-500); }
+        .steps { display: flex; justify-content: center; gap: 40px; margin-bottom: 30px; flex-wrap: wrap; }
+        .step { display: flex; align-items: center; gap: 10px; }
+        .step-number { width: 35px; height: 35px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .step-text { font-weight: 600; color: var(--dark); }
+        .checkout-grid { display: grid; grid-template-columns: 1fr 400px; gap: 30px; }
+        .checkout-form-card, .order-summary { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .order-summary { position: sticky; top: 90px; height: fit-content; }
+        .card-title { font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--gray-100); display: flex; align-items: center; gap: 10px; }
+        .card-title i { color: var(--primary); }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--gray-700); }
+        .form-group label .required { color: var(--red); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 13px 16px; border: 2px solid var(--gray-200); border-radius: 10px; font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
+        .form-group textarea { resize: vertical; min-height: 90px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .delivery-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .delivery-option { padding: 15px; border: 2px solid var(--gray-200); border-radius: 12px; cursor: pointer; transition: all 0.3s; text-align: center; }
+        .delivery-option:hover { border-color: var(--primary); }
+        .delivery-option.selected { border-color: var(--primary); background: rgba(16, 185, 129, 0.05); }
+        .delivery-option i { font-size: 22px; color: var(--primary); margin-bottom: 8px; }
+        .delivery-option h4 { font-size: 14px; margin-bottom: 4px; }
+        .delivery-option p { font-size: 13px; color: var(--primary); font-weight: 700; }
+        .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .payment-option { padding: 18px 15px; border: 2px solid var(--gray-200); border-radius: 12px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 12px; }
+        .payment-option:hover { border-color: var(--primary); }
+        .payment-option.selected { border-color: var(--primary); background: rgba(16, 185, 129, 0.05); }
+        .payment-icon { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; }
         .payment-icon.cod { background: linear-gradient(135deg, #10b981, #059669); }
         .payment-icon.bkash { background: linear-gradient(135deg, #E2136E, #b30f5c); }
         .payment-icon.nagad { background: linear-gradient(135deg, #F58220, #e46e0f); }
         .payment-icon.rocket { background: linear-gradient(135deg, #8A2BE2, #6a1fb0); }
-
-        .payment-info h4 {
-            font-size: 14px;
-            margin-bottom: 2px;
-        }
-
-        .payment-info p {
-            font-size: 12px;
-            color: var(--gray-500);
-        }
-
-        /* PAYMENT INSTRUCTION */
-        .payment-instruction {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            border: 2px solid #f59e0b;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-            display: none;
-        }
-
-        .payment-instruction.show {
-            display: block;
-        }
-
-        .payment-instruction h4 {
-            color: #92400e;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .payment-number {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--dark);
-            margin: 10px 0;
-            letter-spacing: 1px;
-        }
-
-        .payment-instruction p {
-            font-size: 13px;
-            color: #78350f;
-            margin-bottom: 5px;
-        }
-
-        /* SUMMARY */
-        .summary-items {
-            max-height: 250px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            padding-right: 5px;
-        }
-
-        .summary-item {
-            display: flex;
-            gap: 12px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--gray-100);
-        }
-
-        .summary-item img {
-            width: 55px;
-            height: 55px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .summary-item-info {
-            flex: 1;
-        }
-
-        .summary-item-info h4 {
-            font-size: 13px;
-            margin-bottom: 3px;
-            color: var(--dark);
-        }
-
-        .summary-item-info .qty {
-            font-size: 12px;
-            color: var(--gray-500);
-        }
-
-        .summary-item-price {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 14px;
-        }
-
-        .summary-totals {
-            padding: 15px;
-            background: var(--gray-50);
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .summary-row.total {
-            padding-top: 10px;
-            border-top: 2px solid var(--gray-200);
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .place-order-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .place-order-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
-        }
-
-        .place-order-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .secure-notice {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 15px;
-            font-size: 12px;
-            color: var(--gray-500);
-        }
-
-        .secure-notice i {
-            color: var(--primary);
-        }
-
-        /* EMPTY CART */
-        .empty-cart-page {
-            text-align: center;
-            padding: 80px 20px;
-            background: white;
-            border-radius: 16px;
-        }
-
-        .empty-cart-page i {
-            font-size: 80px;
-            color: var(--gray-300);
-            margin-bottom: 20px;
-        }
-
-        .empty-cart-page h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .empty-cart-page p {
-            color: var(--gray-500);
-            margin-bottom: 25px;
-        }
-
-        /* SUCCESS PAGE */
-        .success-page {
-            background: white;
-            border-radius: 16px;
-            padding: 60px 40px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            display: none;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .success-page.show {
-            display: block;
-        }
-
-        .success-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 25px;
-            color: white;
-            font-size: 50px;
-            animation: bounce 1s;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .success-page h1 {
-            font-size: 32px;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .success-page p {
-            font-size: 16px;
-            color: var(--gray-700);
-            margin-bottom: 20px;
-        }
-
-        .order-id-box {
-            background: var(--gray-50);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 25px 0;
-        }
-
-        .order-id-box p {
-            font-size: 14px;
-            color: var(--gray-500);
-            margin-bottom: 5px;
-        }
-
-        .order-id-box h3 {
-            font-size: 20px;
-            color: var(--primary);
-            letter-spacing: 2px;
-        }
-
-        .success-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 25px;
-        }
-
-        .btn-success {
-            padding: 12px 25px;
-            border-radius: 10px;
-            font-family: inherit;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            border: none;
-            font-size: 14px;
-        }
-
-        .btn-success.primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-success.secondary {
-            background: var(--gray-100);
-            color: var(--dark);
-        }
-
-        /* TOAST */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--dark);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transform: translateX(400px);
-            transition: transform 0.3s;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .payment-info h4 { font-size: 14px; margin-bottom: 2px; }
+        .payment-info p { font-size: 12px; color: var(--gray-500); }
+        .payment-instruction { background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #f59e0b; border-radius: 12px; padding: 15px; margin-top: 15px; display: none; }
+        .payment-instruction.show { display: block; }
+        .payment-instruction h4 { color: #92400e; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .payment-number { background: white; padding: 12px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: 700; color: var(--dark); margin: 10px 0; letter-spacing: 1px; }
+        .payment-instruction p { font-size: 13px; color: #78350f; margin-bottom: 5px; }
+        .coupon-box { background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 2px dashed var(--primary); }
+        .coupon-box label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--gray-700); }
+        .coupon-input-wrapper { display: flex; gap: 8px; }
+        .coupon-input-wrapper input { flex: 1; padding: 10px 15px; border: 2px solid var(--gray-200); border-radius: 10px; font-family: inherit; font-size: 14px; text-transform: uppercase; outline: none; }
+        .coupon-input-wrapper input:focus { border-color: var(--primary); }
+        .coupon-btn { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; }
+        .coupon-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .coupon-message { margin-top: 8px; font-size: 13px; display: none; font-weight: 600; }
+        .summary-items { max-height: 250px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px; }
+        .summary-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+        .summary-item img { width: 55px; height: 55px; object-fit: cover; border-radius: 8px; }
+        .summary-item-info { flex: 1; }
+        .summary-item-info h4 { font-size: 13px; margin-bottom: 3px; color: var(--dark); }
+        .summary-item-info .qty { font-size: 12px; color: var(--gray-500); }
+        .summary-item-price { font-weight: 700; color: var(--primary); font-size: 14px; }
+        .summary-totals { padding: 15px; background: var(--gray-50); border-radius: 10px; margin-bottom: 15px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .summary-row.total { padding-top: 10px; border-top: 2px solid var(--gray-200); font-size: 18px; font-weight: 800; color: var(--primary); }
+        .summary-row.discount { color: var(--primary); font-weight: 700; }
+        .place-order-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 12px; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+        .place-order-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4); }
+        .place-order-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .secure-notice { display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 15px; font-size: 12px; color: var(--gray-500); }
+        .secure-notice i { color: var(--primary); }
+        .empty-cart-page { text-align: center; padding: 80px 20px; background: white; border-radius: 16px; }
+        .empty-cart-page i { font-size: 80px; color: var(--gray-300); margin-bottom: 20px; }
+        .empty-cart-page h2 { font-size: 24px; margin-bottom: 10px; }
+        .empty-cart-page p { color: var(--gray-500); margin-bottom: 25px; }
+        .success-page { background: white; border-radius: 16px; padding: 60px 40px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05); display: none; max-width: 600px; margin: 0 auto; }
+        .success-page.show { display: block; }
+        .success-icon { width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; color: white; font-size: 50px; animation: bounce 1s; }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .success-page h1 { font-size: 32px; color: var(--primary); margin-bottom: 10px; }
+        .success-page p { font-size: 16px; color: var(--gray-700); margin-bottom: 20px; }
+        .order-id-box { background: var(--gray-50); padding: 20px; border-radius: 12px; margin: 25px 0; }
+        .order-id-box p { font-size: 14px; color: var(--gray-500); margin-bottom: 5px; }
+        .order-id-box h3 { font-size: 20px; color: var(--primary); letter-spacing: 2px; }
+        .success-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 25px; }
+        .btn-success { padding: 12px 25px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border: none; font-size: 14px; }
+        .btn-success.primary { background: var(--primary); color: white; }
+        .btn-success.secondary { background: var(--gray-100); color: var(--dark); }
+        .toast { position: fixed; bottom: 30px; right: 30px; background: var(--dark); color: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: translateX(400px); transition: transform 0.3s; z-index: 10000; display: flex; align-items: center; gap: 10px; }
         .toast.show { transform: translateX(0); }
         .toast i { color: var(--primary); font-size: 20px; }
-
-        /* RESPONSIVE */
         @media (max-width: 968px) {
-            .checkout-grid {
-                grid-template-columns: 1fr;
-            }
-            .order-summary {
-                position: static;
-            }
-            .steps {
-                gap: 15px;
-            }
+            .checkout-grid { grid-template-columns: 1fr; }
+            .order-summary { position: static; }
+            .steps { gap: 15px; }
         }
-
         @media (max-width: 480px) {
             .form-row { grid-template-columns: 1fr; }
             .delivery-options { grid-template-columns: 1fr; }
@@ -660,7 +137,6 @@
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">
@@ -676,10 +152,8 @@
         </div>
     </nav>
 
-    <!-- MAIN -->
     <div class="main-container">
         
-        <!-- Success Page (Hidden initially) -->
         <div class="success-page" id="successPage">
             <div class="success-icon">
                 <i class="fas fa-check"></i>
@@ -706,7 +180,6 @@
             </div>
         </div>
 
-        <!-- Empty Cart Page -->
         <div class="empty-cart-page" id="emptyCartPage" style="display:none;">
             <i class="fas fa-shopping-cart"></i>
             <h2>আপনার কার্ট খালি!</h2>
@@ -716,7 +189,6 @@
             </a>
         </div>
 
-        <!-- Checkout Content -->
         <div id="checkoutContent">
             <div class="page-title">
                 <h1>🛒 চেকআউট</h1>
@@ -740,11 +212,9 @@
 
             <div class="checkout-grid">
                 
-                <!-- LEFT: Form -->
                 <div>
                     <form id="checkoutForm" onsubmit="placeOrder(event)">
                         
-                        <!-- Customer Info -->
                         <div class="checkout-form-card">
                             <h3 class="card-title">
                                 <i class="fas fa-user"></i> আপনার তথ্য
@@ -776,7 +246,6 @@
                             </div>
                         </div>
 
-                        <!-- Delivery Area -->
                         <div class="checkout-form-card" style="margin-top: 20px;">
                             <h3 class="card-title">
                                 <i class="fas fa-truck"></i> ডেলিভারি এলাকা
@@ -796,7 +265,6 @@
                             </div>
                         </div>
 
-                        <!-- Payment Method -->
                         <div class="checkout-form-card" style="margin-top: 20px;">
                             <h3 class="card-title">
                                 <i class="fas fa-credit-card"></i> পেমেন্ট মেথড
@@ -836,7 +304,6 @@
                                 </div>
                             </div>
 
-                            <!-- Payment Instructions (Hidden by default) -->
                             <div class="payment-instruction" id="paymentInstruction">
                                 <h4><i class="fas fa-info-circle"></i> পেমেন্ট নির্দেশনা</h4>
                                 <p>নিচের নম্বরে <strong id="totalAmount2">৳0</strong> টাকা <strong id="paymentType">Send Money</strong> করুন:</p>
@@ -848,50 +315,45 @@
                     </form>
                 </div>
 
-                <!-- RIGHT: Order Summary -->
                 <div class="order-summary">
                     <h3 class="card-title">
                         <i class="fas fa-receipt"></i> অর্ডার সামারি
                     </h3>
                     
                     <div class="summary-items" id="summaryItems">
-                        <!-- Items load here -->
                     </div>
                     
                     <!-- Coupon Apply Box -->
-<div style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:15px; border:2px dashed #10b981;">
-    <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px; color:#334155;">
-        🎁 কুপন কোড আছে?
-    </label>
-    <div style="display:flex; gap:8px;">
-        <input type="text" id="couponInput" placeholder="কুপন কোড লিখুন" 
-               style="flex:1; padding:10px 15px; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit; font-size:14px; text-transform:uppercase; outline:none;">
-        <button type="button" onclick="applyCoupon()" id="applyCouponBtn"
-                style="padding:10px 20px; background:#10b981; color:white; border:none; border-radius:10px; font-family:inherit; font-weight:600; cursor:pointer;">
-            প্রয়োগ
-        </button>
-    </div>
-    <div id="couponMessage" style="margin-top:8px; font-size:13px; display:none;"></div>
-</div>
-
-<div class="summary-totals">
-    <div class="summary-row">
-        <span>সাব-টোটাল:</span>
-        <span id="subtotalAmount">৳0</span>
-    </div>
-    <div class="summary-row">
-        <span>ডেলিভারি চার্জ:</span>
-        <span id="deliveryAmount">৳60</span>
-    </div>
-    <div class="summary-row" id="discountRow" style="display:none; color:#10b981;">
-        <span>🎁 কুপন ছাড়:</span>
-        <span id="discountAmount">-৳0</span>
-    </div>
-    <div class="summary-row total">
-        <span>সর্বমোট:</span>
-        <span id="totalAmount">৳0</span>
-    </div>
-</div>
+                    <div class="coupon-box">
+                        <label>🎁 কুপন কোড আছে?</label>
+                        <div class="coupon-input-wrapper">
+                            <input type="text" id="couponInput" placeholder="কুপন কোড লিখুন">
+                            <button type="button" onclick="applyCoupon()" id="applyCouponBtn" class="coupon-btn">
+                                প্রয়োগ
+                            </button>
+                        </div>
+                        <div id="couponMessage" class="coupon-message"></div>
+                    </div>
+                    
+                    <div class="summary-totals">
+                        <div class="summary-row">
+                            <span>সাব-টোটাল:</span>
+                            <span id="subtotalAmount">৳0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>ডেলিভারি চার্জ:</span>
+                            <span id="deliveryAmount">৳60</span>
+                        </div>
+                        <div class="summary-row discount" id="discountRow" style="display:none;">
+                            <span>🎁 কুপন ছাড়:</span>
+                            <span id="discountDisplay">-৳0</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>সর্বমোট:</span>
+                            <span id="totalAmount">৳0</span>
+                        </div>
+                    </div>
+                    
                     <button type="submit" form="checkoutForm" class="place-order-btn" id="placeOrderBtn">
                         <i class="fas fa-check-circle"></i>
                         অর্ডার নিশ্চিত করুন
@@ -906,18 +368,15 @@
         </div>
     </div>
 
-    <!-- TOAST -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage">সফল!</span>
     </div>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // ===== FIREBASE CONFIG =====
         const firebaseConfig = {
             apiKey: "AIzaSyDfnRJ3xyh3rkFD01XS-Zsm-LM1VSPuaJY",
             authDomain: "smart-kenakata.firebaseapp.com",
@@ -930,22 +389,20 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // ===== PAYMENT NUMBER (আপনার নিজের নম্বর দিন) =====
         const PAYMENT_NUMBERS = {
             bkash: '01932211123',
             nagad: '01932211123',
-            rocket: '019322111230'  // Rocket এ শেষে extra digit
+            rocket: '019322111230'
         };
 
-        // ===== VARIABLES =====
+        // Variables
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         let deliveryCharge = 60;
         let deliveryArea = 'inside';
         let paymentMethod = 'cod';
         let appliedCoupon = null;
-let discountAmount = 0;
+        let discountAmount = 0;
 
-        // ===== INIT =====
         function init() {
             if (cart.length === 0) {
                 document.getElementById('checkoutContent').style.display = 'none';
@@ -955,7 +412,6 @@ let discountAmount = 0;
             renderSummary();
         }
 
-        // ===== RENDER SUMMARY =====
         function renderSummary() {
             const container = document.getElementById('summaryItems');
             container.innerHTML = cart.map(item => `
@@ -968,44 +424,39 @@ let discountAmount = 0;
                     <div class="summary-item-price">৳${item.price * item.quantity}</div>
                 </div>
             `).join('');
-
             updateTotals();
         }
 
-        // ===== UPDATE TOTALS =====
-       function updateTotals() {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
-    // Calculate discount
-    discountAmount = 0;
-    if (appliedCoupon) {
-        if (appliedCoupon.type === 'percentage') {
-            discountAmount = Math.round((subtotal * appliedCoupon.amount) / 100);
-        } else {
-            discountAmount = appliedCoupon.amount;
+        function updateTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Calculate discount
+            discountAmount = 0;
+            if (appliedCoupon) {
+                if (appliedCoupon.type === 'percentage') {
+                    discountAmount = Math.round((subtotal * appliedCoupon.amount) / 100);
+                } else {
+                    discountAmount = appliedCoupon.amount;
+                }
+                if (discountAmount > subtotal) discountAmount = subtotal;
+            }
+            
+            const total = subtotal + deliveryCharge - discountAmount;
+
+            document.getElementById('subtotalAmount').textContent = '৳' + subtotal;
+            document.getElementById('deliveryAmount').textContent = '৳' + deliveryCharge;
+            document.getElementById('totalAmount').textContent = '৳' + total;
+            document.getElementById('totalAmount2').textContent = '৳' + total;
+            
+            const discountRow = document.getElementById('discountRow');
+            if (discountAmount > 0) {
+                discountRow.style.display = 'flex';
+                document.getElementById('discountDisplay').textContent = '-৳' + discountAmount;
+            } else {
+                discountRow.style.display = 'none';
+            }
         }
-        // Don't exceed subtotal
-        if (discountAmount > subtotal) discountAmount = subtotal;
-    }
-    
-    const total = subtotal + deliveryCharge - discountAmount;
 
-    document.getElementById('subtotalAmount').textContent = '৳' + subtotal;
-    document.getElementById('deliveryAmount').textContent = '৳' + deliveryCharge;
-    document.getElementById('totalAmount').textContent = '৳' + total;
-    document.getElementById('totalAmount2').textContent = '৳' + total;
-    
-    // Show/hide discount row
-    const discountRow = document.getElementById('discountRow');
-    if (discountAmount > 0) {
-        discountRow.style.display = 'flex';
-        document.getElementById('discountAmount').textContent = '-৳' + discountAmount;
-    } else {
-        discountRow.style.display = 'none';
-    }
-}
-
-        // ===== SELECT DELIVERY =====
         function selectDelivery(el, area, charge) {
             document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
             el.classList.add('selected');
@@ -1014,7 +465,6 @@ let discountAmount = 0;
             updateTotals();
         }
 
-        // ===== SELECT PAYMENT =====
         function selectPayment(el, method) {
             document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
             el.classList.add('selected');
@@ -1039,7 +489,6 @@ let discountAmount = 0;
         async function applyCoupon() {
             const input = document.getElementById('couponInput');
             const btn = document.getElementById('applyCouponBtn');
-            const messageDiv = document.getElementById('couponMessage');
             const code = input.value.trim().toUpperCase();
             
             if (!code) {
@@ -1129,9 +578,8 @@ let discountAmount = 0;
             div.textContent = text;
             div.style.display = 'block';
             div.style.color = type === 'error' ? '#ef4444' : '#10b981';
-            div.style.fontWeight = '600';
         }
-        
+
         // ===== PLACE ORDER =====
         async function placeOrder(event) {
             event.preventDefault();
@@ -1147,7 +595,6 @@ let discountAmount = 0;
             const note = document.getElementById('customerNote').value.trim();
             const transactionId = document.getElementById('transactionId').value.trim();
 
-            // Validate phone
             if (!/^01[0-9]{9}$/.test(phone)) {
                 showToast('❌ সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)');
                 btn.disabled = false;
@@ -1155,7 +602,6 @@ let discountAmount = 0;
                 return;
             }
 
-            // Validate transaction ID for online payment
             if (paymentMethod !== 'cod' && !transactionId) {
                 showToast('❌ ট্রানজেকশন আইডি দিতে হবে');
                 btn.disabled = false;
@@ -1164,7 +610,7 @@ let discountAmount = 0;
             }
 
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const total = subtotal + deliveryCharge;
+            const finalTotal = subtotal + deliveryCharge - discountAmount;
 
             const paymentText = {
                 'cod': 'ক্যাশ অন ডেলিভারি',
@@ -1173,56 +619,51 @@ let discountAmount = 0;
                 'rocket': 'রকেট'
             };
 
-            const finalTotal = subtotal + deliveryCharge - discountAmount;
-
-const order = {
-    customerName: name,
-    customerPhone: phone,
-    customerPhone2: phone2 || null,
-    customerAddress: address,
-    customerNote: note || null,
-    items: cart,
-    subtotal: subtotal,
-    deliveryArea: deliveryArea === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে',
-    deliveryCharge: deliveryCharge,
-    couponCode: appliedCoupon ? appliedCoupon.code : null,
-    couponDiscount: discountAmount,
-    total: finalTotal,
-    paymentMethod: paymentText[paymentMethod],
-    transactionId: transactionId || null,
-    status: 'pending',
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-};
+            const order = {
+                customerName: name,
+                customerPhone: phone,
+                customerPhone2: phone2 || null,
+                customerAddress: address,
+                customerNote: note || null,
+                items: cart,
+                subtotal: subtotal,
+                deliveryArea: deliveryArea === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে',
+                deliveryCharge: deliveryCharge,
+                couponCode: appliedCoupon ? appliedCoupon.code : null,
+                couponDiscount: discountAmount,
+                total: finalTotal,
+                paymentMethod: paymentText[paymentMethod],
+                transactionId: transactionId || null,
+                status: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
 
             try {
                 const docRef = await db.collection('orders').add(order);
                 
-                // Clear cart
+                // Update coupon usage
+                if (appliedCoupon) {
+                    db.collection('coupons').doc(appliedCoupon.id).update({
+                        used: (appliedCoupon.used || 0) + 1
+                    }).catch(err => console.error('Coupon update error:', err));
+                }
                 
-                local// Update coupon usage count
-if (appliedCoupon) {
-    db.collection('coupons').doc(appliedCoupon.id).update({
-        used: (appliedCoupon.used || 0) + 1
-    }).catch(err => console.error('Coupon update error:', err));
-}
-                Storage.removeItem('cart');
+                localStorage.removeItem('cart');
                 
-                // Show success page
                 document.getElementById('checkoutContent').style.display = 'none';
                 document.getElementById('successPage').classList.add('show');
                 document.getElementById('orderIdDisplay').textContent = '#' + docRef.id.substring(0, 8).toUpperCase();
                 
-                // Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 
             } catch (error) {
+                console.error('Order error:', error);
                 showToast('❌ অর্ডার করতে সমস্যা: ' + error.message);
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-check-circle"></i> অর্ডার নিশ্চিত করুন';
             }
         }
 
-        // ===== TOAST =====
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMessage').textContent = message;
@@ -1230,9 +671,9 @@ if (appliedCoupon) {
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // ===== INIT =====
         init();
     </script>
+    
     <script src="chatbot.js"></script>
 </body>
 </html>
