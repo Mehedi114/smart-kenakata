@@ -858,21 +858,40 @@
                         <!-- Items load here -->
                     </div>
                     
-                    <div class="summary-totals">
-                        <div class="summary-row">
-                            <span>সাব-টোটাল:</span>
-                            <span id="subtotalAmount">৳0</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>ডেলিভারি চার্জ:</span>
-                            <span id="deliveryAmount">৳60</span>
-                        </div>
-                        <div class="summary-row total">
-                            <span>সর্বমোট:</span>
-                            <span id="totalAmount">৳0</span>
-                        </div>
-                    </div>
-                    
+                    <!-- Coupon Apply Box -->
+<div style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:15px; border:2px dashed #10b981;">
+    <label style="display:block; font-size:14px; font-weight:600; margin-bottom:8px; color:#334155;">
+        🎁 কুপন কোড আছে?
+    </label>
+    <div style="display:flex; gap:8px;">
+        <input type="text" id="couponInput" placeholder="কুপন কোড লিখুন" 
+               style="flex:1; padding:10px 15px; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit; font-size:14px; text-transform:uppercase; outline:none;">
+        <button type="button" onclick="applyCoupon()" id="applyCouponBtn"
+                style="padding:10px 20px; background:#10b981; color:white; border:none; border-radius:10px; font-family:inherit; font-weight:600; cursor:pointer;">
+            প্রয়োগ
+        </button>
+    </div>
+    <div id="couponMessage" style="margin-top:8px; font-size:13px; display:none;"></div>
+</div>
+
+<div class="summary-totals">
+    <div class="summary-row">
+        <span>সাব-টোটাল:</span>
+        <span id="subtotalAmount">৳0</span>
+    </div>
+    <div class="summary-row">
+        <span>ডেলিভারি চার্জ:</span>
+        <span id="deliveryAmount">৳60</span>
+    </div>
+    <div class="summary-row" id="discountRow" style="display:none; color:#10b981;">
+        <span>🎁 কুপন ছাড়:</span>
+        <span id="discountAmount">-৳0</span>
+    </div>
+    <div class="summary-row total">
+        <span>সর্বমোট:</span>
+        <span id="totalAmount">৳0</span>
+    </div>
+</div>
                     <button type="submit" form="checkoutForm" class="place-order-btn" id="placeOrderBtn">
                         <i class="fas fa-check-circle"></i>
                         অর্ডার নিশ্চিত করুন
@@ -923,6 +942,8 @@
         let deliveryCharge = 60;
         let deliveryArea = 'inside';
         let paymentMethod = 'cod';
+        let appliedCoupon = null;
+let discountAmount = 0;
 
         // ===== INIT =====
         function init() {
@@ -952,15 +973,37 @@
         }
 
         // ===== UPDATE TOTALS =====
-        function updateTotals() {
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const total = subtotal + deliveryCharge;
-
-            document.getElementById('subtotalAmount').textContent = '৳' + subtotal;
-            document.getElementById('deliveryAmount').textContent = '৳' + deliveryCharge;
-            document.getElementById('totalAmount').textContent = '৳' + total;
-            document.getElementById('totalAmount2').textContent = '৳' + total;
+       function updateTotals() {
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    // Calculate discount
+    discountAmount = 0;
+    if (appliedCoupon) {
+        if (appliedCoupon.type === 'percentage') {
+            discountAmount = Math.round((subtotal * appliedCoupon.amount) / 100);
+        } else {
+            discountAmount = appliedCoupon.amount;
         }
+        // Don't exceed subtotal
+        if (discountAmount > subtotal) discountAmount = subtotal;
+    }
+    
+    const total = subtotal + deliveryCharge - discountAmount;
+
+    document.getElementById('subtotalAmount').textContent = '৳' + subtotal;
+    document.getElementById('deliveryAmount').textContent = '৳' + deliveryCharge;
+    document.getElementById('totalAmount').textContent = '৳' + total;
+    document.getElementById('totalAmount2').textContent = '৳' + total;
+    
+    // Show/hide discount row
+    const discountRow = document.getElementById('discountRow');
+    if (discountAmount > 0) {
+        discountRow.style.display = 'flex';
+        document.getElementById('discountAmount').textContent = '-৳' + discountAmount;
+    } else {
+        discountRow.style.display = 'none';
+    }
+}
 
         // ===== SELECT DELIVERY =====
         function selectDelivery(el, area, charge) {
@@ -992,6 +1035,103 @@
             }
         }
 
+        // ===== APPLY COUPON =====
+        async function applyCoupon() {
+            const input = document.getElementById('couponInput');
+            const btn = document.getElementById('applyCouponBtn');
+            const messageDiv = document.getElementById('couponMessage');
+            const code = input.value.trim().toUpperCase();
+            
+            if (!code) {
+                showCouponMessage('❌ কুপন কোড লিখুন', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'চেক করছি...';
+            
+            try {
+                const snapshot = await db.collection('coupons').where('code', '==', code).get();
+                
+                if (snapshot.empty) {
+                    showCouponMessage('❌ এই কুপন কোড পাওয়া যায়নি', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'প্রয়োগ';
+                    return;
+                }
+                
+                const couponDoc = snapshot.docs[0];
+                const coupon = { id: couponDoc.id, ...couponDoc.data() };
+                
+                if (!coupon.active) {
+                    showCouponMessage('❌ এই কুপন নিষ্ক্রিয়', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'প্রয়োগ';
+                    return;
+                }
+                
+                if (coupon.expiry && new Date(coupon.expiry) < new Date()) {
+                    showCouponMessage('❌ এই কুপনের মেয়াদ শেষ', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'প্রয়োগ';
+                    return;
+                }
+                
+                if (coupon.used >= coupon.limit) {
+                    showCouponMessage('❌ কুপন ব্যবহারের সীমা শেষ', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'প্রয়োগ';
+                    return;
+                }
+                
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                if (subtotal < coupon.minOrder) {
+                    showCouponMessage('❌ কমপক্ষে ৳' + coupon.minOrder + ' অর্ডার করতে হবে', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'প্রয়োগ';
+                    return;
+                }
+                
+                appliedCoupon = coupon;
+                updateTotals();
+                
+                const discountText = coupon.type === 'percentage' 
+                    ? coupon.amount + '% ছাড়' 
+                    : '৳' + coupon.amount + ' ছাড়';
+                
+                showCouponMessage('✅ কুপন প্রয়োগ হয়েছে! ' + discountText, 'success');
+                input.disabled = true;
+                btn.disabled = false;
+                btn.textContent = '❌ বাতিল';
+                btn.onclick = removeCoupon;
+                
+            } catch (error) {
+                console.error(error);
+                showCouponMessage('❌ কুপন চেক করতে সমস্যা', 'error');
+                btn.disabled = false;
+                btn.textContent = 'প্রয়োগ';
+            }
+        }
+
+        function removeCoupon() {
+            appliedCoupon = null;
+            document.getElementById('couponInput').value = '';
+            document.getElementById('couponInput').disabled = false;
+            document.getElementById('couponMessage').style.display = 'none';
+            const btn = document.getElementById('applyCouponBtn');
+            btn.textContent = 'প্রয়োগ';
+            btn.onclick = applyCoupon;
+            updateTotals();
+        }
+
+        function showCouponMessage(text, type) {
+            const div = document.getElementById('couponMessage');
+            div.textContent = text;
+            div.style.display = 'block';
+            div.style.color = type === 'error' ? '#ef4444' : '#10b981';
+            div.style.fontWeight = '600';
+        }
+        
         // ===== PLACE ORDER =====
         async function placeOrder(event) {
             event.preventDefault();
@@ -1033,28 +1173,39 @@
                 'rocket': 'রকেট'
             };
 
-            const order = {
-                customerName: name,
-                customerPhone: phone,
-                customerPhone2: phone2 || null,
-                customerAddress: address,
-                customerNote: note || null,
-                items: cart,
-                subtotal: subtotal,
-                deliveryArea: deliveryArea === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে',
-                deliveryCharge: deliveryCharge,
-                total: total,
-                paymentMethod: paymentText[paymentMethod],
-                transactionId: transactionId || null,
-                status: 'pending',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
+            const finalTotal = subtotal + deliveryCharge - discountAmount;
+
+const order = {
+    customerName: name,
+    customerPhone: phone,
+    customerPhone2: phone2 || null,
+    customerAddress: address,
+    customerNote: note || null,
+    items: cart,
+    subtotal: subtotal,
+    deliveryArea: deliveryArea === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে',
+    deliveryCharge: deliveryCharge,
+    couponCode: appliedCoupon ? appliedCoupon.code : null,
+    couponDiscount: discountAmount,
+    total: finalTotal,
+    paymentMethod: paymentText[paymentMethod],
+    transactionId: transactionId || null,
+    status: 'pending',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+};
 
             try {
                 const docRef = await db.collection('orders').add(order);
                 
                 // Clear cart
-                localStorage.removeItem('cart');
+                
+                local// Update coupon usage count
+if (appliedCoupon) {
+    db.collection('coupons').doc(appliedCoupon.id).update({
+        used: (appliedCoupon.used || 0) + 1
+    }).catch(err => console.error('Coupon update error:', err));
+}
+                Storage.removeItem('cart');
                 
                 // Show success page
                 document.getElementById('checkoutContent').style.display = 'none';
