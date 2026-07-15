@@ -201,6 +201,10 @@
     <i class="fas fa-tags"></i>
     <span>কুপন কোড</span>
 </button>
+            <button class="menu-item" onclick="showSection('reviews', this)">
+    <i class="fas fa-star"></i>
+    <span>রিভিউ সমূহ</span>
+</button>
             <div class="menu-divider"></div>
             
             <a href="index.html" class="menu-item" target="_blank">
@@ -387,6 +391,19 @@
         </button>
     </div>
 
+<!-- REVIEWS SECTION -->
+<div class="section" id="reviews-section">
+    <div class="section-title">
+        <h2>⭐ গ্রাহক রিভিউ</h2>
+        <button class="btn btn-primary btn-sm" onclick="loadAdminReviews()">
+            <i class="fas fa-sync"></i> রিফ্রেশ
+        </button>
+    </div>
+    <div id="reviewsListAdmin">
+        <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
+    </div>
+</div>
+    
     <!-- Add Coupon Form -->
     <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
         <h3 style="margin-bottom:15px; font-size:16px;">➕ নতুন কুপন তৈরি করুন</h3>
@@ -504,6 +521,7 @@
             if (sectionName === 'orders') loadOrders();
             if (sectionName === 'messages') loadMessages();
             if (sectionName === 'coupons') loadCoupons();
+            if (sectionName === 'reviews') loadAdminReviews();
         }
 
         async function loadDashboardStats() {
@@ -881,6 +899,65 @@ function deleteCoupon(id, code) {
             loadCoupons();
         });
 }
+
+  // ===== REVIEWS FUNCTIONS =====
+function loadAdminReviews() {
+    const container = document.getElementById('reviewsListAdmin');
+    container.innerHTML = '<div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>';
+    
+    db.collection('reviews').get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i><h3>কোন রিভিউ নেই</h3></div>';
+                return;
+            }
+            
+            const reviews = [];
+            snapshot.forEach(doc => reviews.push({ id: doc.id, ...doc.data() }));
+            reviews.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            
+            let html = '<div style="display:grid; gap:15px;">';
+            reviews.forEach(r => {
+                const date = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleString('bn-BD') : 'N/A';
+                const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                
+                html += `
+                    <div style="background:white; padding:20px; border-radius:12px; border:1px solid #e2e8f0;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+                            <div style="flex:1;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <h4 style="margin:0;">${r.name}</h4>
+                                    <span style="color:#fbbf24; font-size:18px;">${stars}</span>
+                                    <span style="background:#dbeafe; color:#1e40af; padding:3px 10px; border-radius:15px; font-size:11px; font-weight:600;">${r.rating}/5</span>
+                                </div>
+                                <p style="font-size:13px; color:#64748b; margin:5px 0;">
+                                    📱 ${r.phone} | 📅 ${date}
+                                </p>
+                                <p style="background:#f8fafc; padding:10px; border-radius:8px; margin:10px 0; color:#334155;">"${r.comment}"</p>
+                                <p style="font-size:12px; color:#10b981; font-weight:600;">
+                                    <i class="fas fa-box"></i> Product: ${r.productName || 'N/A'}
+                                </p>
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="deleteReview('${r.id}')">
+                                <i class="fas fa-trash"></i> ডিলিট
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        });
+}
+
+function deleteReview(id) {
+    if (!confirm('এই রিভিউটি ডিলিট করবেন?')) return;
+    db.collection('reviews').doc(id).delete()
+        .then(() => {
+            showToast('success', '✅ রিভিউ ডিলিট হয়েছে!');
+            loadAdminReviews();
+        });
+}      
         
         function showToast(type, message) {
             const toast = document.getElementById('toast');
