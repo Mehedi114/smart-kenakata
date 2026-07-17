@@ -430,6 +430,30 @@
                         <label>পণ্যের বিবরণ</label>
                         <textarea id="prodDescription" placeholder="পণ্যের বিস্তারিত বিবরণ..."></textarea>
                     </div>
+<div class="form-group full" style="border-top:2px dashed #f59e0b; padding-top:20px; margin-top:20px;">
+    <h3 style="color:#f59e0b; margin-bottom:15px;"><i class="fas fa-lock"></i> 🔒 সাপ্লায়ার তথ্য (শুধু আপনি দেখতে পাবেন)</h3>
+</div>
+<div class="form-group">
+    <label>সাপ্লায়ার/বিক্রেতার নাম</label>
+    <input type="text" id="prodSupplier" placeholder="যেমন: রহিম ট্রেডার্স">
+</div>
+<div class="form-group">
+    <label>সাপ্লায়ার ফোন</label>
+    <input type="tel" id="prodSupplierPhone" placeholder="01XXXXXXXXX">
+</div>
+<div class="form-group">
+    <label>কেনা দাম (৳)</label>
+    <input type="number" id="prodBuyPrice" placeholder="800" min="0">
+</div>
+<div class="form-group">
+    <label>কোথা থেকে কিনেছেন</label>
+    <input type="text" id="prodSource" placeholder="যেমন: নিউমার্কেট, চট্টগ্রাম">
+</div>
+<div class="form-group full">
+    <label>ব্যক্তিগত নোট</label>
+    <input type="text" id="prodNote" placeholder="যেকোন নোট...">
+</div>
+                    
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -668,24 +692,23 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যোগ হচ্ছে...';
             
-            const product = {
-                name: document.getElementById('prodName').value.trim(),
-                category: document.getElementById('prodCategory').value,
-                price: parseInt(document.getElementById('prodPrice').value),
-                oldPrice: parseInt(document.getElementById('prodOldPrice').value) || null,
-                stock: parseInt(document.getElementById('prodStock').value) || 0,
-                image: document.getElementById('prodImage').value.trim(),
-                description: document.getElementById('prodDescription').value.trim(),
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
+            const editId = document.getElementById('addBtn').getAttribute('data-edit-id');
             
-            db.collection('products').add(product)
-                .then(() => {
-                    showToast('success', '✅ পণ্য সফলভাবে যোগ হয়েছে!');
+            let dbAction;
+            if (editId) {
+                dbAction = db.collection('products').doc(editId).update(product);
+            } else {
+                product.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                dbAction = db.collection('products').add(product);
+            }
+            
+            dbAction.then(() => {
+                    showToast('success', editId ? '✅ পণ্য আপডেট হয়েছে!' : '✅ পণ্য যোগ হয়েছে!');
                     event.target.reset();
                     loadDashboardStats();
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-plus"></i> পণ্য যোগ করুন';
+                    btn.removeAttribute('data-edit-id');
                 })
                 .catch(error => {
                     showToast('error', '❌ ' + error.message);
@@ -693,7 +716,7 @@
                     btn.innerHTML = '<i class="fas fa-plus"></i> পণ্য যোগ করুন';
                 });
         }
-
+            
         function loadProducts() {
             const container = document.getElementById('productsList');
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>';
@@ -707,13 +730,30 @@
                     let html = '<div class="products-list">';
                     snapshot.forEach(doc => {
                         const p = doc.data();
+                        const profit = (p.buyPrice && p.price) ? (p.price - p.buyPrice) : null;
+                        const profitColor = profit > 0 ? '#10b981' : '#ef4444';
+                        
                         html += '<div class="product-item">';
                         html += '<div class="product-item-image"><img src="' + p.image + '" alt="' + p.name + '" onerror="this.src=\'https://via.placeholder.com/280x180\'"></div>';
                         html += '<div class="product-item-info">';
-                        html += '<div class="cat">' + p.category + '</div>';
+                        html += '<div class="cat">' + (p.category || '') + '</div>';
                         html += '<h4>' + p.name + '</h4>';
-                        html += '<div class="price">৳' + p.price + '</div>';
+                        html += '<div class="price">বিক্রয়: ৳' + p.price + (p.oldPrice ? ' <small style="text-decoration:line-through;color:#999;">৳' + p.oldPrice + '</small>' : '') + '</div>';
+                        
+                        // Supplier Info (শুধু Admin দেখবে)
+                        if (p.supplier || p.buyPrice || p.source) {
+                            html += '<div style="background:#fef3c7; padding:10px; border-radius:8px; margin:10px 0; border-left:3px solid #f59e0b; font-size:12px;">';
+                            html += '<strong style="color:#92400e;">🔒 সাপ্লায়ার তথ্য:</strong><br>';
+                            if (p.supplier) html += '🏪 ' + p.supplier;
+                            if (p.supplierPhone) html += ' | 📞 ' + p.supplierPhone;
+                            if (p.buyPrice) html += '<br>💰 কেনা: ৳' + p.buyPrice + ' | লাভ: <span style="color:' + profitColor + '; font-weight:700;">৳' + profit + '</span>';
+                            if (p.source) html += '<br>📍 ' + p.source;
+                            if (p.privateNote) html += '<br>📝 ' + p.privateNote;
+                            html += '</div>';
+                        }
+                        
                         html += '<div class="product-actions">';
+                        html += '<button class="btn btn-primary btn-sm" onclick="editProduct(\'' + doc.id + '\')"><i class="fas fa-edit"></i> এডিট</button>';
                         html += '<button class="btn btn-danger btn-sm" onclick="deleteProduct(\'' + doc.id + '\', \'' + p.name.replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> ডিলিট</button>';
                         html += '</div></div></div>';
                     });
@@ -724,7 +764,47 @@
                     container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error</h3><p>' + error.message + '</p></div>';
                 });
         }
+        // ===== EDIT PRODUCT =====
+        async function editProduct(productId) {
+            try {
+                const doc = await db.collection('products').doc(productId).get();
+                if (!doc.exists) { showToast('error', '❌ পণ্য পাওয়া যায়নি'); return; }
+                
+                const p = doc.data();
+                
+                // Switch to add product tab
+                showSection('add-product', document.querySelectorAll('.menu-item')[1]);
+                
+                // Fill form with existing data
+                document.getElementById('prodName').value = p.name || '';
+                document.getElementById('prodCategory').value = p.category || '';
+                document.getElementById('prodPrice').value = p.price || '';
+                document.getElementById('prodOldPrice').value = p.oldPrice || '';
+                document.getElementById('prodStock').value = p.stock || '';
+                document.getElementById('prodImage').value = p.image || '';
+                document.getElementById('prodDescription').value = p.description || '';
+                document.getElementById('prodSupplier').value = p.supplier || '';
+                document.getElementById('prodSupplierPhone').value = p.supplierPhone || '';
+                document.getElementById('prodBuyPrice').value = p.buyPrice || '';
+                document.getElementById('prodSource').value = p.source || '';
+                document.getElementById('prodNote').value = p.privateNote || '';
+                
+                // Change button to "Update"
+                const btn = document.getElementById('addBtn');
+                btn.innerHTML = '<i class="fas fa-save"></i> আপডেট করুন';
+                btn.setAttribute('data-edit-id', productId);
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                showToast('success', '✏️ পণ্যের তথ্য লোড হয়েছে - পরিবর্তন করে আপডেট করুন');
+                
+            } catch (error) {
+                showToast('error', '❌ ' + error.message);
+            }
+        }
 
+        
         function deleteProduct(id, name) {
             if (!confirm('"' + name + '" ডিলিট করতে চান?')) return;
             db.collection('products').doc(id).delete()
