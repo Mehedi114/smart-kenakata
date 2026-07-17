@@ -847,8 +847,16 @@
                         html += '<span class="order-status status-' + status + '">' + statusText[status] + '</span></div>';
                         html += '<div class="order-address"><strong>📍 ঠিকানা:</strong> ' + (o.customerAddress || 'N/A') + '</div>';
                         html += '<div class="order-body">' + itemsHtml + '<div class="order-total order-item"><span>মোট:</span><span>৳' + (o.total || 0) + '</span></div></div>';
-                        html += '<div class="order-address" style="background:#e0f2fe; border-color:#0284c7;"><strong>💳 পেমেন্ট:</strong> ' + (o.paymentMethod || 'COD') + '</div>';
-                        html += '<div class="order-actions">';
+html += '<div class="order-address" style="background:#e0f2fe; border-color:#0284c7;">';
+html += '<strong>💳 পেমেন্ট মেথড:</strong> ' + (o.paymentMethod || 'COD');
+if (o.transactionId) {
+    html += '<br><strong>🔑 ট্রানজেকশন আইডি:</strong> <span style="background:white; padding:3px 10px; border-radius:5px; font-family:monospace; color:#0284c7; font-weight:700; letter-spacing:1px;">' + o.transactionId + '</span>';
+    html += ' <button onclick="navigator.clipboard.writeText(\'' + o.transactionId + '\'); showToast(\'success\', \'✅ কপি হয়েছে!\');" style="background:#0284c7; color:white; border:none; padding:3px 10px; border-radius:5px; cursor:pointer; font-size:11px; margin-left:5px;"><i class="fas fa-copy"></i> কপি</button>';
+}
+if (o.couponCode) {
+    html += '<br><strong>🎁 কুপন:</strong> <span style="background:#10b981; color:white; padding:3px 10px; border-radius:5px; font-weight:700;">' + o.couponCode + '</span> (-৳' + (o.couponDiscount || 0) + ')';
+}
+html += '</div>';                        html += '<div class="order-actions">';
                         if (status === 'pending') html += '<button class="btn btn-primary btn-sm" onclick="updateOrderStatus(\'' + o.id + '\', \'confirmed\')"><i class="fas fa-check"></i> কনফার্ম</button>';
                         if (status === 'confirmed') html += '<button class="btn btn-primary btn-sm" onclick="updateOrderStatus(\'' + o.id + '\', \'delivered\')"><i class="fas fa-truck"></i> ডেলিভারড</button>';
                         if (status !== 'cancelled' && status !== 'delivered') html += '<button class="btn btn-danger btn-sm" onclick="updateOrderStatus(\'' + o.id + '\', \'cancelled\')"><i class="fas fa-times"></i> বাতিল</button>';
