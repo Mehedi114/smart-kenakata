@@ -603,3 +603,297 @@
         }
     }
 }
+
+/* ===== UI IMPROVEMENTS - Compact & 3D Buttons ===== */
+
+@media (max-width: 768px) {
+    
+    /* NAV MENU - 3D Beautiful Buttons */
+    .nav-menu-container {
+        padding: 8px 12px !important;
+        gap: 8px !important;
+    }
+    
+    .nav-menu a {
+        font-size: 12px !important;
+        padding: 7px 14px !important;
+        background: linear-gradient(145deg, #ffffff, #e2e8f0) !important;
+        border-radius: 12px !important;
+        box-shadow: 3px 3px 6px #cbd5e1, -3px -3px 6px #ffffff !important;
+        color: #334155 !important;
+        font-weight: 600 !important;
+        transition: all 0.2s !important;
+        border: none !important;
+    }
+    
+    .nav-menu a:active {
+        box-shadow: inset 2px 2px 5px #cbd5e1, inset -2px -2px 5px #ffffff !important;
+        transform: scale(0.95);
+    }
+    
+    .nav-menu a.active {
+        background: linear-gradient(145deg, #10b981, #059669) !important;
+        color: white !important;
+        box-shadow: 3px 3px 8px rgba(16, 185, 129, 0.4), -2px -2px 6px rgba(255,255,255,0.5) !important;
+    }
+    
+    /* NAV ICONS - Smaller & 3D */
+    .icon-btn {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 13px !important;
+        background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
+        box-shadow: 2px 2px 5px #cbd5e1, -2px -2px 5px #ffffff !important;
+        border: none !important;
+    }
+    
+    .icon-btn:active {
+        box-shadow: inset 2px 2px 4px #cbd5e1, inset -2px -2px 4px #ffffff !important;
+    }
+    
+    .cart-badge {
+        width: 14px !important;
+        height: 14px !important;
+        font-size: 8px !important;
+    }
+    
+    /* LOGO - Compact */
+    .logo-icon {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 14px !important;
+    }
+    
+    .logo-text h1 {
+        font-size: 14px !important;
+    }
+    
+    /* PRODUCT CARDS - Compact 3D */
+    .add-cart-btn {
+        padding: 7px !important;
+        font-size: 11px !important;
+        background: linear-gradient(145deg, #1e293b, #0f172a) !important;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2) !important;
+        border-radius: 8px !important;
+    }
+    
+    .add-cart-btn:active {
+        box-shadow: inset 2px 2px 4px rgba(0,0,0,0.3) !important;
+        transform: scale(0.98);
+    }
+    
+    /* CATEGORY CARDS - Compact */
+    .category-card {
+        padding: 15px 8px !important;
+        border-radius: 15px !important;
+        background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
+        box-shadow: 4px 4px 10px #d4dce6, -4px -4px 10px #ffffff !important;
+    }
+    
+    .category-icon-wrapper {
+        width: 45px !important;
+        height: 45px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .category-icon {
+        font-size: 22px !important;
+    }
+    
+    .category-name {
+        font-size: 12px !important;
+    }
+    
+    .category-count {
+        font-size: 10px !important;
+    }
+    
+    /* HERO BUTTONS - 3D */
+    .btn-primary, .btn-outline {
+        padding: 12px 20px !important;
+        font-size: 13px !important;
+        border-radius: 12px !important;
+        box-shadow: 3px 3px 8px rgba(0,0,0,0.15), -1px -1px 4px rgba(255,255,255,0.1) !important;
+    }
+    
+    .btn-primary:active, .btn-outline:active {
+        transform: scale(0.97);
+    }
+    
+    /* CHATBOT - Compact */
+    #chatbot-toggle {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 18px !important;
+    }
+    
+    #chatbot-window {
+        width: calc(100vw - 20px) !important;
+        max-width: 340px !important;
+        height: 65vh !important;
+        max-height: 500px !important;
+        right: -5px !important;
+        bottom: 55px !important;
+    }
+    
+    .chatbot-header {
+        padding: 12px !important;
+    }
+    
+    .chatbot-avatar {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 14px !important;
+    }
+    
+    .chatbot-info h3 {
+        font-size: 13px !important;
+    }
+    
+    .chatbot-status {
+        font-size: 10px !important;
+    }
+    
+    .ai-badge {
+        font-size: 9px !important;
+        padding: 1px 6px !important;
+    }
+    
+    .chatbot-close {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 12px !important;
+    }
+    
+    .message-bubble {
+        font-size: 12px !important;
+        padding: 8px 12px !important;
+    }
+    
+    .message-avatar {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 12px !important;
+    }
+    
+    .message-time {
+        font-size: 9px !important;
+    }
+    
+    .chatbot-quick-replies {
+        padding: 6px 10px !important;
+        gap: 5px !important;
+    }
+    
+    .chatbot-quick-replies button {
+        font-size: 11px !important;
+        padding: 5px 10px !important;
+        border-radius: 15px !important;
+    }
+    
+    #chatbot-input {
+        font-size: 12px !important;
+        padding: 8px 12px !important;
+    }
+    
+    .chatbot-send {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 12px !important;
+    }
+    
+    .chatbot-footer {
+        font-size: 9px !important;
+        padding: 6px !important;
+    }
+    
+    .chatbot-input-wrapper {
+        padding: 10px !important;
+    }
+    
+    .chatbot-badge {
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 9px !important;
+    }
+    
+    /* FLOATING BUTTONS - Compact */
+    .whatsapp-float {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 20px !important;
+        bottom: 70px !important;
+    }
+    
+    #theme-toggle {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 14px !important;
+        bottom: 125px !important;
+    }
+    
+    /* PRODUCT PRICE - Compact */
+    .current-price {
+        font-size: 15px !important;
+    }
+    
+    .old-price {
+        font-size: 11px !important;
+    }
+    
+    .product-title {
+        font-size: 12px !important;
+        min-height: 32px !important;
+    }
+    
+    .product-category {
+        font-size: 9px !important;
+    }
+    
+    .discount-badge {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+    }
+    
+    /* HEART BUTTON - Smaller */
+    .wishlist-heart {
+        width: 28px !important;
+        height: 28px !important;
+    }
+    
+    .wishlist-heart i {
+        font-size: 12px !important;
+    }
+    
+    /* SECTION TITLES - Compact */
+    .section-title {
+        font-size: 20px !important;
+    }
+    
+    .section-subtitle {
+        font-size: 12px !important;
+    }
+}
+
+/* Extra small phones */
+@media (max-width: 380px) {
+    .nav-menu a {
+        font-size: 11px !important;
+        padding: 6px 10px !important;
+    }
+    
+    .icon-btn {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 12px !important;
+    }
+    
+    .logo-text h1 {
+        font-size: 12px !important;
+    }
+    
+    .logo-icon {
+        width: 30px !important;
+        height: 30px !important;
+    }
+}
