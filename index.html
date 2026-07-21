@@ -268,12 +268,34 @@
             </div>
         </div>
     </nav>
-<!-- Banner Section -->
+<!-- Dynamic Banner Slider -->
 <section style="padding:20px; background:white;">
-    <div style="max-width:1400px; margin:0 auto; border-radius:20px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
-        <img src="https://i.ibb.co.com/1tqfvKxj/Chat-GPT-Image-Jul-15-2026-11-33-06-PM.png" alt="Banner" style="width:100%; display:block;">
+    <div style="max-width:1400px; margin:0 auto; border-radius:20px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.1); position:relative;">
+        <div id="bannerSlider" style="position:relative; width:100%;">
+            <div class="loading" style="padding:100px 20px; text-align:center;">
+                <div class="spinner"></div>
+                <p>ব্যানার লোড হচ্ছে...</p>
+            </div>
+        </div>
+        <div id="bannerDots" style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:10;"></div>
     </div>
 </section>
+
+<style>
+.banner-slide {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+.banner-slide.active { display: block; }
+.banner-slide img { width: 100%; display: block; cursor: pointer; }
+.banner-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,0.5); cursor: pointer;
+    transition: all 0.3s; border: 2px solid white;
+}
+.banner-dot.active { background: white; width: 30px; border-radius: 5px; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
     
     <section class="hero">
         <div class="hero-content">
@@ -687,7 +709,53 @@ function toggleWishlist(productId, btn) {
             toast.classList.add('show');
             setTimeout(function() { toast.classList.remove('show'); }, 2500);
         }
+// ===== BANNER SLIDER =====
+let bannerSlideIndex = 0;
+let bannerSlideInterval = null;
 
+function loadBanners() {
+    db.collection('banners').where('active', '==', true).get()
+        .then(snapshot => {
+            const banners = [];
+            snapshot.forEach(doc => banners.push({ id: doc.id, ...doc.data() }));
+            banners.sort((a, b) => (a.order || 0) - (b.order || 0));
+            
+            const slider = document.getElementById('bannerSlider');
+            const dots = document.getElementById('bannerDots');
+            
+            if (banners.length === 0) {
+                slider.innerHTML = '<img src="https://i.ibb.co.com/1tqfvKxj/Chat-GPT-Image-Jul-15-2026-11-33-06-PM.png" style="width:100%; display:block;">';
+                return;
+            }
+            
+            let sliderHtml = '';
+            let dotsHtml = '';
+            banners.forEach((b, i) => {
+                const onclick = b.link ? 'window.location.href=\'' + b.link + '\'' : '';
+                sliderHtml += '<div class="banner-slide ' + (i === 0 ? 'active' : '') + '"><img src="' + b.image + '" onclick="' + onclick + '" alt="' + (b.title || '') + '"></div>';
+                dotsHtml += '<div class="banner-dot ' + (i === 0 ? 'active' : '') + '" onclick="showBannerSlide(' + i + ')"></div>';
+            });
+            
+            slider.innerHTML = sliderHtml;
+            dots.innerHTML = dotsHtml;
+            
+            if (banners.length > 1) {
+                bannerSlideInterval = setInterval(() => {
+                    bannerSlideIndex = (bannerSlideIndex + 1) % banners.length;
+                    showBannerSlide(bannerSlideIndex);
+                }, 4000);
+            }
+        });
+}
+
+function showBannerSlide(index) {
+    document.querySelectorAll('.banner-slide').forEach((s, i) => s.classList.toggle('active', i === index));
+    document.querySelectorAll('.banner-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+    bannerSlideIndex = index;
+}
+
+loadBanners();
+        
         loadProducts();
         updateCartCount();
         updateWishlistCount();
