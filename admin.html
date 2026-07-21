@@ -516,55 +516,54 @@
         </button>
     </div>
 
-    <!-- BANNERS SECTION -->
-<div class="section" id="banners-section">
-    <div class="section-title">
-        <h2>🖼️ ব্যানার ম্যানেজমেন্ট</h2>
-        <button class="btn btn-primary btn-sm" onclick="loadBanners()">
-            <i class="fas fa-sync"></i> রিফ্রেশ
-        </button>
-    </div>
-
-    <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
-        <h3 style="margin-bottom:15px;">➕ নতুন ব্যানার যোগ করুন</h3>
-        <form onsubmit="addBanner(event)">
-            <div class="form-grid">
-                <div class="form-group full">
-                    <label>ব্যানার ছবির লিংক *</label>
-                    <input type="url" id="bannerImage" placeholder="https://i.ibb.co/xxx/banner.png" required>
-                    <small>💡 ImgBB তে upload করে direct link দিন</small>
-                </div>
-                <div class="form-group">
-                    <label>ব্যানার টাইটেল (ঐচ্ছিক)</label>
-                    <input type="text" id="bannerTitle" placeholder="ঈদ অফার ২০২৬">
-                </div>
-                <div class="form-group">
-                    <label>Link (ঐচ্ছিক)</label>
-                    <input type="url" id="bannerLink" placeholder="category.html?cat=ইলেকট্রনিক্স">
-                </div>
-                <div class="form-group">
-                    <label>ক্রম (Order)</label>
-                    <input type="number" id="bannerOrder" placeholder="1" value="1" min="1">
-                </div>
-                <div class="form-group">
-                    <label>সক্রিয়?</label>
-                    <select id="bannerActive">
-                        <option value="true">হ্যাঁ</option>
-                        <option value="false">না</option>
-                    </select>
-                </div>
+            <!-- BANNERS SECTION -->
+        <div class="section" id="banners-section">
+            <div class="section-title">
+                <h2>🖼️ ব্যানার ম্যানেজমেন্ট</h2>
+                <button class="btn btn-primary btn-sm" onclick="loadBanners()">
+                    <i class="fas fa-sync"></i> রিফ্রেশ
+                </button>
             </div>
-            <button type="submit" class="btn btn-primary" id="addBannerBtn">
-                <i class="fas fa-plus"></i> ব্যানার যোগ করুন
-            </button>
-        </form>
-    </div>
-
-    <h3 style="margin-bottom:15px;">📋 সব ব্যানার</h3>
-    <div id="bannersList">
-        <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
-    </div>
-</div>
+            
+            <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
+                <h3 style="margin-bottom:15px;">➕ নতুন ব্যানার যোগ করুন</h3>
+                <form onsubmit="addBanner(event)">
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label>ব্যানার ছবির লিংক *</label>
+                            <input type="url" id="bannerImage" placeholder="https://i.ibb.co/xxx/banner.png" required>
+                        </div>
+                        <div class="form-group">
+                            <label>টাইটেল</label>
+                            <input type="text" id="bannerTitle" placeholder="ঈদ অফার">
+                        </div>
+                        <div class="form-group">
+                            <label>Link</label>
+                            <input type="url" id="bannerLink" placeholder="category.html?cat=ইলেকট্রনিক্স">
+                        </div>
+                        <div class="form-group">
+                            <label>ক্রম</label>
+                            <input type="number" id="bannerOrder" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>সক্রিয়?</label>
+                            <select id="bannerActive">
+                                <option value="true">হ্যাঁ</option>
+                                <option value="false">না</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="addBannerBtn">
+                        <i class="fas fa-plus"></i> ব্যানার যোগ করুন
+                    </button>
+                </form>
+            </div>
+            
+            <h3 style="margin-bottom:15px;">📋 সব ব্যানার</h3>
+            <div id="bannersList">
+                <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
+            </div>
+        </div>
 
 <!-- REVIEWS SECTION -->
 <div class="section" id="reviews-section">
