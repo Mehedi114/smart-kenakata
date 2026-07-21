@@ -298,6 +298,10 @@
     <i class="fas fa-tags"></i>
     <span>কুপন কোড</span>
 </button>
+          <button class="menu-item" onclick="showSection('banners', this)">
+    <i class="fas fa-image"></i>
+    <span>ব্যানার ম্যানেজমেন্ট</span>
+</button>          
             <button class="menu-item" onclick="showSection('reviews', this)">
     <i class="fas fa-star"></i>
     <span>রিভিউ সমূহ</span>
@@ -512,6 +516,56 @@
         </button>
     </div>
 
+    <!-- BANNERS SECTION -->
+<div class="section" id="banners-section">
+    <div class="section-title">
+        <h2>🖼️ ব্যানার ম্যানেজমেন্ট</h2>
+        <button class="btn btn-primary btn-sm" onclick="loadBanners()">
+            <i class="fas fa-sync"></i> রিফ্রেশ
+        </button>
+    </div>
+
+    <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
+        <h3 style="margin-bottom:15px;">➕ নতুন ব্যানার যোগ করুন</h3>
+        <form onsubmit="addBanner(event)">
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>ব্যানার ছবির লিংক *</label>
+                    <input type="url" id="bannerImage" placeholder="https://i.ibb.co/xxx/banner.png" required>
+                    <small>💡 ImgBB তে upload করে direct link দিন</small>
+                </div>
+                <div class="form-group">
+                    <label>ব্যানার টাইটেল (ঐচ্ছিক)</label>
+                    <input type="text" id="bannerTitle" placeholder="ঈদ অফার ২০২৬">
+                </div>
+                <div class="form-group">
+                    <label>Link (ঐচ্ছিক)</label>
+                    <input type="url" id="bannerLink" placeholder="category.html?cat=ইলেকট্রনিক্স">
+                </div>
+                <div class="form-group">
+                    <label>ক্রম (Order)</label>
+                    <input type="number" id="bannerOrder" placeholder="1" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label>সক্রিয়?</label>
+                    <select id="bannerActive">
+                        <option value="true">হ্যাঁ</option>
+                        <option value="false">না</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="addBannerBtn">
+                <i class="fas fa-plus"></i> ব্যানার যোগ করুন
+            </button>
+        </form>
+    </div>
+
+    <h3 style="margin-bottom:15px;">📋 সব ব্যানার</h3>
+    <div id="bannersList">
+        <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
+    </div>
+</div>
+
 <!-- REVIEWS SECTION -->
 <div class="section" id="reviews-section">
     <div class="section-title">
@@ -647,6 +701,7 @@
             if (sectionName === 'messages') loadMessages();
             if (sectionName === 'coupons') loadCoupons();
             if (sectionName === 'reviews') loadAdminReviews();
+            if (sectionName === 'banners') loadBanners();
         }
 
         async function loadDashboardStats() {
@@ -1088,6 +1143,89 @@ function deleteCoupon(id, code) {
             loadCoupons();
         });
 }
+ // ===== BANNER FUNCTIONS =====
+function addBanner(event) {
+    event.preventDefault();
+    const btn = document.getElementById('addBannerBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যোগ হচ্ছে...';
+    
+    const banner = {
+        image: document.getElementById('bannerImage').value.trim(),
+        title: document.getElementById('bannerTitle').value.trim() || null,
+        link: document.getElementById('bannerLink').value.trim() || null,
+        order: parseInt(document.getElementById('bannerOrder').value) || 1,
+        active: document.getElementById('bannerActive').value === 'true',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    db.collection('banners').add(banner)
+        .then(() => {
+            showToast('success', '✅ ব্যানার যোগ হয়েছে!');
+            event.target.reset();
+            loadBanners();
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-plus"></i> ব্যানার যোগ করুন';
+        })
+        .catch(error => {
+            showToast('error', '❌ ' + error.message);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-plus"></i> ব্যানার যোগ করুন';
+        });
+}
+
+function loadBanners() {
+    const container = document.getElementById('bannersList');
+    container.innerHTML = '<div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>';
+    
+    db.collection('banners').get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-image"></i><h3>কোন ব্যানার নেই</h3></div>';
+                return;
+            }
+            
+            const banners = [];
+            snapshot.forEach(doc => banners.push({ id: doc.id, ...doc.data() }));
+            banners.sort((a, b) => (a.order || 0) - (b.order || 0));
+            
+            let html = '<div style="display:grid; gap:15px;">';
+            banners.forEach(b => {
+                const statusColor = b.active ? '#10b981' : '#ef4444';
+                const statusText = b.active ? '✅ সক্রিয়' : '⏸️ নিষ্ক্রিয়';
+                
+                html += '<div style="background:white; border:2px solid #e2e8f0; border-radius:12px; overflow:hidden;">';
+                html += '<img src="' + b.image + '" style="width:100%; max-height:200px; object-fit:cover;">';
+                html += '<div style="padding:15px;">';
+                html += '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">';
+                html += '<div><h4 style="margin:0;">' + (b.title || 'শিরোনামহীন') + '</h4>';
+                html += '<p style="font-size:12px; color:#64748b; margin:5px 0;">ক্রম: ' + (b.order || 1) + ' | <span style="color:' + statusColor + '; font-weight:700;">' + statusText + '</span></p></div>';
+                html += '<div style="display:flex; gap:8px;">';
+                html += '<button class="btn ' + (b.active ? 'btn-danger' : 'btn-primary') + ' btn-sm" onclick="toggleBanner(\'' + b.id + '\', ' + !b.active + ')">' + (b.active ? '⏸️ Off' : '▶️ On') + '</button>';
+                html += '<button class="btn btn-danger btn-sm" onclick="deleteBanner(\'' + b.id + '\')"><i class="fas fa-trash"></i></button>';
+                html += '</div></div></div></div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        });
+}
+
+function toggleBanner(id, active) {
+    db.collection('banners').doc(id).update({ active: active })
+        .then(() => {
+            showToast('success', '✅ আপডেট হয়েছে!');
+            loadBanners();
+        });
+}
+
+function deleteBanner(id) {
+    if (!confirm('এই ব্যানার ডিলিট করবেন?')) return;
+    db.collection('banners').doc(id).delete()
+        .then(() => {
+            showToast('success', '✅ ডিলিট হয়েছে!');
+            loadBanners();
+        });
+}       
 
   // ===== REVIEWS FUNCTIONS =====
 function loadAdminReviews() {
