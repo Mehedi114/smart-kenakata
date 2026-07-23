@@ -901,6 +901,90 @@
                 statusEl.textContent = '❌ Error: ' + error.message;
             }
         }
+        // ===== IMGBB UPLOAD =====
+        const IMGBB_API_KEY = 'b2ca23b16c7cdc5b0e3f3d0420ba606f';
+        
+        async function uploadImages(event) {
+            const files = event.target.files;
+            if (!files.length) return;
+            if (files.length > 5) { showToast('error', '❌ সর্বোচ্চ ৫টি ছবি'); return; }
+            
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('progressBar');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const preview = document.getElementById('imagePreview');
+            
+            progressDiv.style.display = 'block';
+            preview.style.display = 'grid';
+            preview.innerHTML = '';
+            
+            const fields = ['prodImage', 'prodImage2', 'prodImage3', 'prodImage4', 'prodImage5'];
+            let done = 0;
+            
+            for (let i = 0; i < files.length; i++) {
+                uploadStatus.textContent = `📤 আপলোড হচ্ছে ${i+1}/${files.length}`;
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('image', files[i]);
+                    
+                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                        method: 'POST', body: formData
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        const url = data.data.url;
+                        if (fields[i]) document.getElementById(fields[i]).value = url;
+                        
+                        const item = document.createElement('div');
+                        item.innerHTML = `<img src="${url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px;">`;
+                        preview.appendChild(item);
+                        done++;
+                    }
+                    
+                    const percent = Math.round(((i+1) / files.length) * 100);
+                    progressBar.style.width = percent + '%';
+                    progressBar.textContent = percent + '%';
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+            
+            uploadStatus.textContent = `✅ ${done}টি ছবি আপলোড হয়েছে!`;
+            showToast('success', `✅ ${done}টি ছবি upload হয়েছে!`);
+        }
+        
+        async function uploadVideo(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 32 * 1024 * 1024) { showToast('error', '❌ Video 32MB এর কম হতে হবে'); return; }
+            
+            const statusEl = document.getElementById('videoUploadStatus');
+            statusEl.style.display = 'block';
+            statusEl.textContent = '📤 Upload হচ্ছে...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST', body: formData
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('prodVideo').value = data.data.url;
+                    statusEl.textContent = '✅ Video upload সফল!';
+                    showToast('success', '✅ Video upload হয়েছে!');
+                } else {
+                    statusEl.textContent = '❌ Failed';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Error';
+            }
+        }
+        
         
         function addProduct(event) {
             event.preventDefault();
