@@ -425,10 +425,52 @@
                         <label>স্টক সংখ্যা</label>
                         <input type="number" id="prodStock" placeholder="10" value="10" min="0">
                     </div>
+                                      <div class="form-group full">
+                        <label>📸 পণ্যের ছবি আপলোড (৫টি পর্যন্ত)</label>
+                        <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:20px; text-align:center; margin-bottom:15px;">
+                            <input type="file" id="imageUploader" accept="image/*" multiple style="display:none;" onchange="uploadImages(event)">
+                            <label for="imageUploader" style="cursor:pointer; display:inline-block; padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:10px; font-weight:600;">
+                                <i class="fas fa-cloud-upload-alt"></i> ছবি আপলোড করুন
+                            </label>
+                            <p style="font-size:12px; color:#059669; margin-top:10px;">💡 Ctrl চেপে একাধিক ছবি select করুন</p>
+                            <div id="uploadProgress" style="margin-top:15px; display:none;">
+                                <div style="background:white; border-radius:10px; overflow:hidden; height:20px;">
+                                    <div id="progressBar" style="background:linear-gradient(90deg, #10b981, #059669); height:100%; width:0%; transition:width 0.3s; display:flex; align-items:center; justify-content:center; color:white; font-size:11px; font-weight:700;">0%</div>
+                                </div>
+                                <p id="uploadStatus" style="font-size:12px; margin-top:8px; color:#059669;"></p>
+                            </div>
+                            <div id="imagePreview" style="display:none; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:8px; margin-top:15px;"></div>
+                        </div>
+                        <label>মূল ছবির লিংক *</label>
+                        <input type="url" id="prodImage" placeholder="Auto fill" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ছবি ২</label>
+                        <input type="url" id="prodImage2" placeholder="Auto fill">
+                    </div>
+                    <div class="form-group">
+                        <label>ছবি ৩</label>
+                        <input type="url" id="prodImage3" placeholder="Auto fill">
+                    </div>
+                    <div class="form-group">
+                        <label>ছবি ৪</label>
+                        <input type="url" id="prodImage4" placeholder="Auto fill">
+                    </div>
+                    <div class="form-group">
+                        <label>ছবি ৫</label>
+                        <input type="url" id="prodImage5" placeholder="Auto fill">
+                    </div>
                     <div class="form-group full">
-                        <label>পণ্যের ছবির লিংক *</label>
-                        <input type="url" id="prodImage" placeholder="https://example.com/image.jpg" required>
-                        <small>💡 <a href="https://imgbb.com" target="_blank">imgbb.com</a> এ ছবি আপলোড করে লিংক নিন</small>
+                        <label>🎥 ভিডিও আপলোড (ঐচ্ছিক)</label>
+                        <div style="background:linear-gradient(135deg, #fef2f2, #fee2e2); border:2px dashed #ef4444; border-radius:12px; padding:20px; text-align:center; margin-bottom:10px;">
+                            <input type="file" id="videoUploader" accept="video/*" style="display:none;" onchange="uploadVideo(event)">
+                            <label for="videoUploader" style="cursor:pointer; display:inline-block; padding:12px 25px; background:linear-gradient(135deg, #ef4444, #dc2626); color:white; border-radius:10px; font-weight:600;">
+                                <i class="fas fa-video"></i> ভিডিও আপলোড
+                            </label>
+                            <p style="font-size:12px; color:#dc2626; margin-top:10px;">সর্বোচ্চ 32MB</p>
+                            <p id="videoUploadStatus" style="font-size:12px; margin-top:8px; display:none;"></p>
+                        </div>
+                        <input type="url" id="prodVideo" placeholder="Auto fill অথবা YouTube URL">
                     </div>
                     <div class="form-group full">
                         <label>পণ্যের বিবরণ</label>
