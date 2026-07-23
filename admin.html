@@ -559,7 +559,7 @@
     </div>
 
             <!-- BANNERS SECTION -->
-        <div class="section" id="banners-section" style="display:block !important;">
+        <div class="section" id="banners-section">
             <div class="section-title">
                 <h2>🖼️ ব্যানার ম্যানেজমেন্ট</h2>
                 <button class="btn btn-primary btn-sm" onclick="loadBanners()">
@@ -571,10 +571,18 @@
                 <h3 style="margin-bottom:15px;">➕ নতুন ব্যানার যোগ করুন</h3>
                 <form onsubmit="addBanner(event)">
                     <div class="form-grid">
-                        <div class="form-group full">
-                            <label>ব্যানার ছবির লিংক *</label>
-                            <input type="url" id="bannerImage" placeholder="https://i.ibb.co/xxx/banner.png" required>
-                        </div>
+                       <div class="form-group full">
+    <label>📸 ব্যানার আপলোড করুন</label>
+    <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:20px; text-align:center; margin-bottom:15px;">
+        <input type="file" id="bannerUploader" accept="image/*" style="display:none;" onchange="uploadBannerImage(event)">
+        <label for="bannerUploader" style="cursor:pointer; display:inline-block; padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:10px; font-weight:600;">
+            <i class="fas fa-cloud-upload-alt"></i> Computer থেকে আপলোড
+        </label>
+        <p id="bannerUploadStatus" style="font-size:12px; margin-top:10px; color:#059669; display:none;"></p>
+    </div>
+    <label>ব্যানার ছবির লিংক *</label>
+    <input type="url" id="bannerImage" placeholder="Auto fill হবে" required>
+</div>
                         <div class="form-group">
                             <label>টাইটেল</label>
                             <input type="text" id="bannerTitle" placeholder="ঈদ অফার">
@@ -864,6 +872,32 @@
         }
 
         // ===== VIDEO UPLOAD =====
+               async function uploadBannerImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const statusEl = document.getElementById('bannerUploadStatus');
+            statusEl.style.display = 'block';
+            statusEl.textContent = '📤 Upload হচ্ছে...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST', body: formData
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('bannerImage').value = data.data.url;
+                    statusEl.textContent = '✅ Upload সফল!';
+                    showToast('success', '✅ Banner upload হয়েছে!');
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Error';
+            }
+        }
         async function uploadVideo(event) {
             const file = event.target.files[0];
             if (!file) return;
