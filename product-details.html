@@ -734,7 +734,17 @@
                             <span class="stock-badge ${inStock ? 'in-stock' : 'out-of-stock'}">
                                 ${inStock ? '✅ স্টকে আছে' : '❌ স্টকে নেই'}
                             </span>
-                            <img src="${p.image || 'https://via.placeholder.com/500'}" alt="${p.name}" id="mainImage">
+                            <img src="${p[p.thumbnail] || p.image || 'https://via.placeholder.com/500'}" alt="${p.name}" id="mainImage">
+
+<div class="product-thumbnails" style="display:flex;gap:10px;margin-top:15px;flex-wrap:wrap;">
+    ${['image','image2','image3','image4','image5']
+        .filter(key => p[key])
+        .map(key => `
+            <img src="${p[key]}"
+                 style="width:70px;height:70px;object-fit:cover;border:2px solid #ddd;border-radius:8px;cursor:pointer"
+                 onclick="document.getElementById('mainImage').src='${p[key]}'">
+        `).join('')}
+</div>
                         </div>
                         
                         <!-- Right: Info -->
