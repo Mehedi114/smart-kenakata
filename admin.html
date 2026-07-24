@@ -1021,6 +1021,18 @@
         
         function addProduct(event) {
             event.preventDefault();
+            const product = {
+    name: document.getElementById('prodName').value.trim(),
+    category: document.getElementById('prodCategory').value,
+    price: Number(document.getElementById('prodPrice').value),
+    oldPrice: Number(document.getElementById('prodOldPrice').value) || 0,
+    stock: Number(document.getElementById('prodStock').value) || 0,
+    image: document.getElementById('prodImage').value.trim(),
+    image2: document.getElementById('prodImage2').value.trim(),
+    image3: document.getElementById('prodImage3').value.trim(),
+    image4: document.getElementById('prodImage4').value.trim(),
+    image5: document.getElementById('prodImage5').value.trim()
+};
             const btn = document.getElementById('addBtn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যোগ হচ্ছে...';
