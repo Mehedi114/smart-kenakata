@@ -1098,7 +1098,7 @@ privateNote: document.getElementById('prodNote').value.trim()
                         const profit = (p.buyPrice && p.price) ? (p.price - p.buyPrice) : null;
                         const profitColor = profit > 0 ? '#10b981' : '#ef4444';
                         
-                        html += '<div class="product-item">';
+                        html += '<div class="product-item" onclick="showProductDetails(\'' + doc.id + '\')" style="cursor:pointer;">';
                         html += '<div class="product-item-image"><img src="' + (p[p.thumbnail] || p.image) + '" alt="' + p.name + '" onerror="this.src=\'https://via.placeholder.com/280x180\'"></div>';
                         html += '<div class="product-item-info">';
                         html += '<div class="cat">' + (p.category || '') + '</div>';
@@ -1118,9 +1118,9 @@ privateNote: document.getElementById('prodNote').value.trim()
                         }
                         
                         html += '<div class="product-actions">';
-                        html += '<button class="btn btn-primary btn-sm" onclick="editProduct(\'' + doc.id + '\')"><i class="fas fa-edit"></i> এডিট</button>';
-                        html += '<button class="btn btn-danger btn-sm" onclick="deleteProduct(\'' + doc.id + '\', \'' + p.name.replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> ডিলিট</button>';
-                        html += '</div></div></div>';
+html += '<button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); editProduct(\'' + doc.id + '\')"><i class="fas fa-edit"></i> এডিট</button>';
+html += '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteProduct(\'' + doc.id + '\', \'' + p.name.replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> ডিলিট</button>';
+html += '</div></div></div>';
                     });
                     html += '</div>';
                     container.innerHTML = html;
@@ -1129,6 +1129,111 @@ privateNote: document.getElementById('prodNote').value.trim()
                     container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error</h3><p>' + error.message + '</p></div>';
                 });
         }
+
+   // ===== SHOW PRODUCT DETAILS POPUP =====
+async function showProductDetails(productId) {
+    try {
+        const doc = await db.collection('products').doc(productId).get();
+        if (!doc.exists) { showToast('error', '❌ পণ্য পাওয়া যায়নি'); return; }
+        const p = doc.data();
+
+        const images = ['image','image2','image3','image4','image5']
+            .filter(k => p[k])
+            .map(k => p[k]);
+
+        const profit = (p.price || 0) - (p.buyPrice || 0);
+        const createdDate = p.createdAt ? new Date(p.createdAt.seconds * 1000).toLocaleString('bn-BD') : 'N/A';
+
+        let imagesHtml = '';
+        if (images.length > 0) {
+            imagesHtml = `
+                <div style="margin-bottom:20px;">
+                    <img id="detailMainImg" src="${images[0]}" style="width:100%;max-height:400px;object-fit:contain;border-radius:12px;background:#f5f5f5;">
+                    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center;">
+                        ${images.map(img => `
+                            <img src="${img}" onclick="document.getElementById('detailMainImg').src='${img}'"
+                                style="width:70px;height:70px;object-fit:cover;border:2px solid #ddd;border-radius:8px;cursor:pointer;">
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        let videoHtml = '';
+        if (p.video || p.videoUrl) {
+            const vUrl = p.video || p.videoUrl;
+            if (vUrl.includes('youtube.com') || vUrl.includes('youtu.be')) {
+                const vid = vUrl.split(/v=|\/|be\//).pop().split('&')[0];
+                videoHtml = `<div style="margin:15px 0;"><iframe width="100%" height="300" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen style="border-radius:12px;"></iframe></div>`;
+            } else {
+                videoHtml = `<div style="margin:15px 0;"><video src="${vUrl}" controls style="width:100%;max-height:300px;border-radius:12px;"></video></div>`;
+            }
+        }
+
+        const html = `
+            <div id="productDetailModal" onclick="if(event.target===this) closeProductDetails()"
+                style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;overflow-y:auto;padding:20px;">
+                <div style="max-width:800px;margin:20px auto;background:white;border-radius:16px;padding:25px;position:relative;">
+                    
+                    <button onclick="closeProductDetails()" style="position:absolute;top:15px;right:15px;background:#ef4444;color:white;border:none;width:35px;height:35px;border-radius:50%;font-size:18px;cursor:pointer;">✕</button>
+                    
+                    <h2 style="margin-top:0;color:#111;padding-right:40px;">${p.name || 'N/A'}</h2>
+                    <span style="background:#10b981;color:white;padding:4px 12px;border-radius:20px;font-size:13px;">${p.category || 'N/A'}</span>
+                    
+                    <div style="margin-top:20px;">${imagesHtml}${videoHtml}</div>
+                    
+                    <div style="background:#f0fdf4;padding:15px;border-radius:10px;margin:15px 0;border-left:4px solid #10b981;">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <div>💰 <b>বিক্রয় দাম:</b> ৳${p.price || 0}</div>
+                            <div>🏷️ <b>পুরনো দাম:</b> ৳${p.oldPrice || 0}</div>
+                            <div>📦 <b>স্টক:</b> ${p.stock || 0} টি</div>
+                            <div>🖼️ <b>ছবি:</b> ${images.length} টি</div>
+                        </div>
+                    </div>
+                    
+                    ${p.description ? `
+                        <div style="margin:15px 0;">
+                            <h3 style="margin-bottom:8px;">📝 বিবরণ:</h3>
+                            <p style="background:#f9fafb;padding:12px;border-radius:8px;white-space:pre-wrap;">${p.description}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="background:#fef3c7;padding:15px;border-radius:10px;margin:15px 0;border-left:4px solid #f59e0b;">
+                        <h3 style="margin-top:0;">🔒 সাপ্লায়ার তথ্য (গোপন)</h3>
+                        <div style="display:grid;gap:8px;">
+                            ${p.supplier ? `<div>👤 <b>নাম:</b> ${p.supplier}</div>` : ''}
+                            ${p.supplierPhone ? `<div>📞 <b>ফোন:</b> ${p.supplierPhone}</div>` : ''}
+                            ${p.buyPrice ? `<div>💵 <b>কেনা দাম:</b> ৳${p.buyPrice}</div>` : ''}
+                            ${p.buyPrice ? `<div>📈 <b>লাভ:</b> <span style="color:${profit>=0?'#10b981':'#ef4444'};font-weight:bold;">৳${profit}</span></div>` : ''}
+                            ${p.source ? `<div>📍 <b>কোথা থেকে:</b> ${p.source}</div>` : ''}
+                            ${p.privateNote ? `<div>📝 <b>নোট:</b> ${p.privateNote}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div style="color:#666;font-size:13px;margin:15px 0;">📅 তৈরি: ${createdDate}</div>
+                    
+                    <div style="display:flex;gap:10px;margin-top:20px;">
+                        <button onclick="closeProductDetails(); editProduct('${productId}')" style="flex:1;background:#10b981;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;cursor:pointer;">✏️ এডিট করুন</button>
+                        <button onclick="closeProductDetails()" style="flex:1;background:#6b7280;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;cursor:pointer;">❌ বন্ধ করুন</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        document.body.appendChild(div.firstElementChild);
+        document.body.style.overflow = 'hidden';
+    } catch (error) {
+        showToast('error', '❌ Error: ' + error.message);
+    }
+}
+
+function closeProductDetails() {
+    const modal = document.getElementById('productDetailModal');
+    if (modal) modal.remove();
+    document.body.style.overflow = '';
+}     
         // ===== EDIT PRODUCT =====
         async function editProduct(productId) {
             try {
