@@ -736,7 +736,7 @@
                             </span>
                             <img src="${p[p.thumbnail] || p.image || 'https://via.placeholder.com/500'}" alt="${p.name}" id="mainImage">
 
-<div class="product-thumbnails" style="display:flex;gap:10px;margin-top:15px;flex-wrap:wrap;">
+<div class="product-thumbnails" style="display:flex !important;gap:10px;margin-top:15px;flex-wrap:wrap;width:100%;clear:both;position:relative;z-index:10;">
     ${['image','image2','image3','image4','image5']
         .filter(key => p[key])
         .map(key => `
