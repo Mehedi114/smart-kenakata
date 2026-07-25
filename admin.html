@@ -1138,6 +1138,15 @@ thumbnail: document.getElementById('thumbnailImage').value
                 document.getElementById('prodOldPrice').value = p.oldPrice || '';
                 document.getElementById('prodStock').value = p.stock || '';
                 document.getElementById('prodImage').value = p.image || '';
+                document.getElementById('prodImage2').value = p.image2 || '';
+document.getElementById('prodImage3').value = p.image3 || '';
+document.getElementById('prodImage4').value = p.image4 || '';
+document.getElementById('prodImage5').value = p.image5 || '';
+
+const thumbField = document.getElementById('thumbnailImage');
+if (thumbField) {
+    thumbField.value = p.thumbnail || 'image';
+}
                 document.getElementById('prodDescription').value = p.description || '';
                 document.getElementById('prodSupplier').value = p.supplier || '';
                 document.getElementById('prodSupplierPhone').value = p.supplierPhone || '';
