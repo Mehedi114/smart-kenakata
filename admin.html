@@ -1042,7 +1042,16 @@
     image3: document.getElementById('prodImage3').value.trim(),
     image4: document.getElementById('prodImage4').value.trim(),
     image5: document.getElementById('prodImage5').value.trim(),
-thumbnail: document.getElementById('thumbnailImage').value
+thumbnail: document.getElementById('thumbnailImage').value,
+
+description: document.getElementById('prodDescription').value.trim(),
+video: document.getElementById('prodVideo').value.trim(),
+
+supplier: document.getElementById('prodSupplier').value.trim(),
+supplierPhone: document.getElementById('prodSupplierPhone').value.trim(),
+buyPrice: Number(document.getElementById('prodBuyPrice').value) || 0,
+source: document.getElementById('prodSource').value.trim(),
+privateNote: document.getElementById('prodNote').value.trim()
 };
             const btn = document.getElementById('addBtn');
             btn.disabled = true;
@@ -1148,6 +1157,7 @@ if (thumbField) {
     thumbField.value = p.thumbnail || 'image';
 }
                 document.getElementById('prodDescription').value = p.description || '';
+                document.getElementById('prodVideo').value = p.video || '';
                 document.getElementById('prodSupplier').value = p.supplier || '';
                 document.getElementById('prodSupplierPhone').value = p.supplierPhone || '';
                 document.getElementById('prodBuyPrice').value = p.buyPrice || '';
