@@ -800,7 +800,8 @@
             }
         }
         // ===== IMGBB IMAGE UPLOAD =====
-        const IMGBB_API_KEY = 'b2ca23b16c7cdc5b0e3f3d0420ba606f';
+        const CLOUDINARY_CLOUD_NAME = 'smartkenakata';
+        const CLOUDINARY_UPLOAD_PRESET = 'smart_upload';
         
         async function uploadImages(event) {
             const files = event.target.files;
@@ -832,9 +833,9 @@
                 
                 try {
                     const formData = new FormData();
-                    formData.append('image', file);
+                    formData.append('file', file);                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                     
-                    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
                         method: 'POST',
                         body: formData
                     });
@@ -842,7 +843,7 @@
                     const data = await response.json();
                     
                     if (data.success) {
-                        const url = data.data.url;
+                        const url = data.secure_url;
                         uploadedUrls.push(url);
                         
                         // Fill input field
@@ -892,15 +893,15 @@
             
             try {
                 const formData = new FormData();
-                formData.append('image', file);
+                formData.append('file', file);                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                 
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'POST', body: formData
                 });
                 const data = await res.json();
                 
                 if (data.success) {
-                    document.getElementById('bannerImage').value = data.data.url;
+                    document.getElementById('bannerImage').value = data.secure_url;
                     statusEl.textContent = '✅ Upload সফল!';
                     showToast('success', '✅ Banner upload হয়েছে!');
                 }
@@ -923,9 +924,9 @@
             
             try {
                 const formData = new FormData();
-                formData.append('image', file);
+                formData.append('file', file);                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                 
-                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'POST',
                     body: formData
                 });
@@ -933,7 +934,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    document.getElementById('prodVideo').value = data.data.url;
+                    document.getElementById('prodVideo').value = data.secure_url;
                     statusEl.textContent = '✅ Video upload সফল!';
                     statusEl.style.color = '#10b981';
                     showToast('success', '✅ Video upload হয়েছে!');
@@ -969,15 +970,15 @@
                 
                 try {
                     const formData = new FormData();
-                    formData.append('image', files[i]);
+                    formData.append('file', files[i]);                     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                     
-                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
                         method: 'POST', body: formData
                     });
                     const data = await res.json();
                     
                     if (data.success) {
-                        const url = data.data.url;
+                        const url = data.secure_url;
                         if (fields[i]) document.getElementById(fields[i]).value = url;
                         
                         const item = document.createElement('div');
@@ -1009,15 +1010,15 @@
             
             try {
                 const formData = new FormData();
-                formData.append('image', file);
+                formData.append('file', file);                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                 
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`, {
                     method: 'POST', body: formData
                 });
                 const data = await res.json();
                 
                 if (data.success) {
-                    document.getElementById('prodVideo').value = data.data.url;
+                    document.getElementById('prodVideo').value = data.secure_url;
                     statusEl.textContent = '✅ Video upload সফল!';
                     showToast('success', '✅ Video upload হয়েছে!');
                 } else {
