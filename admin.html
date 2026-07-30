@@ -842,7 +842,7 @@
                     
                     const data = await response.json();
                     
-                    if (data.success) {
+                    if (data.secure_url) {
                         const url = data.secure_url;
                         uploadedUrls.push(url);
                         
@@ -900,7 +900,7 @@
                 });
                 const data = await res.json();
                 
-                if (data.success) {
+                if (data.secure_url) {
                     document.getElementById('bannerImage').value = data.secure_url;
                     statusEl.textContent = '✅ Upload সফল!';
                     showToast('success', '✅ Banner upload হয়েছে!');
@@ -933,7 +933,7 @@
                 
                 const data = await response.json();
                 
-                if (data.success) {
+                if (data.secure_url) {
                     document.getElementById('prodVideo').value = data.secure_url;
                     statusEl.textContent = '✅ Video upload সফল!';
                     statusEl.style.color = '#10b981';
@@ -977,7 +977,7 @@
                     });
                     const data = await res.json();
                     
-                    if (data.success) {
+                    if (data.secure_url) {
                         const url = data.secure_url;
                         if (fields[i]) document.getElementById(fields[i]).value = url;
                         
@@ -1017,7 +1017,7 @@
                 });
                 const data = await res.json();
                 
-                if (data.success) {
+                if (data.secure_url) {
                     document.getElementById('prodVideo').value = data.secure_url;
                     statusEl.textContent = '✅ Video upload সফল!';
                     showToast('success', '✅ Video upload হয়েছে!');
