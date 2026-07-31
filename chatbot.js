@@ -7,7 +7,7 @@
     // ⚠️ এখানে আপনার Groq API Key বসান
     const GROQ_API_KEY = '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';
     
-    const GROQ_API_URL = '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';
+    const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
     
     // ===== BOT CONTEXT =====
     const BOT_CONTEXT = `You are "Smart Assistant" (স্মার্ট সহায়ক), a helpful AI chatbot for "Smart Kenakata" - a Bengali e-commerce platform in Bangladesh.
