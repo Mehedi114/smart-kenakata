@@ -560,15 +560,65 @@
             </div>
         </div>
         <!-- COUPONS SECTION -->
-<div class="section" id="coupons-section">
-    <div class="section-title">
-        <h2>🎁 কুপন কোড ম্যানেজমেন্ট</h2>
-        <button class="btn btn-primary btn-sm" onclick="loadCoupons()">
-            <i class="fas fa-sync"></i> রিফ্রেশ
-        </button>
-    </div>
+        <div class="section" id="coupons-section">
+            <div class="section-title">
+                <h2>🎁 কুপন কোড ম্যানেজমেন্ট</h2>
+                <button class="btn btn-primary btn-sm" onclick="loadCoupons()">
+                    <i class="fas fa-sync"></i> রিফ্রেশ
+                </button>
+            </div>
+            
+            <!-- Add Coupon Form -->
+            <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
+                <h3 style="margin-bottom:15px; font-size:16px;">➕ নতুন কুপন তৈরি করুন</h3>
+                <form onsubmit="addCoupon(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>কুপন কোড *</label>
+                            <input type="text" id="couponCode" placeholder="যেমন: NEW20" required style="text-transform:uppercase;">
+                        </div>
+                        <div class="form-group">
+                            <label>ডিসকাউন্ট টাইপ *</label>
+                            <select id="couponType" required>
+                                <option value="percentage">শতাংশ (%)</option>
+                                <option value="fixed">নির্দিষ্ট টাকা (৳)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ডিসকাউন্ট পরিমাণ *</label>
+                            <input type="number" id="couponAmount" placeholder="20" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>সর্বনিম্ন অর্ডার (৳)</label>
+                            <input type="number" id="couponMinOrder" placeholder="500" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>মেয়াদ শেষ</label>
+                            <input type="date" id="couponExpiry">
+                        </div>
+                        <div class="form-group">
+                            <label>ব্যবহারের সীমা</label>
+                            <input type="number" id="couponLimit" placeholder="100" value="100" min="1">
+                        </div>
+                        <div class="form-group full">
+                            <label>বিবরণ</label>
+                            <input type="text" id="couponDesc" placeholder="যেমন: নতুন গ্রাহকদের জন্য ২০% ছাড়">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="addCouponBtn">
+                        <i class="fas fa-plus"></i> কুপন তৈরি করুন
+                    </button>
+                </form>
+            </div>
 
-            <!-- BANNERS SECTION -->
+            <!-- Coupons List -->
+            <h3 style="margin-bottom:15px;">📋 সক্রিয় কুপন সমূহ</h3>
+            <div id="couponsList">
+                <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
+            </div>
+        </div>
+
+        <!-- BANNERS SECTION - FIXED: এখন আলাদা -->
         <div class="section" id="banners-section">
             <div class="section-title">
                 <h2>🖼️ ব্যানার ম্যানেজমেন্ট</h2>
@@ -582,24 +632,24 @@
                 <form onsubmit="addBanner(event)">
                     <div class="form-grid">
                        <div class="form-group full">
-    <label>📸 ব্যানার আপলোড করুন</label>
-    <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:20px; text-align:center; margin-bottom:15px;">
-        <input type="file" id="bannerUploader" accept="image/*" style="display:none;" onchange="uploadBannerImage(event)">
-        <label for="bannerUploader" style="cursor:pointer; display:inline-block; padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:10px; font-weight:600;">
-            <i class="fas fa-cloud-upload-alt"></i> Computer থেকে আপলোড
-        </label>
-        <p id="bannerUploadStatus" style="font-size:12px; margin-top:10px; color:#059669; display:none;"></p>
-    </div>
-    <label>ব্যানার ছবির লিংক *</label>
-    <input type="url" id="bannerImage" placeholder="Auto fill হবে" required>
-</div>
+                            <label>📸 ব্যানার আপলোড করুন</label>
+                            <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:20px; text-align:center; margin-bottom:15px;">
+                                <input type="file" id="bannerUploader" accept="image/*" style="display:none;" onchange="uploadBannerImage(event)">
+                                <label for="bannerUploader" style="cursor:pointer; display:inline-block; padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:10px; font-weight:600;">
+                                    <i class="fas fa-cloud-upload-alt"></i> Computer থেকে আপলোড
+                                </label>
+                                <p id="bannerUploadStatus" style="font-size:12px; margin-top:10px; color:#059669; display:none;"></p>
+                            </div>
+                            <label>ব্যানার ছবির লিংক *</label>
+                            <input type="url" id="bannerImage" placeholder="Auto fill হবে" required>
+                        </div>
                         <div class="form-group">
                             <label>টাইটেল</label>
                             <input type="text" id="bannerTitle" placeholder="ঈদ অফার">
                         </div>
                         <div class="form-group">
                             <label>Link</label>
-                            <input type="url" id="bannerLink" placeholder="category.html?cat=ইলেকট্রনিক্স">
+                            <input type="text" id="bannerLink" placeholder="category.html?cat=ইলেকট্রনিক্স">
                         </div>
                         <div class="form-group">
                             <label>ক্রম</label>
@@ -625,68 +675,18 @@
             </div>
         </div>
 
-<!-- REVIEWS SECTION -->
-<div class="section" id="reviews-section">
-    <div class="section-title">
-        <h2>⭐ গ্রাহক রিভিউ</h2>
-        <button class="btn btn-primary btn-sm" onclick="loadAdminReviews()">
-            <i class="fas fa-sync"></i> রিফ্রেশ
-        </button>
-    </div>
-    <div id="reviewsListAdmin">
-        <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
-    </div>
-</div>
-    
-    <!-- Add Coupon Form -->
-    <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
-        <h3 style="margin-bottom:15px; font-size:16px;">➕ নতুন কুপন তৈরি করুন</h3>
-        <form onsubmit="addCoupon(event)">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>কুপন কোড *</label>
-                    <input type="text" id="couponCode" placeholder="যেমন: NEW20" required style="text-transform:uppercase;">
-                </div>
-                <div class="form-group">
-                    <label>ডিসকাউন্ট টাইপ *</label>
-                    <select id="couponType" required>
-                        <option value="percentage">শতাংশ (%)</option>
-                        <option value="fixed">নির্দিষ্ট টাকা (৳)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>ডিসকাউন্ট পরিমাণ *</label>
-                    <input type="number" id="couponAmount" placeholder="20" required min="1">
-                </div>
-                <div class="form-group">
-                    <label>সর্বনিম্ন অর্ডার (৳)</label>
-                    <input type="number" id="couponMinOrder" placeholder="500" value="0" min="0">
-                </div>
-                <div class="form-group">
-                    <label>মেয়াদ শেষ</label>
-                    <input type="date" id="couponExpiry">
-                </div>
-                <div class="form-group">
-                    <label>ব্যবহারের সীমা</label>
-                    <input type="number" id="couponLimit" placeholder="100" value="100" min="1">
-                </div>
-                <div class="form-group full">
-                    <label>বিবরণ</label>
-                    <input type="text" id="couponDesc" placeholder="যেমন: নতুন গ্রাহকদের জন্য ২০% ছাড়">
-                </div>
+        <!-- REVIEWS SECTION -->
+        <div class="section" id="reviews-section">
+            <div class="section-title">
+                <h2>⭐ গ্রাহক রিভিউ</h2>
+                <button class="btn btn-primary btn-sm" onclick="loadAdminReviews()">
+                    <i class="fas fa-sync"></i> রিফ্রেশ
+                </button>
             </div>
-            <button type="submit" class="btn btn-primary" id="addCouponBtn">
-                <i class="fas fa-plus"></i> কুপন তৈরি করুন
-            </button>
-        </form>
-    </div>
-
-    <!-- Coupons List -->
-    <h3 style="margin-bottom:15px;">📋 সক্রিয় কুপন সমূহ</h3>
-    <div id="couponsList">
-        <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
-    </div>
-</div>
+            <div id="reviewsListAdmin">
+                <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
+            </div>
+        </div>
 
     </main>
 
