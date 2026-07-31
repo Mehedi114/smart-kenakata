@@ -774,8 +774,7 @@
                     <div class="product-grid">
                         
                         <!-- Left: Image -->
-                        <div class="product-image-wrapper">
-                            ${discount > 0 ? `<span class="discount-badge">-${discount}% ছাড়</span>` : ''}
+                        <div class="product-image-wrapper main-img-zoomable" onclick="openImageZoom()" style="cursor:zoom-in;">                            ${discount > 0 ? `<span class="discount-badge">-${discount}% ছাড়</span>` : ''}
                             <span class="stock-badge ${inStock ? 'in-stock' : 'out-of-stock'}">
                                 ${inStock ? '✅ স্টকে আছে' : '❌ স্টকে নেই'}
                             </span>
@@ -1084,6 +1083,36 @@ async function submitReview(event) {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-paper-plane"></i> রিভিউ পোস্ট করুন';
 }   
+                // ===== IMAGE ZOOM SYSTEM - NEW =====
+        let zoomScale = 1; let zoomTranslateX = 0; let zoomTranslateY = 0; let lastTouchDist = 0; let isDragging = false; let lastX = 0, lastY = 0;
+        function openImageZoom(imgSrc) {
+            if (!imgSrc) imgSrc = document.getElementById('mainImage')?.src;
+            document.getElementById('zoomImage').src = imgSrc;
+            document.getElementById('imageZoomModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            resetZoom();
+            document.getElementById('zoomProductName').textContent = currentProduct?.name || 'পণ্যের ছবি';
+            initZoomEvents();
+        }
+        function closeImageZoom(e) { if (e && e.target !== document.getElementById('imageZoomModal') && e.target !== document.getElementById('zoomContainer')) return; closeImageZoomDirect(); }
+        function closeImageZoomDirect() { document.getElementById('imageZoomModal').classList.remove('active'); document.body.style.overflow = ''; resetZoom(); }
+        function updateZoomTransform() { document.getElementById('zoomImage').style.transform = `translate(${zoomTranslateX}px, ${zoomTranslateY}px) scale(${zoomScale})`; }
+        function zoomIn() { zoomScale = Math.min(zoomScale + 0.5, 5); updateZoomTransform(); }
+        function zoomOut() { zoomScale = Math.max(zoomScale - 0.5, 1); if (zoomScale === 1) { zoomTranslateX = 0; zoomTranslateY = 0; } updateZoomTransform(); }
+        function resetZoom() { zoomScale = 1; zoomTranslateX = 0; zoomTranslateY = 0; updateZoomTransform(); }
+        function changeMainImage(src) { document.getElementById('mainImage').src = src; }
+        function initZoomEvents() {
+            const container = document.getElementById('zoomContainer'); const img = document.getElementById('zoomImage');
+            img.ondblclick = () => { if (zoomScale > 1) resetZoom(); else { zoomScale = 2.5; updateZoomTransform(); } };
+            container.onwheel = (e) => { e.preventDefault(); zoomScale = Math.min(Math.max(1, zoomScale + (e.deltaY > 0 ? -0.2 : 0.2)), 5); if (zoomScale === 1) { zoomTranslateX = 0; zoomTranslateY = 0; } updateZoomTransform(); };
+            container.onmousedown = (e) => { if (zoomScale <= 1) return; isDragging = true; lastX = e.clientX; lastY = e.clientY; };
+            window.onmouseup = () => { isDragging = false; };
+            container.onmousemove = (e) => { if (!isDragging || zoomScale <= 1) return; zoomTranslateX += e.clientX - lastX; zoomTranslateY += e.clientY - lastY; lastX = e.clientX; lastY = e.clientY; updateZoomTransform(); };
+            container.ontouchstart = (e) => { if (e.touches.length === 1) { isDragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; } else if (e.touches.length === 2) { lastTouchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); } };
+            container.ontouchmove = (e) => { e.preventDefault(); if (e.touches.length === 1 && isDragging && zoomScale > 1) { zoomTranslateX += e.touches[0].clientX - lastX; zoomTranslateY += e.touches[0].clientY - lastY; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; updateZoomTransform(); } else if (e.touches.length === 2) { const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); if (lastTouchDist > 0) { zoomScale = Math.min(Math.max(1, zoomScale * (dist / lastTouchDist)), 5); updateZoomTransform(); } lastTouchDist = dist; } };
+            container.ontouchend = () => { isDragging = false; lastTouchDist = 0; };
+        }
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeImageZoomDirect(); });
         
         // ===== COPY LINK =====
         function copyLink() {
