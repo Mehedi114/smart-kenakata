@@ -641,6 +641,50 @@
 
             try {
                 const docRef = await db.collection('orders').add(order);
+
+                // ===== TELEGRAM NOTIFICATION =====
+try {
+    const telegramToken = '8648498942:AAHdQuXTJMlXLQoBDmG6NlL1t4Mj9CXusvs';
+    const telegramChatId = '5990402731';
+    
+    const itemsList = cart.map(item => 
+        `• ${item.name} × ${item.quantity} = ৳${item.price * item.quantity}`
+    ).join('\n');
+    
+    const telegramMessage = 
+`🛒 *নতুন অর্ডার!*
+━━━━━━━━━━━━━━━
+
+📦 *পণ্য:*
+${itemsList}
+
+━━━━━━━━━━━━━━━
+👤 *কাস্টমার:* ${name}
+📞 *ফোন:* ${phone}
+${phone2 ? `📞 *বিকল্প:* ${phone2}\n` : ''}📍 *ঠিকানা:* ${address}
+${note ? `📝 *নোট:* ${note}\n` : ''}
+━━━━━━━━━━━━━━━
+💰 *সাবটোটাল:* ৳${subtotal}
+🚚 *ডেলিভারি:* ৳${deliveryCharge} (${deliveryArea === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে'})
+${discountAmount > 0 ? `🎁 *ছাড়:* -৳${discountAmount}\n` : ''}💵 *মোট:* ৳${finalTotal}
+
+💳 *পেমেন্ট:* ${paymentText[paymentMethod]}
+${transactionId ? `🔢 *TrxID:* \`${transactionId}\`\n` : ''}
+🆔 *Order ID:* \`${docRef.id.substring(0, 8).toUpperCase()}\`
+🕐 ${new Date().toLocaleString('bn-BD')}`;
+
+    fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            chat_id: telegramChatId,
+            text: telegramMessage,
+            parse_mode: 'Markdown'
+        })
+    }).catch(err => console.error('Telegram notification failed:', err));
+} catch (telegramError) {
+    console.error('Telegram error:', telegramError);
+}
                 
                 // Update coupon usage
                 if (appliedCoupon) {
