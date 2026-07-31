@@ -664,6 +664,21 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
+        <!-- IMAGE ZOOM MODAL - NEW -->
+    <div class="image-zoom-modal" id="imageZoomModal" onclick="closeImageZoom(event)">
+        <div class="zoom-header">
+            <h3 id="zoomProductName">পণ্যের ছবি</h3>
+            <button class="zoom-close" onclick="closeImageZoomDirect()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="zoom-container" id="zoomContainer">
+            <img id="zoomImage" src="" alt="Zoomed Image">
+        </div>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomOut()"><i class="fas fa-minus"></i></button>
+            <button class="zoom-btn" onclick="resetZoom()"><i class="fas fa-expand"></i></button>
+            <button class="zoom-btn" onclick="zoomIn()"><i class="fas fa-plus"></i></button>
+        </div>
+    </div>
     <!-- TOAST -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
