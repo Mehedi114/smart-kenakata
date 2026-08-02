@@ -1,7 +1,8 @@
 // Smart Kenakata - No Price, Attractive CTA
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-const GROQ_KEY = process.env.GROQ_API_KEY;
+const GROQ_KEYS = (process.env.GROQ_API_KEY || '').split(',').map(k => k.trim()).filter(k => k);
+const GROQ_KEY = GROQ_KEYS[0];
 
 async function getProducts() {
   const url = `https://firestore.googleapis.com/v1/projects/smart-kenakata/databases/(default)/documents/products?pageSize=80`;
