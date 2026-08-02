@@ -1091,11 +1091,12 @@ privateNote: document.getElementById('prodNote').value.trim()
                  let allAdminProducts = [];
         function filterAdminProducts() {
             const q = document.getElementById('adminProductSearch').value.toLowerCase().trim();
-            const filtered = q ? allAdminProducts.filter(p => 
-                (p.name && p.name.toLowerCase().includes(q)) ||
-                (p.category && p.category.toLowerCase().includes(q)) ||
-                (p.supplier && p.supplier.toLowerCase().includes(q))
-            ) : allAdminProducts;
+                        const filtered = q ? allAdminProducts.filter(doc => {
+                const p = (typeof doc.data === 'function' ? doc.data() : doc);
+                return (p.name && p.name.toLowerCase().includes(q)) ||
+                       (p.category && p.category.toLowerCase().includes(q)) ||
+                       (p.supplier && p.supplier.toLowerCase().includes(q));
+            }) : allAdminProducts;
             displayAdminProducts(filtered);
         }
         function displayAdminProducts(products) {
@@ -1108,7 +1109,7 @@ privateNote: document.getElementById('prodNote').value.trim()
             }
             let html = '<div class="products-list">';
             products.forEach(doc => {
-                const p = doc.data ? doc.data : doc;
+                const p = (typeof doc.data === 'function' ? doc.data() : doc);
                 const id = doc.id || p.id;
                 const profit = (p.buyPrice && p.price) ? (p.price - p.buyPrice) : null;
                 const profitColor = profit > 0 ? '#10b981' : '#ef4444';
