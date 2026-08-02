@@ -399,9 +399,9 @@
                         <label>পণ্যের নাম *</label>
                         <input type="text" id="prodName" placeholder="উদাহরণ: স্মার্ট ওয়াচ আল্ট্রা প্রো" required>
                     </div>
-                    <div class="form-group">
+                  <div class="form-group">
                         <label>ক্যাটাগরি *</label>
-                        <select id="prodCategory" required>
+                        <select id="prodCategory" required onchange="checkCustomCategory(this.value)">
                             <option value="">ক্যাটাগরি নির্বাচন করুন</option>
                             <option value="ইলেকট্রনিক্স">ইলেকট্রনিক্স</option>
                             <option value="ফ্যাশন">ফ্যাশন</option>
@@ -411,7 +411,12 @@
                             <option value="বই ও শিক্ষা">বই ও শিক্ষা</option>
                             <option value="গ্রোসারি">গ্রোসারি</option>
                             <option value="অন্যান্য">অন্যান্য</option>
+                            <option value="__custom__">➕ নতুন ক্যাটাগরি যোগ করুন</option>
                         </select>
+                        <div id="customCategoryDiv" style="display:none; margin-top:10px;">
+                            <input type="text" id="customCategoryInput" placeholder="নতুন ক্যাটাগরির নাম লিখুন (যেমন: গহনা)" style="width:100%; padding:10px; border:2px dashed #10b981; border-radius:8px;">
+                            <small style="color:#059669;">এটা লিখলে নতুন ক্যাটাগরি হিসেবে সেভ হবে আর ওয়েবসাইটে দেখা যাবে</small>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>বর্তমান দাম (৳) *</label>
@@ -754,7 +759,24 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
         }
-
+        function checkCustomCategory(val) {
+            document.getElementById('customCategoryDiv').style.display = val === '__custom__' ? 'block' : 'none';
+        }
+        async function loadAdminCategories() {
+            try {
+                const snap = await db.collection('categories').get();
+                const sel = document.getElementById('prodCategory');
+                snap.forEach(doc => {
+                    const cat = doc.data().name;
+                    if (![...sel.options].some(o => o.value === cat)) {
+                        const opt = document.createElement('option');
+                        opt.value = cat; opt.textContent = cat;
+                        sel.insertBefore(opt, sel.lastChild);
+                    }
+                });
+            } catch(e) { console.log(e); }
+        }
+        
         function showSection(sectionName, btn) {
             document.querySelectorAll('.section[id$="-section"]').forEach(s => s.classList.remove('active'));
             document.getElementById(sectionName + '-section').classList.add('active');
@@ -1040,7 +1062,7 @@
             event.preventDefault();
             const product = {
     name: document.getElementById('prodName').value.trim(),
-    category: document.getElementById('prodCategory').value,
+    category: (function(){ const v=document.getElementById('prodCategory').value; if(v==='__custom__'){ const c=document.getElementById('customCategoryInput').value.trim(); if(!c){ alert('নতুন ক্যাটাগরির নাম লিখুন'); throw new Error('custom needed'); } db.collection('categories').doc(c).set({name:c, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); return c; } return v; })(),
     price: Number(document.getElementById('prodPrice').value),
     oldPrice: Number(document.getElementById('prodOldPrice').value) || 0,
     stock: Number(document.getElementById('prodStock').value) || 0,
