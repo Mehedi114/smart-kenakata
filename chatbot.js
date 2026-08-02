@@ -5,7 +5,13 @@
     'use strict';
 
     // ⚠️ এখানে আপনার Groq API Key বসান
-    const GROQ_API_KEY = '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';
+    const GROQ_API_KEYS = [
+        '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',
+        'gsk_2nd_KEY_HERE', // ২য় কী এখানে বসাও
+        'gsk_3rd_KEY_HERE'  // ৩য় কী এখানে বসাও
+        'gsk_3rd_KEY_HERE'  // ৪র্থ কী এখানে বসাও
+    ];
+    let currentKeyIndex = parseInt(localStorage.getItem('groq_key_index') || '0');
     
     const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
     
@@ -464,57 +470,35 @@ RULES:
     }
 
     // ===== CALL GROQ AI =====
-    async function getAIResponse(userMessage) {
-        try {
-            // Build messages
-            const messages = [
-                { role: 'system', content: BOT_CONTEXT }
-            ];
+       async function getAIResponse(userMessage) {
+        const messages = [{ role: 'system', content: BOT_CONTEXT }];
+        chatHistory.forEach(msg => messages.push(msg));
+        messages.push({ role: 'user', content: userMessage });
 
-            // Add history
-            chatHistory.forEach(msg => messages.push(msg));
-
-            // Add current message
-            messages.push({ role: 'user', content: userMessage });
-
-            const response = await fetch(GROQ_API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${GROQ_API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: 'llama-3.3-70b-versatile',
-                    messages: messages,
-                    temperature: 0.7,
-                    max_tokens: 500
-                })
-            });
-
-            const data = await response.json();
-            
-            if (data.choices && data.choices[0]) {
-                const reply = data.choices[0].message.content;
-                
-                // Save to history
-                chatHistory.push({ role: 'user', content: userMessage });
-                chatHistory.push({ role: 'assistant', content: reply });
-                
-                if (chatHistory.length > 10) {
-                    chatHistory = chatHistory.slice(-10);
+        for (let i = 0; i < GROQ_API_KEYS.length; i++) {
+            const keyIndex = (currentKeyIndex + i) % GROQ_API_KEYS.length;
+            const apiKey = GROQ_API_KEYS[keyIndex];
+            try {
+                const response = await fetch(GROQ_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: messages, temperature: 0.7, max_tokens: 500 })
+                });
+                const data = await response.json();
+                if (data.choices && data.choices[0]) {
+                    currentKeyIndex = keyIndex;
+                    localStorage.setItem('groq_key_index', keyIndex);
+                    const reply = data.choices[0].message.content;
+                    chatHistory.push({ role: 'user', content: userMessage });
+                    chatHistory.push({ role: 'assistant', content: reply });
+                    if (chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
+                    return reply;
                 }
-                
-                return reply;
-            } else if (data.error) {
-                console.error('Groq Error:', data.error);
-                return '⚠️ একটু সমস্যা হচ্ছে। আবার চেষ্টা করুন অথবা কল করুন: ০১৯৩২২১১১২৩';
-            } else {
-                return '😅 বুঝতে পারিনি। আবার বলুন প্লিজ!';
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            return '❌ ইন্টারনেট সমস্যা। একটু পর চেষ্টা করুন।';
+                if (data.error && data.error.code === 'rate_limit_exceeded') continue;
+            } catch (e) { continue; }
         }
+        return '⚠️ সব API কী তে সমস্যা। একটু পর চেষ্টা করুন।';
+     }
     }
 
     window.sendMessage = async function() {
