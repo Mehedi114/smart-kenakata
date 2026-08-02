@@ -96,7 +96,13 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         function trackOrder() {
-            const phone = document.getElementById('phoneInput').value.trim();
+            const rawInput = document.getElementById('phoneInput').value.trim();
+            let phone = rawInput.replace(/\D/g, '');
+            if (phone.length === 13 && phone.startsWith('880')) {
+                phone = phone.substring(2);
+            } else if (phone.length === 14 && phone.startsWith('880')) {
+                phone = phone.substring(3);
+            }
             const resultDiv = document.getElementById('result');
             const btn = document.getElementById('trackBtn');
             if (!/^01[0-9]{9}$/.test(phone)) {
@@ -109,11 +115,18 @@
             db.collection('orders').where('customerPhone', '==', phone).get()
                 .then(snap => {
                     if (snap.empty) {
+                        return db.collection('orders').where('phone', '==', phone).get();
+                    }
+                    return snap;
+                })
+                .then(snap => {
+                    if (snap.empty) {
                         resultDiv.innerHTML = '<div class="card empty"><i class="fas fa-search"></i><h3>কোন অর্ডার পাওয়া যায়নি</h3><p>এই নাম্বারে কোন অর্ডার নেই। নাম্বার ঠিক আছে কি না চেক করুন।</p><p style="margin-top:15px"><a href="https://wa.me/8801932211123" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:700"><i class="fab fa-whatsapp"></i> WhatsApp এ যোগাযোগ করুন</a></p></div>';
                         return;
                     }
-                    const orders = [];
-                    snap.forEach(d => orders.push({ id: d.id, ...d.data() }));
+                    const ordersMap = new Map();
+                    snap.forEach(d => ordersMap.set(d.id, { id: d.id, ...d.data() }));
+                    const orders = Array.from(ordersMap.values());
                     orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
                     let html = '<div class="card"><h3 style="margin-bottom:15px">🔍 ' + orders.length + ' টি অর্ডার পাওয়া গেছে</h3></div>';
                     orders.forEach(o => {
@@ -168,7 +181,7 @@
                     resultDiv.innerHTML = html;
                 })
                 .catch(err => {
-                    resultDiv.innerHTML = '<div class="card" style="color:#ef4444;text-align:center">❌ Error: ' + err.message + '</div>';
+                    resultDiv.innerHTML = '<div class="card" style="color:#ef4444;text-align:center"><i class="fas fa-exclamation-triangle"></i> অর্ডার খুঁজতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন অথবা <a href="https://wa.me/8801932211123" target="_blank" style="color:var(--primary)">WhatsApp এ যোগাযোগ করুন</a></div>';
                 })
                 .finally(() => {
                     btn.disabled = false;
