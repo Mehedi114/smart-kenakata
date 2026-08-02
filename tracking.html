@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অর্ডার ট্র্যাকিং - স্মার্ট কেনাকাটা</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--primary:#10b981;--dark:#0f172a;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-500:#64748b;--red:#ef4444}
+        body{font-family:'Hind Siliguri',sans-serif;background:var(--gray-50);color:var(--dark)}
+        .navbar{background:white;padding:15px 0;box-shadow:0 2px 10px rgba(0,0,0,0.05);position:sticky;top:0;z-index:100}
+        .nav-container{max-width:1000px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center}
+        .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--dark);font-weight:700;font-size:20px}
+        .logo-icon{width:40px;height:40px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white}
+        .main{max-width:800px;margin:30px auto;padding:0 20px}
+        .card{background:white;border-radius:16px;padding:25px;box-shadow:0 2px 10px rgba(0,0,0,0.05);margin-bottom:20px}
+        .title{text-align:center;margin-bottom:25px}
+        .title h1{font-size:28px;margin-bottom:8px}
+        .title p{color:var(--gray-500);font-size:14px}
+        .search-box{display:flex;gap:10px;margin-bottom:20px}
+        .search-box input{flex:1;padding:14px 18px;border:2px solid var(--gray-200);border-radius:12px;font-family:inherit;font-size:16px;outline:none}
+        .search-box input:focus{border-color:var(--primary)}
+        .search-btn{padding:14px 28px;background:linear-gradient(135deg,var(--primary),#059669);color:white;border:none;border-radius:12px;font-family:inherit;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px}
+        .search-btn:disabled{opacity:0.6;cursor:not-allowed}
+        .order-card{border:1px solid var(--gray-200);border-radius:12px;padding:20px;margin-bottom:15px}
+        .order-header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:15px}
+        .order-id{font-size:12px;color:var(--gray-500)}
+        .status{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700}
+        .status-pending{background:#fef3c7;color:#92400e}
+        .status-confirmed{background:#dbeafe;color:#1e40af}
+        .status-delivered{background:#d1fae5;color:#065f46}
+        .status-cancelled{background:#fee2e2;color:#991b1b}
+        .timeline{display:flex;justify-content:space-between;margin:20px 0;position:relative}
+        .timeline::before{content:'';position:absolute;top:20px;left:10%;right:10%;height:3px;background:var(--gray-200);z-index:0}
+        .step{text-align:center;position:relative;z-index:1;flex:1}
+        .step-circle{width:40px;height:40px;border-radius:50%;background:white;border:3px solid var(--gray-200);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:var(--gray-500)}
+        .step.active .step-circle{background:var(--primary);border-color:var(--primary);color:white}
+        .step.done .step-circle{background:#10b981;border-color:#10b981;color:white}
+        .step p{font-size:11px;font-weight:600}
+        .order-items{background:var(--gray-50);padding:15px;border-radius:10px;margin:15px 0}
+        .item{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;border-bottom:1px dashed var(--gray-200)}
+        .total{font-weight:800;color:var(--primary);font-size:16px;margin-top:10px;padding-top:10px;border-top:2px solid var(--gray-200);display:flex;justify-content:space-between}
+        .empty{text-align:center;padding:50px 20px;color:var(--gray-500)}
+        .empty i{font-size:60px;color:#cbd5e1;margin-bottom:15px}
+        .loading{text-align:center;padding:40px}
+        .spinner{width:40px;height:40px;border:4px solid var(--gray-200);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .whatsapp-float{position:fixed;bottom:25px;right:25px;width:60px;height:60px;background:#25D366;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;text-decoration:none;box-shadow:0 5px 20px rgba(37,211,102,0.4);z-index:999}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><div class="logo-icon"><i class="fas fa-shopping-bag"></i></div> স্মার্ট কেনাকাটা</a>
+            <a href="index.html" style="text-decoration:none;color:var(--gray-500);font-size:14px"><i class="fas fa-arrow-left"></i> হোম</a>
+        </div>
+    </nav>
+    <div class="main">
+        <div class="card">
+            <div class="title">
+                <h1>📦 অর্ডার ট্র্যাকিং</h1>
+                <p>আপনার ফোন নাম্বার দিয়ে অর্ডার ট্র্যাক করুন</p>
+            </div>
+            <div class="search-box">
+                <input type="tel" id="phoneInput" placeholder="01XXXXXXXXX" maxlength="11">
+                <button class="search-btn" onclick="trackOrder()" id="trackBtn"><i class="fas fa-search"></i> ট্র্যাক</button>
+            </div>
+            <p style="font-size:12px;color:var(--gray-500);text-align:center">যে নাম্বার দিয়ে অর্ডার করেছেন সেটা দিন</p>
+        </div>
+        <div id="result"></div>
+        <div class="card" id="helpCard">
+            <h3 style="margin-bottom:10px"><i class="fas fa-question-circle" style="color:var(--primary)"></i> কিভাবে কাজ করে?</h3>
+            <ul style="font-size:14px;color:var(--gray-500);padding-left:18px;line-height:1.8">
+                <li>ফোন নাম্বার দিয়ে Search করুন</li>
+                <li>আপনার সব অর্ডার দেখতে পাবেন</li>
+                <li>⏳ পেন্ডিং = আমরা রিভিউ করছি</li>
+                <li>✅ কনফার্মড = প্যাকিং হচ্ছে</li>
+                <li>📦 ডেলিভারড = কুরিয়ারে পাঠানো হয়েছে</li>
+            </ul>
+        </div>
+    </div>
+    <a href="https://wa.me/8801932211123" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfnRJ3xyh3rkFD01XS-Zsm-LM1VSPuaJY",
+            authDomain: "smart-kenakata.firebaseapp.com",
+            projectId: "smart-kenakata",
+            storageBucket: "smart-kenakata.firebasestorage.app",
+            messagingSenderId: "892479175235",
+            appId: "1:892479175235:web:56a53187e4cd5ba662f2f6"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        function trackOrder() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            const btn = document.getElementById('trackBtn');
+            if (!/^01[0-9]{9}$/.test(phone)) {
+                resultDiv.innerHTML = '<div class="card" style="text-align:center;color:#ef4444"><i class="fas fa-exclamation-triangle"></i> সঠিক 11 ডিজিট নাম্বার দিন (01XXXXXXXXX)</div>';
+                return;
+            }
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> খুঁজছি...';
+            resultDiv.innerHTML = '<div class="card"><div class="loading"><div class="spinner"></div><p>অর্ডার খুঁজছি...</p></div></div>';
+            db.collection('orders').where('customerPhone', '==', phone).get()
+                .then(snap => {
+                    if (snap.empty) {
+                        resultDiv.innerHTML = '<div class="card empty"><i class="fas fa-search"></i><h3>কোন অর্ডার পাওয়া যায়নি</h3><p>এই নাম্বারে কোন অর্ডার নেই। নাম্বার ঠিক আছে কি না চেক করুন।</p><p style="margin-top:15px"><a href="https://wa.me/8801932211123" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:700"><i class="fab fa-whatsapp"></i> WhatsApp এ যোগাযোগ করুন</a></p></div>';
+                        return;
+                    }
+                    const orders = [];
+                    snap.forEach(d => orders.push({ id: d.id, ...d.data() }));
+                    orders.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                    let html = '<div class="card"><h3 style="margin-bottom:15px">🔍 ' + orders.length + ' টি অর্ডার পাওয়া গেছে</h3></div>';
+                    orders.forEach(o => {
+                        const status = o.status || 'pending';
+                        const statusText = { pending: '⏳ পেন্ডিং', confirmed: '✅ কনফার্মড', delivered: '📦 ডেলিভারড', cancelled: '❌ বাতিল' };
+                        const date = o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleString('bn-BD') : 'N/A';
+                        
+                        let steps = '';
+                        const isPending = status === 'pending' || status === 'confirmed' || status === 'delivered';
+                        const isConfirmed = status === 'confirmed' || status === 'delivered';
+                        const isDelivered = status === 'delivered';
+                        steps = `
+                            <div class="timeline">
+                                <div class="step ${isPending ? 'done' : ''} ${status === 'pending' ? 'active' : ''}">
+                                    <div class="step-circle"><i class="fas fa-clock"></i></div>
+                                    <p>পেন্ডিং</p>
+                                </div>
+                                <div class="step ${isConfirmed ? 'done' : ''} ${status === 'confirmed' ? 'active' : ''}">
+                                    <div class="step-circle"><i class="fas fa-check"></i></div>
+                                    <p>কনফার্ম</p>
+                                </div>
+                                <div class="step ${isDelivered ? 'done active' : ''}">
+                                    <div class="step-circle"><i class="fas fa-truck"></i></div>
+                                    <p>ডেলিভারি</p>
+                                </div>
+                            </div>
+                        `;
+                        let itemsHtml = '';
+                        (o.items || []).forEach(it => {
+                            itemsHtml += `<div class="item"><span>${it.name} x ${it.quantity}</span><span>৳${it.price * it.quantity}</span></div>`;
+                        });
+                        html += `
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div>
+                                        <div class="order-id">Order #${o.id.substring(0,8).toUpperCase()} • ${date}</div>
+                                        <div style="font-weight:700;margin-top:5px">${o.customerName || ''}</div>
+                                        <div style="font-size:13px;color:#64748b">📍 ${o.customerAddress || ''}</div>
+                                    </div>
+                                    <span class="status status-${status}">${statusText[status] || status}</span>
+                                </div>
+                                ${steps}
+                                <div class="order-items">
+                                    ${itemsHtml}
+                                    <div class="total"><span>মোট:</span><span>৳${o.total || 0}</span></div>
+                                    ${o.deliveryArea ? `<div style="font-size:12px;color:#64748b;margin-top:8px">🚚 ${o.deliveryArea} - ৳${o.deliveryCharge}</div>` : ''}
+                                    ${o.paymentMethod ? `<div style="font-size:12px;color:#64748b">💳 ${o.paymentMethod}</div>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    resultDiv.innerHTML = html;
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = '<div class="card" style="color:#ef4444;text-align:center">❌ Error: ' + err.message + '</div>';
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-search"></i> ট্র্যাক';
+                });
+        }
+        document.getElementById('phoneInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') trackOrder();
+        });
+        // Auto-fill if phone in URL ?phone=01...
+        const urlParams = new URLSearchParams(window.location.search);
+        const phoneParam = urlParams.get('phone');
+        if (phoneParam) {
+            document.getElementById('phoneInput').value = phoneParam;
+            trackOrder();
+        }
+    </script>
+</body>
+</html>
