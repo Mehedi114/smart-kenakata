@@ -1111,9 +1111,9 @@ privateNote: document.getElementById('prodNote').value.trim()
                 });
         }
                  let allAdminProducts = [];
-        function filterAdminProducts() {
+               function filterAdminProducts() {
             const q = document.getElementById('adminProductSearch').value.toLowerCase().trim();
-                        const filtered = q ? allAdminProducts.filter(doc => {
+            const filtered = q ? allAdminProducts.filter(doc => {
                 const p = (typeof doc.data === 'function' ? doc.data() : doc);
                 return (p.name && p.name.toLowerCase().includes(q)) ||
                        (p.category && p.category.toLowerCase().includes(q)) ||
