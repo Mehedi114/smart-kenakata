@@ -530,6 +530,12 @@
                     <i class="fas fa-sync"></i> রিফ্রেশ
                 </button>
             </div>
+                        <div style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:20px; display:flex; gap:10px; align-items:center;">
+                <i class="fas fa-search" style="color:#64748b;"></i>
+                <input type="text" id="adminProductSearch" placeholder="🔍 নাম, ক্যাটাগরি বা সাপ্লায়ার দিয়ে খুঁজুন..." oninput="filterAdminProducts()" style="flex:1; border:none; background:transparent; outline:none; font-family:inherit; font-size:14px;">
+                <span id="adminProductCount" style="background:#10b981; color:white; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">0 টি</span>
+            </div>
+            <div id="productsList">
             <div id="productsList">
                 <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
             </div>
@@ -1082,55 +1088,59 @@ privateNote: document.getElementById('prodNote').value.trim()
                     btn.innerHTML = '<i class="fas fa-plus"></i> পণ্য যোগ করুন';
                 });
         }
-            
-        function loadProducts() {
+                 let allAdminProducts = [];
+        function filterAdminProducts() {
+            const q = document.getElementById('adminProductSearch').value.toLowerCase().trim();
+            const filtered = q ? allAdminProducts.filter(p => 
+                (p.name && p.name.toLowerCase().includes(q)) ||
+                (p.category && p.category.toLowerCase().includes(q)) ||
+                (p.supplier && p.supplier.toLowerCase().includes(q))
+            ) : allAdminProducts;
+            displayAdminProducts(filtered);
+        }
+        function displayAdminProducts(products) {
+            const container = document.getElementById('productsList');
+            const countEl = document.getElementById('adminProductCount');
+            if (countEl) countEl.textContent = products.length + ' টি';
+            if (products.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><h3>কোন পণ্য পাওয়া যায়নি</h3></div>';
+                return;
+            }
+            let html = '<div class="products-list">';
+            products.forEach(doc => {
+                const p = doc.data ? doc.data : doc;
+                const id = doc.id || p.id;
+                const profit = (p.buyPrice && p.price) ? (p.price - p.buyPrice) : null;
+                const profitColor = profit > 0 ? '#10b981' : '#ef4444';
+                html += '<div class="product-item" onclick="showProductDetails(\'' + id + '\')" style="cursor:pointer;">';
+                html += '<div class="product-item-image"><img src="' + (p[p.thumbnail] || p.image) + '" onerror="this.src=\'https://via.placeholder.com/280x180\'"></div>';
+                html += '<div class="product-item-info"><div class="cat">' + (p.category || '') + '</div><h4>' + p.name + '</h4><div class="price">বিক্রয়: ৳' + p.price + '</div>';
+                if (p.supplier || p.buyPrice) {
+                    html += '<div style="background:#fef3c7; padding:10px; border-radius:8px; margin:10px 0; font-size:12px;"><strong>🔒 ' + (p.supplier || '') + '</strong> | 💰 কেনা: ৳' + (p.buyPrice || 0) + ' | লাভ: <span style="color:' + profitColor + '">৳' + (profit || 0) + '</span></div>';
+                }
+                html += '<div class="product-actions"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); editProduct(\'' + id + '\')"><i class="fas fa-edit"></i> এডিট</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteProduct(\'' + id + '\', \'' + p.name.replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> ডিলিট</button></div></div></div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+             function loadProducts() {
             const container = document.getElementById('productsList');
             container.innerHTML = '<div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>';
-            
-            db.collection('products').get()
-                .then(snapshot => {
-                    if (snapshot.empty) {
-                        container.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>কোন পণ্য নেই</h3></div>';
-                        return;
-                    }
-                    let html = '<div class="products-list">';
-                    snapshot.forEach(doc => {
-                        const p = doc.data();
-                        const profit = (p.buyPrice && p.price) ? (p.price - p.buyPrice) : null;
-                        const profitColor = profit > 0 ? '#10b981' : '#ef4444';
-                        
-                        html += '<div class="product-item" onclick="showProductDetails(\'' + doc.id + '\')" style="cursor:pointer;">';
-                        html += '<div class="product-item-image"><img src="' + (p[p.thumbnail] || p.image) + '" alt="' + p.name + '" onerror="this.src=\'https://via.placeholder.com/280x180\'"></div>';
-                        html += '<div class="product-item-info">';
-                        html += '<div class="cat">' + (p.category || '') + '</div>';
-                        html += '<h4>' + p.name + '</h4>';
-                        html += '<div class="price">বিক্রয়: ৳' + p.price + (p.oldPrice ? ' <small style="text-decoration:line-through;color:#999;">৳' + p.oldPrice + '</small>' : '') + '</div>';
-                        
-                        // Supplier Info (শুধু Admin দেখবে)
-                        if (p.supplier || p.buyPrice || p.source) {
-                            html += '<div style="background:#fef3c7; padding:10px; border-radius:8px; margin:10px 0; border-left:3px solid #f59e0b; font-size:12px;">';
-                            html += '<strong style="color:#92400e;">🔒 সাপ্লায়ার তথ্য:</strong><br>';
-                            if (p.supplier) html += '🏪 ' + p.supplier;
-                            if (p.supplierPhone) html += ' | 📞 ' + p.supplierPhone;
-                            if (p.buyPrice) html += '<br>💰 কেনা: ৳' + p.buyPrice + ' | লাভ: <span style="color:' + profitColor + '; font-weight:700;">৳' + profit + '</span>';
-                            if (p.source) html += '<br>📍 ' + p.source;
-                            if (p.privateNote) html += '<br>📝 ' + p.privateNote;
-                            html += '</div>';
-                        }
-                        
-                        html += '<div class="product-actions">';
-html += '<button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); editProduct(\'' + doc.id + '\')"><i class="fas fa-edit"></i> এডিট</button>';
-html += '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteProduct(\'' + doc.id + '\', \'' + p.name.replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> ডিলিট</button>';
-html += '</div></div></div>';
-                    });
-                    html += '</div>';
-                    container.innerHTML = html;
-                })
-                .catch(error => {
-                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error</h3><p>' + error.message + '</p></div>';
-                });
+            db.collection('products').get().then(snapshot => {
+                if (snapshot.empty) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>কোন পণ্য নেই</h3></div>';
+                    const countEl = document.getElementById('adminProductCount');
+                    if (countEl) countEl.textContent = '0 টি';
+                    return;
+                }
+                allAdminProducts = [];
+                snapshot.forEach(doc => allAdminProducts.push(doc));
+                displayAdminProducts(allAdminProducts);
+            }).catch(error => {
+                container.innerHTML = '<div class="empty-state"><h3>Error</h3><p>' + error.message + '</p></div>';
+            });
         }
-
    // ===== SHOW PRODUCT DETAILS POPUP =====
 async function showProductDetails(productId) {
     try {
