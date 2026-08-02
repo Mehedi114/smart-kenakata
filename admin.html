@@ -1110,8 +1110,8 @@ privateNote: document.getElementById('prodNote').value.trim()
                     btn.innerHTML = '<i class="fas fa-plus"></i> পণ্য যোগ করুন';
                 });
         }
-                 let allAdminProducts = [];
-               function filterAdminProducts() {
+                        let allAdminProducts = [];
+        function filterAdminProducts() {
             const q = document.getElementById('adminProductSearch').value.toLowerCase().trim();
             const filtered = q ? allAdminProducts.filter(doc => {
                 const p = (typeof doc.data === 'function' ? doc.data() : doc);
