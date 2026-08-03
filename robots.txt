@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Block admin and private pages
+Disallow: /admin.html
+Disallow: /admin-login.html
+Disallow: /service-worker.js
+Disallow: /scripts/
+Disallow: /.git/
+
+Sitemap: https://mehedi114.github.io/smart-kenakata/sitemap.xml
+Crawl-delay: 1
