@@ -722,6 +722,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+                db.enablePersistence().catch(err => console.log(err));
 
         const ADMIN_EMAILS = ['mdmahedulislammehedi@gmail.com'];
 
