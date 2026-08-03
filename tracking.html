@@ -95,6 +95,7 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+                db.enablePersistence().catch(err => console.log(err));
         function trackOrder() {
             const rawInput = document.getElementById('phoneInput').value.trim();
             let phone = rawInput.replace(/\D/g, '');
