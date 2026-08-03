@@ -740,6 +740,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+                db.enablePersistence().catch(err => console.log(err));
 
         let currentProduct = null;
         let quantity = 1;
