@@ -183,7 +183,7 @@
 </head>
 <body>
     <!-- Splash Screen -->
-<div id="splashScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); z-index:999999; display:flex; align-items:center; justify-content:center; flex-direction:column; animation:fadeOut 0.5s ease-in-out 2s forwards;">
+<div id="splashScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); z-index:999999; display:flex; align-items:center; justify-content:center; flex-direction:column;">
     
     <div style="text-align:center; animation:zoomIn 1s ease-out;">
         <div style="width:120px; height:120px; background:white; border-radius:30px; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:bounce 1s infinite;">
@@ -775,7 +775,23 @@ function showBannerSlide(index) {
 }
 
 loadBanners();
-        
+
+                // Splash - show once per day only
+        (function(){
+            const splash = document.getElementById('splashScreen');
+            const lastSeen = localStorage.getItem('splashSeen');
+            const now = Date.now();
+            const oneDay = 24*60*60*1000;
+            if (lastSeen && (now - parseInt(lastSeen)) < oneDay) {
+                splash.style.display = 'none';
+            } else {
+                setTimeout(() => {
+                    splash.style.animation = 'fadeOut 0.5s ease-in-out forwards';
+                    setTimeout(() => splash.style.display = 'none', 500);
+                    localStorage.setItem('splashSeen', now.toString());
+                }, 1800);
+            }
+        })();
         loadProducts();
         updateCartCount();
         updateWishlistCount();
