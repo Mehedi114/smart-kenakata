@@ -385,12 +385,13 @@
     }
     
     /* CART SIDEBAR FIX */
-        .cart-sidebar {
+          .cart-sidebar {
         width: 100% !important;
-        z-index: 10000 !important;
-        position: fixed !important;
-        top: 0 !important;
-        height: 100vh !important;
+        right: -105% !important;
+    }
+    .cart-sidebar.open {
+        right: 0 !important;
+    }
     }
     .cart-overlay {
         z-index: 9999 !important;
