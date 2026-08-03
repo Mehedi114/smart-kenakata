@@ -503,24 +503,30 @@
         }
         .toast.show { transform: translateX(0); }
         .toast i { color: var(--primary); font-size: 20px; }
-            /* ===== STICKY BUY BAR - MOBILE ===== */
+        
+        /* ===== STICKY BUY BAR - MOBILE ===== */
         .sticky-buy-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--gray-200); padding: 10px 15px; display: none; align-items: center; justify-content: space-between; gap: 12px; z-index: 9998; box-shadow: 0 -2px 15px rgba(0,0,0,0.08); }
         .sticky-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
         .sticky-info img { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; }
+        .sticky-info div { min-width: 0; }
         #stickyName { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
         #stickyPrice { font-size: 14px; font-weight: 800; color: var(--primary); }
         .sticky-actions { display: flex; gap: 8px; }
         .sticky-cart { width: 45px; height: 45px; background: var(--dark); color: white; border: none; border-radius: 10px; font-size: 18px; cursor: pointer; }
-        .sticky-buy { padding: 12px 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
-        @media (max-width: 768px) { .sticky-buy-bar { display: flex; } body { padding-bottom: 70px; } }
-
-        /* TEMP HIDE CHATBOT & DARK MODE - ONLY WHATSAPP */
+        .sticky-buy { padding: 12px 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 10px; font-weight: 700; font-family: inherit; cursor: pointer; }
+              @media (max-width: 768px) {
+            .sticky-buy-bar { display: flex; }
+            body { padding-bottom: 75px; }
+            .whatsapp-float { bottom: 85px !important; right: 15px !important; }
+            #chatbot-wrapper { bottom: 145px !important; right: 15px !important; }
+            #chatbot-window { bottom: 75px !important; right: 0 !important; }
+            #theme-toggle { bottom: 205px !important; right: 15px !important; width: 45px !important; height: 45px !important; }
+        }
+                /* TEMP HIDE - Chatbot & Dark Mode */
         #theme-toggle { display: none !important; }
         #chatbot-wrapper { display: none !important; }
         #chatbot-window { display: none !important; }
 
-        .whatsapp-float { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: #25D366; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; text-decoration: none; box-shadow: 0 5px 20px rgba(37,211,102,0.4); z-index: 999; }
-        @media (max-width: 768px) { .whatsapp-float { bottom: 80px !important; } }
         .whatsapp-float {
         /* WHATSAPP FLOAT */
         .whatsapp-float {
