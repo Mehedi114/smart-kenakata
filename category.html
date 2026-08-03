@@ -625,6 +625,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        db.enablePersistence().catch(err => console.log('Offline error:', err));
 
         // Category icons mapping
         const CATEGORY_ICONS = {
@@ -678,7 +679,7 @@
         function loadProducts() {
             const grid = document.getElementById('productsGrid');
             
-            db.collection('products').get()
+                        db.collection('products').orderBy('createdAt','desc').limit(20).get()
                 .then(snapshot => {
                     allProducts = [];
                     snapshot.forEach(doc => {
