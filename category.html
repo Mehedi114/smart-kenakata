@@ -438,7 +438,6 @@
         
         #theme-toggle { display: none !important; }
         #chatbot-wrapper { display: none !important; }
-        .whatsapp-float {
         /* WHATSAPP */
         .whatsapp-float {
             position: fixed;
@@ -667,41 +666,49 @@
 
         // ===== HIGHLIGHT ACTIVE CATEGORY =====
         function highlightActiveCategory() {
-            document.querySelectorAll('.quick-cat').forEach(link => {
-                const linkCat = new URL(link.href).searchParams.get('cat');
-                if (linkCat === category) {
-                    link.classList.add('active');
-                }
-            });
+            try {
+                document.querySelectorAll('.quick-cat').forEach(link => {
+                    try {
+                        const url = new URL(link.href, window.location.origin);
+                        const linkCat = url.searchParams.get('cat');
+                        if (linkCat === category) {
+                            link.classList.add('active');
+                        }
+                    } catch(e) {
+                        // fallback parse
+                        try {
+                            const href = link.getAttribute('href') || '';
+                            if (href.includes('cat=' + category) || (category==='all' && href.includes('cat=all'))) {
+                                link.classList.add('active');
+                            }
+                        } catch(e2) {}
+                    }
+                });
+            } catch(e) { console.log('highlight error', e); }
         }
 
-        // ===== LOAD PRODUCTS =====
+        // ===== LOAD PRODUCTS - FIXED =====
         function loadProducts() {
             const grid = document.getElementById('productsGrid');
-            
-                        db.collection('products').orderBy('createdAt','desc').limit(20).get()
+            const tryOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(100).get();
+            const trySimple = () => db.collection('products').limit(100).get();
+            (tryOrdered().catch(() => trySimple()))
                 .then(snapshot => {
                     allProducts = [];
                     snapshot.forEach(doc => {
                         allProducts.push({ id: doc.id, ...doc.data() });
                     });
-
-                    // Filter by category
                     if (category === 'all') {
                         filteredProducts = [...allProducts];
                     } else {
                         filteredProducts = allProducts.filter(p => p.category === category);
                     }
-
-                    // Update count
                     document.getElementById('categoryCount').textContent = filteredProducts.length + ' টি পণ্য পাওয়া গেছে';
-
-                    // Apply default sorting
                     applySorting();
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h2>Error</h2><p>' + error.message + '</p></div>';
+                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h2>লোড করতে সমস্যা</h2><p>' + (error.message || 'আবার চেষ্টা করুন') + '</p><button onclick="loadProducts()" style="margin-top:10px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
                 });
         }
 
