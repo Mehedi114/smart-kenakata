@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
+        <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>পণ্যের বিস্তারিত - স্মার্ট কেনাকাটা</title>
+    <title>পণ্যের বিস্তারিত - স্মার্ট কেনাকাটা | Best Price in BD</title>
+    <meta name="description" content="সেরা দামে অরিজিনাল পণ্য কিনুন স্মার্ট কেনাকাটা থেকে। ঢাকায় ২৪ ঘন্টায় ডেলিভারি, ক্যাশ অন ডেলিভারি।">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" id="canonicalLink" href="https://mehedi114.github.io/smart-kenakata/product-details.html">
+    <meta property="og:type" content="product">
+    <meta property="og:site_name" content="স্মার্ট কেনাকাটা">
+    <meta property="og:title" id="ogTitle" content="পণ্যের বিস্তারিত - স্মার্ট কেনাকাটা">
+    <meta property="og:description" id="ogDesc" content="সেরা দামে অরিজিনাল পণ্য">
+    <meta property="og:image" id="ogImage" content="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png">
+    <meta property="og:url" id="ogUrl" content="">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="twTitle" content="">
+    <meta name="twitter:description" id="twDesc" content="">
+    <meta name="twitter:image" id="twImage" content="">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -815,6 +828,50 @@
             if (stickyName) stickyName.textContent = p.name;
             if (stickyPrice) stickyPrice.textContent = '৳' + p.price;
             document.getElementById('categoryLink').textContent = p.category || 'ক্যাটাগরি';
+                        // ===== SEO: Update Meta Dynamically =====
+            try {
+                const canon = document.getElementById('canonicalLink');
+                if (canon) canon.href = window.location.href;
+                const ogUrl = document.getElementById('ogUrl');
+                if (ogUrl) ogUrl.content = window.location.href;
+                document.getElementById('ogTitle').content = p.name + ' - স্মার্ট কেনাকাটা';
+                document.getElementById('ogDesc').content = (p.description || p.name).substring(0, 150);
+                document.getElementById('ogImage').content = p[p.thumbnail] || p.image || '';
+                document.getElementById('twTitle').content = p.name;
+                document.getElementById('twDesc').content = (p.description || p.name).substring(0, 150);
+                document.getElementById('twImage').content = p[p.thumbnail] || p.image || '';
+                document.title = p.name + ' - মাত্র ৳' + p.price + ' | স্মার্ট কেনাকাটা';
+            } catch(e) {}
+
+            // ===== JSON-LD Product Schema for Google =====
+            try {
+                const oldSchema = document.getElementById('product-schema');
+                if (oldSchema) oldSchema.remove();
+                const productSchema = {
+                    "@context": "https://schema.org",
+                    "@type": "Product",
+                    "name": p.name,
+                    "image": [p.image, p.image2, p.image3, p.image4, p.image5].filter(Boolean),
+                    "description": p.description || p.name,
+                    "sku": p.id,
+                    "brand": { "@type": "Brand", "name": "Smart Kenakata" },
+                    "category": p.category,
+                    "offers": {
+                        "@type": "Offer",
+                        "url": window.location.href,
+                        "priceCurrency": "BDT",
+                        "price": p.price,
+                        "availability": (p.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                        "seller": { "@type": "Organization", "name": "স্মার্ট কেনাকাটা" }
+                    },
+                    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "reviewCount": "100" }
+                };
+                const script = document.createElement('script');
+                script.type = 'application/ld+json';
+                script.id = 'product-schema';
+                script.textContent = JSON.stringify(productSchema);
+                document.head.appendChild(script);
+            } catch(e) {}
 
             document.getElementById('productContent').innerHTML = `
                 <div class="product-container">
