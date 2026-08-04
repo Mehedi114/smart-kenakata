@@ -571,25 +571,20 @@
         const CACHE_TIME_KEY = 'sk_all_products_time_v2';
         const CACHE_EXPIRY = 10 * 60 * 1000; // 10 minute
 
-               function loadProducts() {
+                    function loadProducts() {
             const grid = document.getElementById('productsGrid');
             try {
-                const cachedData = localStorage.getItem(CACHE_KEY);
-                const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
-                if (cachedData && cachedTime) {
-                    const age = Date.now() - parseInt(cachedTime);
-                    if (age < CACHE_EXPIRY) {
-                        allProducts = JSON.parse(cachedData);
-                        currentPage = 1;
-                        displayProductsPaginated();
-                        renderPaginationControls();
-                        return;
-                    }
+                const cData = localStorage.getItem(CACHE_KEY);
+                const cTime = localStorage.getItem(CACHE_TIME_KEY);
+                if (cData && cTime && (Date.now() - parseInt(cTime) < CACHE_EXPIRY)) {
+                    allProducts = JSON.parse(cData);
+                    currentPage = 1;
+                    displayProductsPaginated();
+                    renderPaginationControls();
+                    return;
                 }
             } catch(e) {}
-            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(100).get();
-            const loadSimple = () => db.collection('products').limit(100).get();
-            (loadOrdered().catch(() => loadSimple())).then((snapshot) => {
+            db.collection('products').limit(100).get().then((snapshot) => {
                 allProducts = [];
                 snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
                 allProducts.sort((a, b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
@@ -597,15 +592,11 @@
                     localStorage.setItem(CACHE_KEY, JSON.stringify(allProducts));
                     localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
                 } catch(e) {}
-                if (allProducts.length === 0) {
-                    grid.innerHTML = '<div class="empty-state"><h3>কোন পণ্য নেই</h3></div>';
-                    return;
-                }
                 currentPage = 1;
                 displayProductsPaginated();
                 renderPaginationControls();
             }).catch((error) => {
-                grid.innerHTML = '<div class="empty-state"><h3>লোড সমস্যা</h3><p>'+error.message+'</p><button onclick="loadProducts()" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;">আবার চেষ্টা</button></div>';
+                grid.innerHTML = '<div>Error: '+error.message+'</div>';
             });
         }
 
