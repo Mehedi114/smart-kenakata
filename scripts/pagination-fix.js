@@ -11,6 +11,7 @@
     const all = getProducts();
     return all.filter(p => (p.name && p.name.toLowerCase().includes(q)) || (p.category && p.category.toLowerCase().includes(q)));
   }
+  
   function displayPage(page) {
     const filtered = getFiltered();
     const source = filtered || getProducts();
