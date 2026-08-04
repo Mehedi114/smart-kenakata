@@ -3,6 +3,7 @@
   const PER_PAGE = 15;
   let currentPage = 1;
   let fullList = [];
+
   
   function displayPage(page, source) {
     if (!source || !source.length) return;
