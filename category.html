@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
+        <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ক্যাটাগরি - স্মার্ট কেনাকাটা</title>
+    <title id="pageTitle">ক্যাটাগরি - স্মার্ট কেনাকাটা | Best Price BD</title>
+    <meta name="description" id="metaDesc" content="স্মার্ট কেনাকাটা ক্যাটাগরি - সেরা পণ্য সেরা দামে। ঢাকায় ২৪ ঘন্টায় ডেলিভারি।">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" id="canonicalCat" href="https://mehedi114.github.io/smart-kenakata/category.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="স্মার্ট কেনাকাটা">
+    <meta property="og:title" id="ogCatTitle" content="ক্যাটাগরি - স্মার্ট কেনাকাটা">
+    <meta property="og:description" id="ogCatDesc" content="সেরা পণ্য সেরা দামে">
+    <meta property="og:url" id="ogCatUrl" content="">
+    <meta property="og:image" content="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png">
+    <script type="application/ld+json" id="cat-schema">
+    { "@context": "https://schema.org", "@type": "CollectionPage", "name": "ক্যাটাগরি - স্মার্ট কেনাকাটা" }
+    </script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -656,12 +668,39 @@
         }
 
         // ===== UPDATE HEADER =====
-        function updateCategoryHeader() {
+               function updateCategoryHeader() {
             const name = category === 'all' ? 'সকল পণ্য' : category;
             document.getElementById('categoryName').textContent = name;
             document.getElementById('breadcrumbCat').textContent = name;
             document.getElementById('categoryIconBig').textContent = CATEGORY_ICONS[category] || '📦';
             document.title = name + ' - স্মার্ট কেনাকাটা';
+            try {
+                const catName = name;
+                document.title = catName + ' - মাত্র ৳ থেকে শুরু | স্মার্ট কেনাকাটা';
+                document.getElementById('metaDesc').content = catName + ' ক্যাটাগরির সেরা পণ্য কিনুন স্মার্ট কেনাকাটা থেকে।';
+                document.getElementById('canonicalCat').href = window.location.href;
+                document.getElementById('ogCatUrl').content = window.location.href;
+                document.getElementById('ogCatTitle').content = catName + ' - স্মার্ট কেনাকাটা';
+                document.getElementById('pageTitle').textContent = catName + ' - স্মার্ট কেনাকাটা | Best Price BD';
+                const schemaEl = document.getElementById('cat-schema');
+                if (schemaEl) {
+                    const schema = {
+                        "@context": "https://schema.org",
+                        "@type": "CollectionPage",
+                        "name": catName + " - স্মার্ট কেনাকাটা",
+                        "description": catName + " ক্যাটাগরির সব পণ্য",
+                        "url": window.location.href,
+                        "breadcrumb": {
+                            "@type": "BreadcrumbList",
+                            "itemListElement": [
+                                {"@type": "ListItem", "position": 1, "name": "হোম", "item": "https://mehedi114.github.io/smart-kenakata/"},
+                                {"@type": "ListItem", "position": 2, "name": catName, "item": window.location.href}
+                            ]
+                        }
+                    };
+                    schemaEl.textContent = JSON.stringify(schema);
+                }
+            } catch(e) {}
         }
 
         // ===== HIGHLIGHT ACTIVE CATEGORY =====
