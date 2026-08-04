@@ -430,8 +430,6 @@
                 <p>পণ্য লোড হচ্ছে...</p>
             </div>
         </div>
-                <!-- Pagination - 15 ta kore -->
-        <div id="pagination"></div>
     </section>
 
     <section class="features">
@@ -560,94 +558,36 @@
         const db = firebase.firestore();
                 db.enablePersistence().catch(err => console.log('Offline error:', err));
 
-               let allProducts = [];
-        let filteredProducts = [];
-        let currentPage = 1;
-        const PRODUCTS_PER_PAGE = 15;
-        let currentSearchQuery = '';
+        let allProducts = [];
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-        const CACHE_KEY = 'sk_all_products_v2';
-        const CACHE_TIME_KEY = 'sk_all_products_time_v2';
-        const CACHE_EXPIRY = 10 * 60 * 1000; // 10 minute
 
-               function loadProducts() {
+        function loadProducts() {
             const grid = document.getElementById('productsGrid');
-            try {
-                const cachedData = localStorage.getItem(CACHE_KEY);
-                const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
-                if (cachedData && cachedTime) {
-                    const age = Date.now() - parseInt(cachedTime);
-                    if (age < CACHE_EXPIRY) {
-                        allProducts = JSON.parse(cachedData);
-                        currentPage = 1;
-                        displayProductsPaginated();
-                        renderPaginationControls();
-                        return;
-                    }
-                }
-            } catch(e) {}
-            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(100).get();
-            const loadSimple = () => db.collection('products').limit(100).get();
-            (loadOrdered().catch(() => loadSimple())).then((snapshot) => {
+            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(20).get();
+            const loadSimple = () => db.collection('products').limit(20).get();
+            (loadOrdered().catch(() => {
+                console.log('ordered failed, fallback to simple');
+                return loadSimple();
+            })).then((snapshot) => {
                 allProducts = [];
-                snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
-                allProducts.sort((a, b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
-                try {
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(allProducts));
-                    localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
-                } catch(e) {}
+                snapshot.forEach(doc => {
+                    allProducts.push({ id: doc.id, ...doc.data() });
+                });
+                allProducts.sort((a, b) => {
+                    const timeA = a.createdAt?.seconds || 0;
+                    const timeB = b.createdAt?.seconds || 0;
+                    return timeB - timeA;
+                });
                 if (allProducts.length === 0) {
-                    grid.innerHTML = '<div class="empty-state"><h3>কোন পণ্য নেই</h3></div>';
+                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
                     return;
                 }
-                currentPage = 1;
-                displayProductsPaginated();
-                renderPaginationControls();
+                displayProducts(allProducts);
             }).catch((error) => {
-                grid.innerHTML = '<div class="empty-state"><h3>লোড সমস্যা</h3><p>'+error.message+'</p><button onclick="loadProducts()" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;">আবার চেষ্টা</button></div>';
+                console.error('Error loading products:', error);
+                grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>' + error.message + '</p><button onclick="loadProducts()" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
             });
-        }
-
-        function displayProductsPaginated() {
-            const source = currentSearchQuery ? filteredProducts : allProducts;
-            const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
-            const end = start + PRODUCTS_PER_PAGE;
-            const pageProducts = source.slice(start, end);
-            displayProducts(pageProducts);
-        }
-
-        function renderPaginationControls() {
-            const source = currentSearchQuery ? filteredProducts : allProducts;
-            const totalPages = Math.ceil(source.length / PRODUCTS_PER_PAGE);
-            const paginationEl = document.getElementById('pagination');
-            if (!paginationEl) return;
-            if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
-            let html = '<div style="display:flex;justify-content:center;align-items:center;gap:8px;margin:30px 0;flex-wrap:wrap;">';
-            html += `<button onclick="changePage(${currentPage-1})" ${currentPage===1?'disabled':''} style="padding:10px 16px;border:2px solid ${currentPage===1?'#e2e8f0':'#10b981'};background:${currentPage===1?'#f1f5f9':'white'};color:${currentPage===1?'#94a3b8':'#10b981'};border-radius:10px;cursor:${currentPage===1?'not-allowed':'pointer'};font-weight:600;">← আগের</button>`;
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, startPage + 4);
-            if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
-            for (let i=startPage; i<=endPage; i++) {
-                if (i === currentPage) html += `<button style="width:40px;height:40px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;border-radius:10px;font-weight:700;">${i}</button>`;
-                else html += `<button onclick="changePage(${i})" style="width:40px;height:40px;background:white;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;font-weight:600;">${i}</button>`;
-            }
-            if (totalPages > 5 && endPage < totalPages) html += `<span>...</span><button onclick="changePage(${totalPages})" style="width:40px;height:40px;background:white;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;">${totalPages}</button>`;
-            html += `<button onclick="changePage(${currentPage+1})" ${currentPage===totalPages?'disabled':''} style="padding:10px 16px;border:2px solid ${currentPage===totalPages?'#e2e8f0':'#10b981'};background:${currentPage===totalPages?'#f1f5f9':'white'};color:${currentPage===totalPages?'#94a3b8':'#10b981'};border-radius:10px;cursor:${currentPage===totalPages?'not-allowed':'pointer'};font-weight:600;">পরের →</button>`;
-            html += `</div><div style="text-align:center;color:#64748b;font-size:13px;">পেজ ${currentPage} / ${totalPages} - মোট ${source.length} টি পণ্য</div>`;
-            paginationEl.innerHTML = html;
-        }
-
-        function changePage(newPage) {
-            const source = currentSearchQuery ? filteredProducts : allProducts;
-            const totalPages = Math.ceil(source.length / PRODUCTS_PER_PAGE);
-            if (newPage < 1 || newPage > totalPages) return;
-            currentPage = newPage;
-            displayProductsPaginated();
-            renderPaginationControls();
-            const grid = document.getElementById('productsGrid');
-            if (grid) grid.scrollIntoView({behavior:'smooth', block:'start'});
-        }
         }
 
         function escapeHtml(text) {
@@ -707,24 +647,19 @@
             window.location.href = 'category.html?cat=' + encodeURIComponent(category);
         }
 
-                document.getElementById('searchInput').addEventListener('input', function(e) {
+        document.getElementById('searchInput').addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase().trim();
-            currentSearchQuery = query;
             if (!query) {
-                filteredProducts = [];
-                currentPage = 1;
-                displayProductsPaginated();
-                renderPaginationControls();
+                displayProducts(allProducts);
                 return;
             }
-            filteredProducts = allProducts.filter(p => 
+            const filtered = allProducts.filter(p => 
                 p.name.toLowerCase().includes(query) || 
                 (p.category && p.category.toLowerCase().includes(query))
             );
-            currentPage = 1;
-            displayProductsPaginated();
-            renderPaginationControls();
+            displayProducts(filtered);
         });
+
         function saveCart() {
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
