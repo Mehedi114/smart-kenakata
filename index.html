@@ -895,7 +895,14 @@ function loadBanners() {
             }
         });
 }
-
+              }).catch(error => {
+            console.log('Banner load failed:', error);
+            const slider = document.getElementById('bannerSlider');
+            if (slider) {
+                slider.innerHTML = '<img src="https://i.ibb.co.com/1tqfvKxj/Chat-GPT-Image-Jul-15-2026-11-33-06-PM.png" style="width:100%; display:block; border-radius:12px;">';
+            }
+        });  
+        
 function showBannerSlide(index) {
     document.querySelectorAll('.banner-slide').forEach((s, i) => s.classList.toggle('active', i === index));
     document.querySelectorAll('.banner-dot').forEach((d, i) => d.classList.toggle('active', i === index));
