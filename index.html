@@ -571,20 +571,25 @@
         const CACHE_TIME_KEY = 'sk_all_products_time_v2';
         const CACHE_EXPIRY = 10 * 60 * 1000; // 10 minute
 
-                    function loadProducts() {
+               function loadProducts() {
             const grid = document.getElementById('productsGrid');
             try {
-                const cData = localStorage.getItem(CACHE_KEY);
-                const cTime = localStorage.getItem(CACHE_TIME_KEY);
-                if (cData && cTime && (Date.now() - parseInt(cTime) < CACHE_EXPIRY)) {
-                    allProducts = JSON.parse(cData);
-                    currentPage = 1;
-                    displayProductsPaginated();
-                    renderPaginationControls();
-                    return;
+                const cachedData = localStorage.getItem(CACHE_KEY);
+                const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+                if (cachedData && cachedTime) {
+                    const age = Date.now() - parseInt(cachedTime);
+                    if (age < CACHE_EXPIRY) {
+                        allProducts = JSON.parse(cachedData);
+                        currentPage = 1;
+                        displayProductsPaginated();
+                        renderPaginationControls();
+                        return;
+                    }
                 }
             } catch(e) {}
-            db.collection('products').limit(100).get().then((snapshot) => {
+            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(100).get();
+            const loadSimple = () => db.collection('products').limit(100).get();
+            (loadOrdered().catch(() => loadSimple())).then((snapshot) => {
                 allProducts = [];
                 snapshot.forEach(doc => allProducts.push({ id: doc.id, ...doc.data() }));
                 allProducts.sort((a, b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
@@ -592,11 +597,15 @@
                     localStorage.setItem(CACHE_KEY, JSON.stringify(allProducts));
                     localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
                 } catch(e) {}
+                if (allProducts.length === 0) {
+                    grid.innerHTML = '<div class="empty-state"><h3>কোন পণ্য নেই</h3></div>';
+                    return;
+                }
                 currentPage = 1;
                 displayProductsPaginated();
                 renderPaginationControls();
             }).catch((error) => {
-                grid.innerHTML = '<div>Error: '+error.message+'</div>';
+                grid.innerHTML = '<div class="empty-state"><h3>লোড সমস্যা</h3><p>'+error.message+'</p><button onclick="loadProducts()" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;">আবার চেষ্টা</button></div>';
             });
         }
 
@@ -895,14 +904,7 @@ function loadBanners() {
             }
         });
 }
-              }).catch(error => {
-            console.log('Banner load failed:', error);
-            const slider = document.getElementById('bannerSlider');
-            if (slider) {
-                slider.innerHTML = '<img src="https://i.ibb.co.com/1tqfvKxj/Chat-GPT-Image-Jul-15-2026-11-33-06-PM.png" style="width:100%; display:block; border-radius:12px;">';
-            }
-        });  
-        
+
 function showBannerSlide(index) {
     document.querySelectorAll('.banner-slide').forEach((s, i) => s.classList.toggle('active', i === index));
     document.querySelectorAll('.banner-dot').forEach((d, i) => d.classList.toggle('active', i === index));
@@ -933,17 +935,6 @@ loadBanners();
     </script>
     <script src="chatbot.js"></script>
     <script src="theme.js"></script>
-      <script src="chatbot.js"></script>
-    <script src="theme.js"></script>
-<script>
-// Force hide splash if JS error
-setTimeout(function(){
-  var s = document.getElementById('splashScreen');
-  if(s) s.style.display = 'none';
-}, 2000);
-</script>
   
-</body>
-</html>
 </body>
 </html>
