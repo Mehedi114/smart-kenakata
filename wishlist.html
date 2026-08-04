@@ -428,7 +428,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-                db.enablePersistence().catch(err => console.log(err));
+                
 
         let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
