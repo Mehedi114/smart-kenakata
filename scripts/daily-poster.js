@@ -8,6 +8,10 @@ async function getProducts() {
   const url = `https://firestore.googleapis.com/v1/projects/smart-kenakata/databases/(default)/documents/products?pageSize=80`;
   const res = await fetch(url);
   const data = await res.json();
+  if (!data.documents || !Array.isArray(data.documents)) {
+    console.log('কোনো পণ্য পাওয়া যায়নি (documents খালি)');
+    return [];
+  }
   return data.documents.map(doc => {
     const f = doc.fields;
     return {
@@ -43,8 +47,15 @@ async function send(p, cap) {
 }
 
 (async () => {
-  const list = await getProducts();
-  const p = list[Math.floor(Math.random() * list.length)];
-  const cap = await genCaption(p);
-  await send(p, cap);
+  try {
+    if (!BOT_TOKEN || !CHAT_ID) throw new Error('TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID env মিসিং!');
+    const list = await getProducts();
+    if (!list.length) { console.log('ছবিসহ কোনো পণ্য নেই — পোস্ট স্কিপ'); process.exit(0); }
+    const p = list[Math.floor(Math.random() * list.length)];
+    const cap = await genCaption(p);
+    await send(p, cap);
+  } catch (err) {
+    console.error('❌ Daily poster ব্যর্থ:', err.message || err);
+    process.exit(1);
+  }
 })();

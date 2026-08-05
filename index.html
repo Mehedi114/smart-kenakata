@@ -227,6 +227,7 @@
         }
     </style>
         <link rel="stylesheet" href="mobile-fix.css?v=300">
+    <link rel="stylesheet" href="premium.css?v=1">
 </head>
 <body>
     <!-- Splash Screen -->
@@ -295,8 +296,9 @@
                 </div>
             </a>
             <div class="search-box">
-                <input type="text" placeholder="পণ্য খুঁজুন..." id="searchInput">
+                <input type="text" placeholder="পণ্য খুঁজুন..." id="searchInput" autocomplete="off">
                 <button class="search-btn"><i class="fas fa-search"></i></button>
+                <div class="sk-suggest" id="searchSuggest"></div>
             </div>
             <div class="nav-icons">
                 <a href="wishlist.html" class="icon-btn" title="উইশলিস্ট" style="position:relative;">
@@ -375,47 +377,8 @@
             <h2 class="section-title">ক্যাটাগরি সমূহ</h2>
             <p class="section-subtitle">পছন্দের ক্যাটাগরি বেছে নিন</p>
         </div>
-        <div class="categories-grid">
-            <div class="category-card" onclick="filterCategory('ইলেকট্রনিক্স', event)">
-                <div class="category-icon-wrapper"><span class="category-icon">📱</span></div>
-                <h3 class="category-name">ইলেকট্রনিক্স</h3>
-                <p class="category-count">পণ্য দেখুন</p>
-            </div>
-            <div class="category-card" onclick="filterCategory('ফ্যাশন', event)">
-                <div class="category-icon-wrapper"><span class="category-icon">👕</span></div>
-                <h3 class="category-name">ফ্যাশন</h3>
-                <p class="category-count">পণ্য দেখুন</p>
-            </div>
-            <div class="category-card" onclick="filterCategory('বিউটি', event)">
-                <div class="category-icon-wrapper"><span class="category-icon">💄</span></div>
-                <h3 class="category-name">বিউটি</h3>
-                <p class="category-count">পণ্য দেখুন</p>
-            </div>
-            <div class="category-card" onclick="filterCategory('হোম ও লিভিং', event)">
-                <div class="category-icon-wrapper"><span class="category-icon">🏠</span></div>
-                <h3 class="category-name">হোম ও লিভিং</h3>
-                <p class="category-count">পণ্য দেখুন</p>
-            </div>
-            <div class="category-card" onclick="filterCategory('খেলনা', event)">
-                <div class="category-icon-wrapper"><span class="category-icon">🧸</span></div>
-                <h3 class="category-name">খেলনা</h3>
-                <p class="category-count">পণ্য দেখুন</p>
-            </div>
-            <div class="category-card" onclick="filterCategory('বই ও শিক্ষা', event)">
-                <div class="category-icon-wrapper"><span class="category-icon">📚</span></div>
-                <h3 class="category-name">বই ও শিক্ষা</h3>
-                <p class="category-count">পণ্য দেখুন</p>
-            </div>
-            <div class="category-card" onclick="filterCategory('গ্রোসারি', event)">
-                <div class="category-icon-wrapper"><span class="category-icon">🛒</span></div>
-                <h3 class="category-name">গ্রোসারি</h3>
-                <p class="category-count">পণ্য দেখুন</p>
-            </div>
-            <div class="category-card" onclick="filterCategory('all', event)">
-                <div class="category-icon-wrapper"><span class="category-icon">📦</span></div>
-                <h3 class="category-name">সব দেখুন</h3>
-                <p class="category-count">সকল পণ্য</p>
-            </div>
+        <div class="categories-grid" id="homeCategories">
+            <!-- ক্যাটাগরি Firestore থেকে লাইভ লোড হবে (Admin Panel থেকে add করলেই এখানে আসবে) -->
         </div>
     </section>
 
@@ -425,10 +388,13 @@
             <p class="section-subtitle">সবচেয়ে বেশি বিক্রিত পণ্যসমূহ</p>
         </div>
         <div class="products-grid" id="productsGrid">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>পণ্য লোড হচ্ছে...</p>
-            </div>
+            <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+            <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+            <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+            <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+        </div>
+        <div class="sk-load-more">
+            <button onclick="window.location.href='category.html?cat=all'">সব পণ্য দেখুন <i class="fas fa-arrow-right"></i></button>
         </div>
     </section>
 
@@ -543,6 +509,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="site-core.js?v=1"></script>
 
     <script>
         const firebaseConfig = {
@@ -562,10 +529,28 @@
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
 
-        function loadProducts() {
+        const HOME_CACHE_KEY = 'sk_home_products';
+        const HOME_CACHE_TTL = 5 * 60 * 1000; // ৫ মিনিট — Firestore read বাঁচায়
+        const HOME_LIMIT = 12;
+
+        function loadProducts(forceRefresh) {
             const grid = document.getElementById('productsGrid');
-            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(20).get();
-            const loadSimple = () => db.collection('products').limit(20).get();
+
+            // ১) প্রথমে ক্যাশ দেখান (instant render)
+            if (!forceRefresh) {
+                try {
+                    const cached = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
+                    if (cached && cached.t && (Date.now() - cached.t < HOME_CACHE_TTL) && cached.list.length) {
+                        allProducts = cached.list;
+                        displayProducts(allProducts);
+                        return;
+                    }
+                } catch (e) {}
+            }
+
+            // ২) Firestore থেকে সর্বশেষ পণ্য (মাত্র ১২টা)
+            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(HOME_LIMIT).get();
+            const loadSimple = () => db.collection('products').limit(HOME_LIMIT).get();
             (loadOrdered().catch(() => {
                 console.log('ordered failed, fallback to simple');
                 return loadSimple();
@@ -583,11 +568,58 @@
                     grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
                     return;
                 }
+                try { localStorage.setItem(HOME_CACHE_KEY, JSON.stringify({ t: Date.now(), list: allProducts })); } catch (e) {}
                 displayProducts(allProducts);
             }).catch((error) => {
                 console.error('Error loading products:', error);
-                grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>' + error.message + '</p><button onclick="loadProducts()" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
+                grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>' + error.message + '</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
             });
+        }
+
+        // ===== হোমপেজের ক্যাটাগরি — Firestore থেকে লাইভ =====
+        function loadHomeCategories() {
+            const wrap = document.getElementById('homeCategories');
+            const DEFAULT_CATS = [
+                { name: 'ইলেকট্রনিক্স', icon: '📱' }, { name: 'ফ্যাশন', icon: '👕' },
+                { name: 'বিউটি', icon: '💄' }, { name: 'হোম ও লিভিং', icon: '🏠' },
+                { name: 'খেলনা', icon: '🧸' }, { name: 'বই ও শিক্ষা', icon: '📚' },
+                { name: 'গ্রোসারি', icon: '🛒' }
+            ];
+            const render = (cats) => {
+                let html = '';
+                cats.forEach(c => {
+                    const iconHtml = c.image
+                        ? '<img src="' + c.image + '" alt="' + skEscape(c.name) + '" style="width:52px;height:52px;border-radius:50%;object-fit:cover;">'
+                        : '<span class="category-icon">' + (c.icon || '📦') + '</span>';
+                    html += '<div class="category-card" onclick="filterCategory(\'' + String(c.name).replace(/'/g, "\\'") + '\', event)">'
+                        + '<div class="category-icon-wrapper">' + iconHtml + '</div>'
+                        + '<h3 class="category-name">' + skEscape(c.name) + '</h3>'
+                        + '<p class="category-count">পণ্য দেখুন</p></div>';
+                });
+                html += '<div class="category-card" onclick="filterCategory(\'all\', event)">'
+                    + '<div class="category-icon-wrapper"><span class="category-icon">🛍️</span></div>'
+                    + '<h3 class="category-name">সব দেখুন</h3><p class="category-count">সকল পণ্য</p></div>';
+                wrap.innerHTML = html;
+            };
+            // ক্যাশ আগে (instant)
+            try {
+                const cached = JSON.parse(localStorage.getItem('sk_categories') || 'null');
+                if (cached && cached.t && (Date.now() - cached.t < 10 * 60 * 1000) && cached.list.length) render(cached.list);
+            } catch (e) {}
+            db.collection('categories').get().then(snap => {
+                const live = [];
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    if (d.active !== false && d.name) live.push({ name: d.name, icon: d.icon || '', image: d.image || '' });
+                });
+                if (live.length) {
+                    live.sort((a, b) => a.name.localeCompare(b.name));
+                    render(live);
+                    try { localStorage.setItem('sk_categories', JSON.stringify({ t: Date.now(), list: live })); } catch (e) {}
+                } else if (!wrap.querySelector('.category-card')) {
+                    render(DEFAULT_CATS); // কালেকশন খালি থাকলে ডিফল্ট
+                }
+            }).catch(() => { if (!wrap.querySelector('.category-card')) render(DEFAULT_CATS); });
         }
 
         function escapeHtml(text) {
@@ -609,12 +641,16 @@
                 const discount = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
                 const safeName = (product.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const safeImage = (product.image || '').replace(/'/g, "\\'");
-                
+                const stockOut = (product.stock !== undefined && product.stock !== null && product.stock <= 0);
+                const hasVariants = skHasVariants(product);
+
                 html += '<div class="product-card" onclick="viewProduct(\'' + product.id + '\')">';
                 html += '<div class="product-image">';
                 if (discount > 0) html += '<span class="discount-badge">-' + discount + '%</span>';
+                if (skHasFlash(product)) html += '<span class="badge-flash">⚡ ফ্ল্যাশ সেল</span>';
+                else html += skStockBadge(product);
                 html += '<button class="wishlist-heart" onclick="event.stopPropagation(); toggleWishlist(\'' + product.id + '\', this)" style="position:absolute; top:12px; right:12px; width:38px; height:38px; background:white; border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.1); z-index:2; transition:all 0.3s;"><i class="' + (wishlist.includes(product.id) ? 'fas' : 'far') + ' fa-heart" style="color:' + (wishlist.includes(product.id) ? '#ec4899' : '#94a3b8') + '; font-size:16px;"></i></button>';
-                html += '<img src="' + (product.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy">';
+                html += '<img src="' + (product.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
                 html += '</div>';
                 html += '<div class="product-info">';
                 html += '<div class="product-category">' + escapeHtml(product.category || 'সাধারণ') + '</div>';
@@ -623,11 +659,17 @@
                 html += '<span class="current-price">৳' + product.price + '</span>';
                 if (product.oldPrice) html += '<span class="old-price">৳' + product.oldPrice + '</span>';
                 html += '</div>';
-                html += '<button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(\'' + product.id + '\', \'' + safeName + '\', ' + product.price + ', \'' + safeImage + '\')">';
-                html += '<i class="fas fa-cart-plus"></i> কার্টে যোগ করুন</button>';
+                if (stockOut) {
+                    html += '<button class="add-cart-btn" disabled><i class="fas fa-ban"></i> স্টক শেষ</button>';
+                } else if (hasVariants) {
+                    html += '<button class="add-cart-btn variant-btn" onclick="event.stopPropagation(); viewProduct(\'' + product.id + '\')"><i class="fas fa-list-ul"></i> অপশন দেখুন</button>';
+                } else {
+                    html += '<button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(\'' + product.id + '\', \'' + safeName + '\', ' + product.price + ', \'' + safeImage + '\')">';
+                    html += '<i class="fas fa-cart-plus"></i> কার্টে যোগ করুন</button>';
+                }
                 html += '</div></div>';
             });
-            
+
             grid.innerHTML = html;
         }
 
@@ -647,17 +689,72 @@
             window.location.href = 'category.html?cat=' + encodeURIComponent(category);
         }
 
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase().trim();
-            if (!query) {
-                displayProducts(allProducts);
+        // ===== DARAZ-স্টাইল সার্চ: suggestion dropdown + ফল পেজে রিডাইরেক্ট =====
+        const searchInput = document.getElementById('searchInput');
+        const suggestBox = document.getElementById('searchSuggest');
+        let searchTimer = null;
+
+        function goToSearch(q) {
+            if (!q) return;
+            window.location.href = 'category.html?cat=all&q=' + encodeURIComponent(q);
+        }
+        function hideSuggest() { if (suggestBox) suggestBox.classList.remove('show'); }
+
+        function renderSuggestions(list, q) {
+            if (!suggestBox) return;
+            if (!list.length) {
+                suggestBox.innerHTML = '<div class="sk-suggest-empty">কোন পণ্য পাওয়া যায়নি — Enter চেপে খুঁজে দেখুন</div>';
+                suggestBox.classList.add('show');
                 return;
             }
-            const filtered = allProducts.filter(p => 
-                p.name.toLowerCase().includes(query) || 
-                (p.category && p.category.toLowerCase().includes(query))
-            );
-            displayProducts(filtered);
+            let html = '';
+            list.forEach(p => {
+                html += '<div class="sk-suggest-item" onclick="viewProduct(\'' + p.id + '\')">'
+                    + '<img src="' + (p.image || 'https://via.placeholder.com/38') + '" alt="" loading="lazy" onerror="this.src=\'https://via.placeholder.com/38\'">'
+                    + '<div><div class="s-name">' + skEscape(p.name) + '</div>'
+                    + '<div class="s-price">৳' + (p.price || 0) + '</div></div></div>';
+            });
+            html += '<div class="sk-suggest-item" style="justify-content:center;color:#059669;font-weight:700;border-top:1px solid #f1f5f9;" onclick="goToSearch(\'' + q.replace(/'/g, "\\'") + '\')">'
+                + '<i class="fas fa-search"></i>&nbsp; "' + skEscape(q) + '" এর সব ফলাফল দেখুন</div>';
+            suggestBox.innerHTML = html;
+            suggestBox.classList.add('show');
+        }
+
+        searchInput.addEventListener('input', function () {
+            const q = searchInput.value.trim();
+            clearTimeout(searchTimer);
+            if (!q) { hideSuggest(); return; }
+            searchTimer = setTimeout(() => {
+                // ১) Firestore keywords index দিয়ে দ্রুত ম্যাচ (top 6)
+                const token = q.toLowerCase().split(/\s+/).sort((a, b) => b.length - a.length)[0];
+                if (token.length >= 2) {
+                    db.collection('products').where('keywords', 'array-contains', token).limit(6).get()
+                        .then(snap => {
+                            const list = [];
+                            snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+                            if (list.length) { renderSuggestions(list, q); return; }
+                            // ২) fallback: লোড করা পণ্যের মধ্যে client-side ম্যাচ
+                            const local = allProducts.filter(p =>
+                                (p.name && p.name.toLowerCase().includes(q.toLowerCase())) ||
+                                (p.category && p.category.toLowerCase().includes(q.toLowerCase())));
+                            renderSuggestions(local.slice(0, 6), q);
+                        })
+                        .catch(() => {
+                            const local = allProducts.filter(p =>
+                                (p.name && p.name.toLowerCase().includes(q.toLowerCase())) ||
+                                (p.category && p.category.toLowerCase().includes(q.toLowerCase())));
+                            renderSuggestions(local.slice(0, 6), q);
+                        });
+                }
+            }, 300);
+        });
+        searchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); goToSearch(searchInput.value.trim()); }
+            if (e.key === 'Escape') hideSuggest();
+        });
+        searchInput.addEventListener('blur', function () { setTimeout(hideSuggest, 180); });
+        document.querySelector('.search-btn').addEventListener('click', function () {
+            goToSearch(searchInput.value.trim());
         });
 
         function saveCart() {
@@ -710,7 +807,7 @@ function toggleWishlist(productId, btn) {
 }
 
         function addToCart(id, name, price, image) {
-            const existing = cart.find(item => item.id === id);
+            const existing = cart.find(item => item.id === id && !item.size && !item.color);
             if (existing) {
                 existing.quantity += 1;
             } else {
@@ -718,6 +815,7 @@ function toggleWishlist(productId, btn) {
             }
             saveCart();
             showToast('✅ কার্টে যোগ করা হয়েছে!');
+            skTrack('AddToCart', { value: Number(price) || 0, currency: 'BDT', content_name: name, content_ids: [id] });
         }
 
         function removeFromCart(id) {
@@ -865,13 +963,13 @@ loadBanners();
             }
         })();
         loadProducts();
+        loadHomeCategories();
         updateCartCount();
         updateWishlistCount();
     </script>
     <script src="chatbot.js"></script>
     <script src="theme.js"></script>
-    <script src="scripts/pagination-fix.js"></script>
-    <script src="scripts/category-pagination-fix.js"></script>
+    <!-- পুরনো দুই pagination স্ক্রিপ্ট সরানো হয়েছে (ডুপ্লিকেট কনফ্লিক্ট বাগ ফিক্স) -->
   
 </body>
 </html>

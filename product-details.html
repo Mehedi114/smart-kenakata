@@ -578,6 +578,7 @@
         }
     </style>
         <link rel="stylesheet" href="mobile-fix.css?v=2">
+    <link rel="stylesheet" href="premium.css?v=1">
 </head>
 <body>
 
@@ -673,7 +674,17 @@
                 <label style="display:block; margin-bottom:8px; font-weight:600; font-size:14px;">আপনার মতামত *</label>
                 <textarea id="reviewComment" required rows="4" style="width:100%; padding:12px; border:2px solid #e2e8f0; border-radius:10px; font-family:inherit; font-size:14px; resize:vertical;"></textarea>
             </div>
-            
+
+            <div style="margin-bottom:15px;">
+                <label style="display:block; margin-bottom:8px; font-weight:600; font-size:14px;">📷 ছবি যোগ করুন (ঐচ্ছিক, সর্বোচ্চ ২টি)</label>
+                <div class="sk-photo-drop" onclick="document.getElementById('reviewPhotoInput').click()">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:22px; margin-bottom:4px;"></i><br>
+                    পণ্যের ছবি সিলেক্ট করুন (প্রতিটা ২MB এর মধ্যে)
+                </div>
+                <input type="file" id="reviewPhotoInput" accept="image/*" multiple style="display:none;" onchange="onReviewPhotos(this)">
+                <div class="sk-photo-input-preview" id="reviewPhotoPreview"></div>
+            </div>
+
             <div style="display:flex; gap:10px;">
                 <button type="submit" id="submitReviewBtn" style="padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border:none; border-radius:10px; font-family:inherit; font-weight:600; cursor:pointer;">
                     <i class="fas fa-paper-plane"></i> রিভিউ পোস্ট করুন
@@ -739,6 +750,8 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="site-core.js?v=1"></script>
 
     <script>
         const firebaseConfig = {
@@ -797,8 +810,10 @@
                 
                 currentProduct = { id: doc.id, ...doc.data() };
                 renderProduct();
+                startFlashTimer(currentProduct);
                 loadRelated();
                 loadReviews();
+                skTrack('ViewContent', { value: Number(currentProduct.price) || 0, currency: 'BDT', content_name: currentProduct.name, content_ids: [currentProduct.id] });
             } catch (error) {
                 console.error(error);
                 document.getElementById('productContent').innerHTML = `
@@ -811,11 +826,50 @@
         }
 
         // ===== RENDER PRODUCT =====
+        let selectedSize = null;
+        let selectedColor = null;
+
         function renderProduct() {
             const p = currentProduct;
             const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
             const saveAmount = p.oldPrice ? p.oldPrice - p.price : 0;
-            const inStock = (p.stock || 0) > 0;
+            const stock = (p.stock === undefined || p.stock === null || p.stock === '') ? 999 : Number(p.stock);
+            const inStock = stock > 0;
+            selectedSize = null;
+            selectedColor = null;
+
+            // স্টক লাইন
+            let stockLine = '';
+            if (stock > 0 && stock <= SKS('stockAlert') && stock < 900) {
+                stockLine = `<div class="sk-stock-line low">🔥 স্টক সীমিত! আর মাত্র <b>${stock}</b> টি পণ্য বাকি!</div>`;
+            } else if (inStock && stock < 900) {
+                stockLine = `<div class="sk-stock-line ok">✅ স্টকে আছে (${stock}টি)</div>`;
+            }
+
+            // Variant UI
+            let variantHtml = '';
+            if (p.sizes && p.sizes.length) {
+                variantHtml += `<div class="sk-variant-group"><div class="sk-variant-label">📏 সাইজ বেছে নিন:</div>
+                    <div class="sk-variant-opts" id="sizeOpts">${p.sizes.map(s => `<button type="button" class="sk-variant-opt" data-g="size" data-v="${skEscape(s)}" onclick="selectVariantBtn(this)">${skEscape(s)}</button>`).join('')}</div></div>`;
+            }
+            if (p.colors && p.colors.length) {
+                variantHtml += `<div class="sk-variant-group"><div class="sk-variant-label">🎨 কালার বেছে নিন:</div>
+                    <div class="sk-variant-opts" id="colorOpts">${p.colors.map(c => `<button type="button" class="sk-variant-opt" data-g="color" data-v="${skEscape(c)}" onclick="selectVariantBtn(this)">${skEscape(c)}</button>`).join('')}</div></div>`;
+            }
+            if (variantHtml) variantHtml += `<div class="sk-variant-error" id="variantError">⚠️ অনুগ্রহ করে সাইজ/কালার বেছে নিন</div>`;
+
+            // Flash sale box
+            let flashHtml = '';
+            if (skHasFlash(p)) {
+                flashHtml = `<div class="sk-flash-box">
+                    <span class="sk-flash-title">⚡ ফ্ল্যাশ সেল চলছে!</span>
+                    <div class="sk-flash-timer" id="flashTimer">
+                        <div class="t-cell"><span id="ftH">00</span><small>ঘণ্টা</small></div>
+                        <div class="t-cell"><span id="ftM">00</span><small>মিনিট</small></div>
+                        <div class="t-cell"><span id="ftS">00</span><small>সেকেন্ড</small></div>
+                    </div>
+                </div>`;
+            }
 
             // Update page title & breadcrumb
             document.title = p.name + ' - স্মার্ট কেনাকাটা';
@@ -925,6 +979,10 @@
                                 <li><i class="fas fa-undo"></i> ৭ দিনের রিটার্ন পলিসি</li>
                             </ul>
                             
+                            ${flashHtml}
+                            ${stockLine}
+                            ${variantHtml}
+
                             ${inStock ? `
                                 <div class="quantity-row">
                                     <span class="quantity-label">পরিমাণ:</span>
@@ -944,7 +1002,7 @@
                                     </button>
                                 </div>
                                 
-                                <a href="https://wa.me/8801932211123?text=আমি ${encodeURIComponent(p.name)} (৳${p.price}) অর্ডার করতে চাই" 
+                                <a href="https://wa.me/${SKS('whatsapp')}?text=${encodeURIComponent('আমি ' + p.name + (selectedSize ? ' (সাইজ: ' + selectedSize + ')' : '') + (selectedColor ? ' (কালার: ' + selectedColor + ')' : '') + ' (৳' + p.price + ') অর্ডার করতে চাই')}"
                                    target="_blank" class="whatsapp-order">
                                     <i class="fab fa-whatsapp"></i> WhatsApp এ সরাসরি অর্ডার
                                 </a>
@@ -1027,28 +1085,91 @@
             document.getElementById('qtyValue').textContent = quantity;
         }
 
-        // ===== ADD TO CART =====
+        // ===== VARIANT SELECT =====
+        function selectVariantBtn(btn) {
+            const group = btn.getAttribute('data-g');
+            const value = btn.getAttribute('data-v');
+            btn.parentElement.querySelectorAll('.sk-variant-opt').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            if (group === 'size') selectedSize = value;
+            if (group === 'color') selectedColor = value;
+            const err = document.getElementById('variantError');
+            if (err) err.classList.remove('show');
+        }
+
+        function validateVariants() {
+            const p = currentProduct;
+            if (!p) return true;
+            const needSize = p.sizes && p.sizes.length && !selectedSize;
+            const needColor = p.colors && p.colors.length && !selectedColor;
+            if (needSize || needColor) {
+                const err = document.getElementById('variantError');
+                if (err) {
+                    err.textContent = needSize ? '⚠️ আগে সাইজ বেছে নিন!' : '⚠️ আগে কালার বেছে নিন!';
+                    err.classList.add('show');
+                    err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return false;
+            }
+            return true;
+        }
+
+        // ===== FLASH TIMER =====
+        let flashInterval = null;
+        function startFlashTimer(p) {
+            if (!skHasFlash(p)) return;
+            clearInterval(flashInterval);
+            const tick = () => {
+                const remain = Number(p.flashEnd) - Date.now();
+                if (remain <= 0) {
+                    clearInterval(flashInterval);
+                    const box = document.querySelector('.sk-flash-box');
+                    if (box) { box.innerHTML = '<span class="sk-flash-title">⏰ ফ্ল্যাশ সেল শেষ!</span>'; box.style.opacity = '.6'; }
+                    return;
+                }
+                const h = Math.floor(remain / 3600000);
+                const m = Math.floor((remain % 3600000) / 60000);
+                const s = Math.floor((remain % 60000) / 1000);
+                const eH = document.getElementById('ftH'), eM = document.getElementById('ftM'), eS = document.getElementById('ftS');
+                if (eH) eH.textContent = String(h).padStart(2, '0');
+                if (eM) eM.textContent = String(m).padStart(2, '0');
+                if (eS) eS.textContent = String(s).padStart(2, '0');
+            };
+            tick();
+            flashInterval = setInterval(tick, 1000);
+        }
+
+        // ===== ADD TO CART (variant সহ) =====
         function addToCart() {
-            const existing = cart.find(item => item.id === currentProduct.id);
+            if (!validateVariants()) return;
+            const p = currentProduct;
+            const existing = cart.find(item => item.id === p.id && (item.size || null) === selectedSize && (item.color || null) === selectedColor);
             if (existing) {
                 existing.quantity += quantity;
             } else {
-                cart.push({
-                    id: currentProduct.id,
-                    name: currentProduct.name,
-                    price: currentProduct.price,
-                    image: currentProduct.image,
+                const item = {
+                    id: p.id,
+                    name: p.name,
+                    price: p.price,
+                    image: p.image,
                     quantity: quantity
-                });
+                };
+                if (selectedSize) item.size = selectedSize;
+                if (selectedColor) item.color = selectedColor;
+                cart.push(item);
             }
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
             showToast('✅ কার্টে যোগ করা হয়েছে!');
+            skTrack('AddToCart', { value: (Number(p.price) || 0) * quantity, currency: 'BDT', content_name: p.name, content_ids: [p.id] });
         }
 
         // ===== BUY NOW =====
         function buyNow() {
+            if (!validateVariants()) return;
+            const had = cart.length;
             addToCart();
+            if (cart.length === had && false) return;
             setTimeout(() => {
                 window.location.href = 'checkout.html';
             }, 500);
@@ -1106,12 +1227,13 @@ function loadReviews() {
                             <div style="flex:1;">
                                 <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:5px;">
                                     <div>
-                                        <h4 style="margin:0; font-size:16px;">${r.name}</h4>
+                                        <h4 style="margin:0; font-size:16px;">${skEscape(r.name)}</h4>
                                         <div style="color:#fbbf24; font-size:16px; margin:5px 0;">${stars}</div>
                                     </div>
                                     <span style="font-size:12px; color:#64748b;">📅 ${date}</span>
                                 </div>
-                                <p style="margin-top:10px; color:#334155; line-height:1.6;">${r.comment}</p>
+                                <p style="margin-top:10px; color:#334155; line-height:1.6;">${skEscape(r.comment)}</p>
+                                ${(r.images && r.images.length) ? `<div class="sk-review-photos">${r.images.map(u => `<img src="${u}" alt="রিভিউ ছবি" loading="lazy" onclick="openImageZoom('${u}')">`).join('')}</div>` : ''}
                             </div>
                         </div>
                     </div>
@@ -1150,18 +1272,58 @@ function updateStars(rating) {
     });
 }
 
+// ===== REVIEW PHOTOS (Firebase Storage) =====
+let pendingPhotos = []; // {file, url}
+
+function onReviewPhotos(input) {
+    const files = Array.from(input.files || []);
+    files.forEach(f => {
+        if (!f.type.startsWith('image/')) return;
+        if (f.size > 2 * 1024 * 1024) { showToast('❌ ছবি ২MB এর বড় হতে পারবে না: ' + f.name); return; }
+        if (pendingPhotos.length >= 2) { showToast('⚠️ সর্বোচ্চ ২টি ছবি'); return; }
+        pendingPhotos.push({ file: f, url: URL.createObjectURL(f) });
+    });
+    input.value = '';
+    renderPhotoPreview();
+}
+
+function renderPhotoPreview() {
+    const box = document.getElementById('reviewPhotoPreview');
+    box.innerHTML = pendingPhotos.map((p, i) =>
+        `<div class="ph"><img src="${p.url}" alt=""><button type="button" class="rm" onclick="removePendingPhoto(${i})">✕</button></div>`
+    ).join('');
+}
+
+function removePendingPhoto(i) {
+    try { URL.revokeObjectURL(pendingPhotos[i].url); } catch (e) {}
+    pendingPhotos.splice(i, 1);
+    renderPhotoPreview();
+}
+
+async function uploadReviewPhotos() {
+    const urls = [];
+    for (let i = 0; i < pendingPhotos.length; i++) {
+        const f = pendingPhotos[i].file;
+        const ext = (f.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+        const path = 'review_photos/' + productId + '_' + Date.now() + '_' + i + '.' + ext;
+        const snap = await firebase.storage().ref(path).put(f, { contentType: f.type });
+        urls.push(await snap.ref.getDownloadURL());
+    }
+    return urls;
+}
+
 async function submitReview(event) {
     event.preventDefault();
-    
+
     if (selectedRating === 0) {
         showToast('❌ রেটিং দিতে হবে!');
         return;
     }
-    
+
     const btn = document.getElementById('submitReviewBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> পোস্ট হচ্ছে...';
-    
+
     const review = {
         productId: productId,
         productName: currentProduct.name,
@@ -1171,11 +1333,25 @@ async function submitReview(event) {
         comment: document.getElementById('reviewComment').value.trim(),
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    
+
     try {
+        // ছবি থাকলে আগে আপলোড
+        if (pendingPhotos.length) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ছবি আপলোড হচ্ছে...';
+            try {
+                review.images = await uploadReviewPhotos();
+            } catch (upErr) {
+                console.error('photo upload failed:', upErr);
+                showToast('⚠️ ছবি আপলোড ব্যর্থ — টেক্সট রিভিউই যাচ্ছে');
+            }
+        }
+
         await db.collection('reviews').add(review);
         showToast('✅ রিভিউ সফলভাবে পোস্ট হয়েছে!');
         event.target.reset();
+        pendingPhotos.forEach(p => { try { URL.revokeObjectURL(p.url); } catch (e) {} });
+        pendingPhotos = [];
+        renderPhotoPreview();
         selectedRating = 0;
         updateStars(0);
         hideReviewForm();
@@ -1183,7 +1359,7 @@ async function submitReview(event) {
     } catch (error) {
         showToast('❌ ' + error.message);
     }
-    
+
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-paper-plane"></i> রিভিউ পোস্ট করুন';
 }   

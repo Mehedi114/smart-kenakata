@@ -513,6 +513,7 @@
         }
     </style>
        <link rel="stylesheet" href="mobile-fix.css?v=2">
+    <link rel="stylesheet" href="premium.css?v=1">
 </head>
 <body>
 
@@ -601,12 +602,28 @@
             <span>মোট <strong id="resultsCount">0</strong> টি পণ্য পাওয়া গেছে</span>
         </div>
 
+        <!-- Premium Filter Bar — দাম রেঞ্জ + স্টক -->
+        <div class="sk-filter-bar" id="advancedFilters">
+            <label class="sk-chip-toggle" title="শুধু স্টকে থাকা পণ্য">
+                <input type="checkbox" id="inStockOnly" onchange="resetAndReload()"> ✅ শুধু স্টকে আছে
+            </label>
+            <div class="sk-range-wrap">
+                <div class="sk-track"><div class="sk-fill" id="rangeFill"></div></div>
+                <input type="range" id="priceMin" min="0" max="5000" value="0" step="10" oninput="onPriceInput()">
+                <input type="range" id="priceMax" min="0" max="5000" value="5000" step="10" oninput="onPriceInput()">
+                <div class="sk-range-vals">৳<span id="priceMinVal">0</span> — ৳<span id="priceMaxVal">5000</span>+</div>
+            </div>
+        </div>
+
         <!-- Products Grid -->
         <div class="products-grid" id="productsGrid">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>পণ্য লোড হচ্ছে...</p>
-            </div>
+            <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+            <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+            <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+            <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+        </div>
+        <div class="sk-load-more">
+            <button id="loadMoreBtn" onclick="loadNextPage()" style="display:none;">আরো পণ্য দেখুন <i class="fas fa-chevron-down"></i></button>
         </div>
     </div>
 
@@ -623,6 +640,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="site-core.js?v=1"></script>
 
     <script>
         const firebaseConfig = {
@@ -654,17 +672,33 @@
         // Get category from URL
         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('cat') || 'all';
+        const searchQuery = (urlParams.get('q') || '').trim();
 
-        let allProducts = [];
-        let filteredProducts = [];
+        let loadedProducts = [];       // এ পর্যন্ত লোড হওয়া সব পণ্য
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        // ===== Server-side Pagination state =====
+        const PAGE_SIZE = 12;
+        let lastDoc = null;
+        let hasMore = false;
+        let pageLoading = false;
+
+        // ===== Filter state =====
+        let priceMin = 0, priceMax = 5000, inStockOnly = false;
 
         // ===== INIT =====
         function init() {
             updateCategoryHeader();
             highlightActiveCategory();
-            loadProducts();
+            loadQuickCategories();
+            setupFilters();
+            resetAndReload();
             updateCartCount();
+            if (searchQuery) {
+                document.getElementById('searchInput').value = searchQuery;
+                document.getElementById('categoryName').textContent = '🔍 ' + searchQuery;
+                document.getElementById('breadcrumbCat').textContent = 'সার্চ: ' + searchQuery;
+            }
         }
 
         // ===== UPDATE HEADER =====
@@ -726,120 +760,250 @@
             } catch(e) { console.log('highlight error', e); }
         }
 
-        // ===== LOAD PRODUCTS - FIXED =====
-        function loadProducts() {
-            const grid = document.getElementById('productsGrid');
-            const tryOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(100).get();
-            const trySimple = () => db.collection('products').limit(100).get();
-            (tryOrdered().catch(() => trySimple()))
-                .then(snapshot => {
-                    allProducts = [];
-                    snapshot.forEach(doc => {
-                        allProducts.push({ id: doc.id, ...doc.data() });
-                    });
-                    if (category === 'all') {
-                        filteredProducts = [...allProducts];
-                    } else {
-                        filteredProducts = allProducts.filter(p => p.category === category);
-                    }
-                    document.getElementById('categoryCount').textContent = filteredProducts.length + ' টি পণ্য পাওয়া গেছে';
-                    applySorting();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h2>লোড করতে সমস্যা</h2><p>' + (error.message || 'আবার চেষ্টা করুন') + '</p><button onclick="loadProducts()" style="margin-top:10px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
+        // ===== লাইভ Quick Categories (Admin থেকে add করলে এখানেও আসবে) =====
+        function loadQuickCategories() {
+            db.collection('categories').get().then(snap => {
+                const live = [];
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    if (d.active !== false && d.name) live.push({ name: d.name, icon: d.icon || '' });
                 });
+                if (!live.length) return;
+                live.sort((a, b) => a.name.localeCompare(b.name));
+                const wrap = document.getElementById('quickCategories');
+                let html = '<a href="category.html?cat=all" class="quick-cat"><i class="fas fa-th"></i> সব পণ্য</a>';
+                live.forEach(c => {
+                    html += '<a href="category.html?cat=' + encodeURIComponent(c.name) + '" class="quick-cat">' + (c.icon ? c.icon + ' ' : '') + skEscape(c.name) + '</a>';
+                });
+                wrap.innerHTML = html;
+                highlightActiveCategory();
+            }).catch(() => {});
         }
 
-        // ===== APPLY SORTING =====
-        function applySorting() {
-            const sortBy = document.getElementById('sortSelect').value;
-
-            switch(sortBy) {
-                case 'priceLow':
-                    filteredProducts.sort((a, b) => a.price - b.price);
-                    break;
-                case 'priceHigh':
-                    filteredProducts.sort((a, b) => b.price - a.price);
-                    break;
-                case 'nameAZ':
-                    filteredProducts.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-                    break;
-                case 'newest':
-                default:
-                    filteredProducts.sort((a, b) => {
-                        const timeA = a.createdAt?.seconds || 0;
-                        const timeB = b.createdAt?.seconds || 0;
-                        return timeB - timeA;
-                    });
-                    break;
+        // ===== FILTER SETUP =====
+        function setupFilters() {
+            priceMin = 0; priceMax = 5000; inStockOnly = false;
+            updateRangeUI();
+        }
+        function onPriceInput() {
+            let mn = Number(document.getElementById('priceMin').value);
+            let mx = Number(document.getElementById('priceMax').value);
+            if (mn > mx - 10) {
+                if (document.activeElement && document.activeElement.id === 'priceMin') mn = mx - 10;
+                else mx = mn + 10;
+                document.getElementById('priceMin').value = mn;
+                document.getElementById('priceMax').value = mx;
             }
-
-            displayProducts(filteredProducts);
+            priceMin = mn; priceMax = mx;
+            updateRangeUI();
+            clearTimeout(window._priceTimer);
+            window._priceTimer = setTimeout(applyClientFilters, 250);
+        }
+        function updateRangeUI() {
+            document.getElementById('priceMinVal').textContent = priceMin;
+            document.getElementById('priceMaxVal').textContent = priceMax >= 5000 ? '5000' : priceMax;
+            const fill = document.getElementById('rangeFill');
+            fill.style.left = (priceMin / 5000 * 100) + '%';
+            fill.style.right = (100 - priceMax / 5000 * 100) + '%';
         }
 
-        // ===== DISPLAY PRODUCTS =====
-        function displayProducts(products) {
+        function resetAndReload() {
+            inStockOnly = document.getElementById('inStockOnly') ? document.getElementById('inStockOnly').checked : false;
+            loadedProducts = [];
+            lastDoc = null;
+            hasMore = false;
+            document.getElementById('productsGrid').innerHTML =
+                '<div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>'.repeat(4);
+            loadNextPage();
+        }
+
+        // ===== SERVER-SIDE QUERY (cursor pagination) =====
+        function buildQuery() {
+            let q = db.collection('products');
+            const sortBy = document.getElementById('sortSelect').value;
+            if (searchQuery) {
+                // সার্চ: keywords index দিয়ে
+                const token = searchQuery.toLowerCase().split(/\s+/).sort((a, b) => b.length - a.length)[0];
+                q = q.where('keywords', 'array-contains', token);
+            } else if (category !== 'all') {
+                q = q.where('category', '==', category);
+            }
+            // sort
+            if (sortBy === 'priceLow') q = q.orderBy('price', 'asc');
+            else if (sortBy === 'priceHigh') q = q.orderBy('price', 'desc');
+            else if (sortBy !== 'nameAZ') q = q.orderBy('createdAt', 'desc');
+            return q;
+        }
+
+        function loadNextPage() {
+            if (pageLoading) return;
+            pageLoading = true;
+            const btn = document.getElementById('loadMoreBtn');
+            btn.style.display = 'none';
+            const grid = document.getElementById('productsGrid');
+
+            let query = buildQuery().limit(PAGE_SIZE);
+            if (lastDoc) query = query.startAfter(lastDoc);
+
+            query.get().then(snap => {
+                if (!snap.empty) lastDoc = snap.docs[snap.docs.length - 1];
+                const fresh = [];
+                snap.forEach(doc => fresh.push({ id: doc.id, ...doc.data() }));
+                hasMore = fresh.length === PAGE_SIZE;
+                loadedProducts = loadedProducts.concat(fresh);
+                if (loadedProducts.length === 0 && !hasMore) {
+                    renderGrid([]);
+                    return;
+                }
+                applyClientFilters();
+            }).catch(error => {
+                console.warn('indexed query failed, fallback:', error.code);
+                // Index না থাকলে/অন্য error হলে: সিম্পল কুয়েরি + client-side সবকিছু
+                fallbackLoad();
+            }).finally(() => { pageLoading = false; });
+        }
+
+        let fallbackDone = false;
+        function fallbackLoad() {
+            if (fallbackDone) return;
+            fallbackDone = true;
+            let q = db.collection('products');
+            if (!searchQuery && category !== 'all') q = q.where('category', '==', category);
+            else if (searchQuery) {
+                const token = searchQuery.toLowerCase().split(/\s+/).sort((a, b) => b.length - a.length)[0];
+                q = q.where('keywords', 'array-contains', token);
+            }
+            q.limit(100).get().then(snap => {
+                loadedProducts = [];
+                snap.forEach(doc => loadedProducts.push({ id: doc.id, ...doc.data() }));
+                lastDoc = null; hasMore = false;
+                applyClientFilters();
+            }).catch(e => {
+                document.getElementById('productsGrid').innerHTML =
+                    '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h2>লোড করতে সমস্যা</h2><p>' + skEscape(e.message || '') + '</p>' +
+                    '<button onclick="fallbackDone=false;resetAndReload()" style="margin-top:10px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
+            });
+        }
+
+        // ===== CLIENT FILTERS (দাম/স্টক/সার্চ-রিফাইন) =====
+        function applyClientFilters() {
+            let list = loadedProducts.slice();
+            if (searchQuery) {
+                const terms = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+                list = list.filter(p => {
+                    const text = ((p.name || '') + ' ' + (p.category || '') + ' ' + (p.description || '')).toLowerCase();
+                    return terms.every(t => text.includes(t));
+                });
+            }
+            if (inStockOnly) list = list.filter(p => (p.stock === undefined || p.stock === null) || p.stock > 0);
+            list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= 5000 || Number(p.price) <= priceMax));
+
+            const sortBy = document.getElementById('sortSelect').value;
+            if (sortBy === 'nameAZ') list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            else if (fallbackDone) {
+                if (sortBy === 'priceLow') list.sort((a, b) => (a.price || 0) - (b.price || 0));
+                else if (sortBy === 'priceHigh') list.sort((a, b) => (b.price || 0) - (a.price || 0));
+                else list.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+            }
+            renderGrid(list);
+        }
+
+        // ===== DISPLAY =====
+        function escapeHtml(text) { return skEscape(text); }
+
+        function productCardHtml(product) {
+            const discount = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
+            const safeName = (product.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeImage = (product.image || '').replace(/'/g, "\\'");
+            const stockOut = (product.stock !== undefined && product.stock !== null && product.stock <= 0);
+
+            let html = '<div class="product-card" onclick="viewProduct(\'' + product.id + '\')">';
+            html += '<div class="product-image">';
+            if (discount > 0) html += '<span class="discount-badge">-' + discount + '%</span>';
+            if (skHasFlash(product)) html += '<span class="badge-flash">⚡ ফ্ল্যাশ সেল</span>';
+            else html += skStockBadge(product);
+            html += '<img src="' + (product.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
+            html += '</div>';
+            html += '<div class="product-info">';
+            html += '<div class="product-category">' + escapeHtml(product.category || 'সাধারণ') + '</div>';
+            html += '<h3 class="product-title">' + escapeHtml(product.name) + '</h3>';
+            html += '<div class="product-price">';
+            html += '<span class="current-price">৳' + product.price + '</span>';
+            if (product.oldPrice) html += '<span class="old-price">৳' + product.oldPrice + '</span>';
+            html += '</div>';
+            if (stockOut) {
+                html += '<button class="add-cart-btn" disabled><i class="fas fa-ban"></i> স্টক শেষ</button>';
+            } else if (skHasVariants(product)) {
+                html += '<button class="add-cart-btn variant-btn" onclick="event.stopPropagation(); viewProduct(\'' + product.id + '\')"><i class="fas fa-list-ul"></i> অপশন দেখুন</button>';
+            } else {
+                html += '<button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(\'' + product.id + '\', \'' + safeName + '\', ' + product.price + ', \'' + safeImage + '\')">';
+                html += '<i class="fas fa-cart-plus"></i> কার্টে যোগ করুন</button>';
+            }
+            html += '</div></div>';
+            return html;
+        }
+
+        function renderGrid(products) {
             const grid = document.getElementById('productsGrid');
             const info = document.getElementById('resultsInfo');
-            
+
             if (products.length === 0) {
                 grid.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-search"></i>
                         <h2>কোন পণ্য পাওয়া যায়নি</h2>
-                        <p>এই ক্যাটাগরিতে এখনো কোন পণ্য নেই</p>
+                        <p>ফিল্টার বদলে দেখুন বা অন্য কিছু খুঁজুন</p>
                         <a href="index.html">← হোমে ফিরে যান</a>
                     </div>
                 `;
                 info.style.display = 'none';
+                document.getElementById('categoryCount').textContent = '০ টি পণ্য';
+                updateLoadMoreBtn();
                 return;
             }
 
             info.style.display = 'flex';
             document.getElementById('resultsCount').textContent = products.length;
+            document.getElementById('categoryCount').textContent = products.length + ' টি পণ্য পাওয়া গেছে';
 
-            let html = '';
-            products.forEach(product => {
-                const discount = product.oldPrice ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
-                const safeName = (product.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const safeImage = (product.image || '').replace(/'/g, "\\'");
-
-                html += '<div class="product-card" onclick="viewProduct(\'' + product.id + '\')">';
-                html += '<div class="product-image">';
-                if (discount > 0) html += '<span class="discount-badge">-' + discount + '%</span>';
-                html += '<img src="' + (product.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy">';
-                html += '</div>';
-                html += '<div class="product-info">';
-                html += '<div class="product-category">' + (product.category || 'সাধারণ') + '</div>';
-                html += '<h3 class="product-title">' + product.name + '</h3>';
-                html += '<div class="product-price">';
-                html += '<span class="current-price">৳' + product.price + '</span>';
-                if (product.oldPrice) html += '<span class="old-price">৳' + product.oldPrice + '</span>';
-                html += '</div>';
-                html += '<button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(\'' + product.id + '\', \'' + safeName + '\', ' + product.price + ', \'' + safeImage + '\')">';
-                html += '<i class="fas fa-cart-plus"></i> কার্টে যোগ করুন</button>';
-                html += '</div></div>';
-            });
-
-            grid.innerHTML = html;
+            grid.innerHTML = products.map(productCardHtml).join('');
+            updateLoadMoreBtn();
         }
 
-        // ===== SEARCH =====
+        function updateLoadMoreBtn() {
+            const btn = document.getElementById('loadMoreBtn');
+            // ফিল্টার লাগানো থাকলে নতুন পেজ আনলেও সেটা filter হয়ে যাবে — তাই চালু রাখি
+            if (hasMore && !fallbackDone) { btn.style.display = 'inline-flex'; btn.disabled = false; btn.innerHTML = 'আরো পণ্য দেখুন <i class="fas fa-chevron-down"></i>'; }
+            else btn.style.display = 'none';
+        }
+
+        function applySorting() { fallbackDone = false; resetAndReload(); }
+
+        // ===== SEARCH (এই পেজের ভেতর) =====
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase().trim();
-            const baseProducts = category === 'all' ? allProducts : allProducts.filter(p => p.category === category);
-            
-            if (!query) {
-                filteredProducts = baseProducts;
-            } else {
-                filteredProducts = baseProducts.filter(p =>
-                    p.name.toLowerCase().includes(query) ||
-                    (p.description && p.description.toLowerCase().includes(query))
+            clearTimeout(window._catSearchTimer);
+            window._catSearchTimer = setTimeout(() => {
+                applyClientFiltersLocal(query);
+            }, 200);
+        });
+        function applyClientFiltersLocal(query) {
+            let list = loadedProducts.slice();
+            if (query) {
+                list = list.filter(p =>
+                    (p.name && p.name.toLowerCase().includes(query)) ||
+                    (p.description && p.description.toLowerCase().includes(query)) ||
+                    (p.category && p.category.toLowerCase().includes(query))
                 );
             }
-            applySorting();
-        });
+            if (inStockOnly) list = list.filter(p => (p.stock === undefined || p.stock === null) || p.stock > 0);
+            list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= 5000 || Number(p.price) <= priceMax));
+            const sortBy = document.getElementById('sortSelect').value;
+            if (sortBy === 'priceLow') list.sort((a, b) => (a.price || 0) - (b.price || 0));
+            else if (sortBy === 'priceHigh') list.sort((a, b) => (b.price || 0) - (a.price || 0));
+            else if (sortBy === 'nameAZ') list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            renderGrid(list);
+        }
 
         // ===== SET VIEW =====
         function setView(view, btn) {
@@ -861,7 +1025,7 @@
 
         // ===== CART =====
         function addToCart(id, name, price, image) {
-            const existing = cart.find(item => item.id === id);
+            const existing = cart.find(item => item.id === id && !item.size && !item.color);
             if (existing) {
                 existing.quantity += 1;
             } else {
@@ -870,6 +1034,7 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
             showToast('✅ কার্টে যোগ করা হয়েছে!');
+            skTrack('AddToCart', { value: Number(price) || 0, currency: 'BDT', content_name: name, content_ids: [id] });
         }
 
         function updateCartCount() {

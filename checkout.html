@@ -135,6 +135,7 @@
         }
     </style>
        <link rel="stylesheet" href="mobile-fix.css?v=2">
+    <link rel="stylesheet" href="premium.css?v=1">
 </head>
 <body>
 
@@ -253,15 +254,18 @@
                             </h3>
                             
                             <div class="delivery-options">
-                                <div class="delivery-option selected" onclick="selectDelivery(this, 'inside', 60)">
+                                <div class="delivery-option selected" onclick="selectDelivery(this, 'inside', null)">
                                     <i class="fas fa-city"></i>
                                     <h4>ঢাকার ভিতরে</h4>
-                                    <p>৳৬০</p>
+                                    <p id="deliveryInsideLabel">৳৬০</p>
                                 </div>
-                                <div class="delivery-option" onclick="selectDelivery(this, 'outside', 120)">
+                                <div class="delivery-option" onclick="selectDelivery(this, 'outside', null)">
                                     <i class="fas fa-map-marker-alt"></i>
                                     <h4>ঢাকার বাইরে</h4>
-                                    <p>৳১২০</p>
+                                    <p id="deliveryOutsideLabel">৳১২০</p>
+                                </div>
+                                <div id="freeDeliveryNote" style="display:none; width:100%; margin-top:10px; background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; padding:10px 12px; border-radius:10px; font-size:13px; font-weight:600;">
+                                    🎉 অভিনন্দন! ৳<span id="freeDeliveryMinVal"></span>+ অর্ডারে আপনার ডেলিভারি <b>ফ্রি</b>!
                                 </div>
                             </div>
                         </div>
@@ -376,6 +380,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="site-core.js?v=1"></script>
 
     <script>
         const firebaseConfig = {
@@ -391,37 +396,65 @@
         const db = firebase.firestore();
                 
 
+        // পেমেন্ট নাম্বার — Admin → সেটিংস থেকে আসে (site-core.js)
         const PAYMENT_NUMBERS = {
-            bkash: '01932211123',
-            nagad: '01932211123',
-            rocket: '019322111230'
+            get bkash() { return SKS('bkashNumber'); },
+            get nagad() { return SKS('nagadNumber'); },
+            get rocket() { return SKS('rocketNumber'); }
         };
 
         // Variables
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        let deliveryCharge = 60;
+        let deliveryCharge = Number(SKS('deliveryInside'));
         let deliveryArea = 'inside';
         let paymentMethod = 'cod';
         let appliedCoupon = null;
         let discountAmount = 0;
+        let baseDeliveryCharge = deliveryCharge;
+
+        // সেটিংস লেটে এলে লেবেল/টোটাল রিফ্রেশ
+        document.addEventListener('sk-settings', function () {
+            document.getElementById('deliveryInsideLabel').textContent = '৳' + toBanglaNum(SKS('deliveryInside'));
+            document.getElementById('deliveryOutsideLabel').textContent = '৳' + toBanglaNum(SKS('deliveryOutside'));
+            deliveryCharge = deliveryArea === 'inside' ? Number(SKS('deliveryInside')) : Number(SKS('deliveryOutside'));
+            baseDeliveryCharge = deliveryCharge;
+            updateTotals();
+        });
+        function toBanglaNum(n) {
+            return String(n).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+        }
 
         function init() {
+            document.getElementById('deliveryInsideLabel').textContent = '৳' + toBanglaNum(SKS('deliveryInside'));
+            document.getElementById('deliveryOutsideLabel').textContent = '৳' + toBanglaNum(SKS('deliveryOutside'));
             if (cart.length === 0) {
                 document.getElementById('checkoutContent').style.display = 'none';
                 document.getElementById('emptyCartPage').style.display = 'block';
                 return;
             }
             renderSummary();
+            skTrack('InitiateCheckout', {
+                value: cart.reduce((s, i) => s + (i.price * i.quantity), 0),
+                currency: 'BDT',
+                num_items: cart.reduce((s, i) => s + i.quantity, 0)
+            });
+        }
+
+        function variantText(item) {
+            const parts = [];
+            if (item.size) parts.push('সাইজ: ' + item.size);
+            if (item.color) parts.push('কালার: ' + item.color);
+            return parts.length ? ' | ' + parts.join(', ') : '';
         }
 
         function renderSummary() {
             const container = document.getElementById('summaryItems');
             container.innerHTML = cart.map(item => `
                 <div class="summary-item">
-                    <img src="${item.image || 'https://via.placeholder.com/55'}" alt="${item.name}">
+                    <img src="${item.image || 'https://via.placeholder.com/55'}" alt="${skEscape(item.name)}">
                     <div class="summary-item-info">
-                        <h4>${item.name}</h4>
-                        <p class="qty">পরিমাণ: ${item.quantity}</p>
+                        <h4>${skEscape(item.name)}</h4>
+                        <p class="qty">পরিমাণ: ${item.quantity}${skEscape(variantText(item))}</p>
                     </div>
                     <div class="summary-item-price">৳${item.price * item.quantity}</div>
                 </div>
@@ -431,7 +464,21 @@
 
         function updateTotals() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            
+
+            // ফ্রি ডেলিভারি থ্রেশহোল্ড (Admin সেটিংস)
+            const freeMin = Number(SKS('freeDeliveryMin')) || 0;
+            let effectiveDelivery = deliveryCharge;
+            const noteEl = document.getElementById('freeDeliveryNote');
+            if (freeMin > 0 && subtotal >= freeMin) {
+                effectiveDelivery = 0;
+                if (noteEl) {
+                    noteEl.style.display = 'block';
+                    document.getElementById('freeDeliveryMinVal').textContent = toBanglaNum(freeMin);
+                }
+            } else if (noteEl) {
+                noteEl.style.display = 'none';
+            }
+
             // Calculate discount
             discountAmount = 0;
             if (appliedCoupon) {
@@ -442,14 +489,14 @@
                 }
                 if (discountAmount > subtotal) discountAmount = subtotal;
             }
-            
-            const total = subtotal + deliveryCharge - discountAmount;
+
+            const total = subtotal + effectiveDelivery - discountAmount;
 
             document.getElementById('subtotalAmount').textContent = '৳' + subtotal;
-            document.getElementById('deliveryAmount').textContent = '৳' + deliveryCharge;
+            document.getElementById('deliveryAmount').textContent = effectiveDelivery === 0 ? 'ফ্রি 🎉' : '৳' + effectiveDelivery;
             document.getElementById('totalAmount').textContent = '৳' + total;
             document.getElementById('totalAmount2').textContent = '৳' + total;
-            
+
             const discountRow = document.getElementById('discountRow');
             if (discountAmount > 0) {
                 discountRow.style.display = 'flex';
@@ -457,13 +504,15 @@
             } else {
                 discountRow.style.display = 'none';
             }
+            window._effectiveDelivery = effectiveDelivery;
         }
 
         function selectDelivery(el, area, charge) {
             document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
             el.classList.add('selected');
             deliveryArea = area;
-            deliveryCharge = charge;
+            deliveryCharge = area === 'inside' ? Number(SKS('deliveryInside')) : Number(SKS('deliveryOutside'));
+            baseDeliveryCharge = deliveryCharge;
             updateTotals();
         }
 
@@ -612,7 +661,8 @@
             }
 
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const finalTotal = subtotal + deliveryCharge - discountAmount;
+            const effectiveDelivery = (window._effectiveDelivery !== undefined) ? window._effectiveDelivery : deliveryCharge;
+            const finalTotal = subtotal + effectiveDelivery - discountAmount;
 
             const paymentText = {
                 'cod': 'ক্যাশ অন ডেলিভারি',
@@ -630,7 +680,7 @@
                 items: cart,
                 subtotal: subtotal,
                 deliveryArea: deliveryArea === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে',
-                deliveryCharge: deliveryCharge,
+                deliveryCharge: effectiveDelivery,
                 couponCode: appliedCoupon ? appliedCoupon.code : null,
                 couponDiscount: discountAmount,
                 total: finalTotal,
@@ -648,8 +698,8 @@ try {
     const telegramToken = '8648498942:AAHdQuXTJMlXLQoBDmG6NlL1t4Mj9CXusvs';
     const telegramChatId = '5990402731';
     
-    const itemsList = cart.map(item => 
-        `• ${item.name} × ${item.quantity} = ৳${item.price * item.quantity}`
+    const itemsList = cart.map(item =>
+        `• ${item.name}${variantText(item)} × ${item.quantity} = ৳${item.price * item.quantity}`
     ).join('\n');
     
     const telegramMessage = 
@@ -666,7 +716,7 @@ ${phone2 ? `📞 *বিকল্প:* ${phone2}\n` : ''}📍 *ঠিকান�
 ${note ? `📝 *নোট:* ${note}\n` : ''}
 ━━━━━━━━━━━━━━━
 💰 *সাবটোটাল:* ৳${subtotal}
-🚚 *ডেলিভারি:* ৳${deliveryCharge} (${deliveryArea === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে'})
+🚚 *ডেলিভারি:* ${effectiveDelivery === 0 ? 'ফ্রি 🎉' : '৳' + effectiveDelivery} (${deliveryArea === 'inside' ? 'ঢাকার ভিতরে' : 'ঢাকার বাইরে'})
 ${discountAmount > 0 ? `🎁 *ছাড়:* -৳${discountAmount}\n` : ''}💵 *মোট:* ৳${finalTotal}
 
 💳 *পেমেন্ট:* ${paymentText[paymentMethod]}
@@ -695,11 +745,19 @@ ${transactionId ? `🔢 *TrxID:* \`${transactionId}\`\n` : ''}
                 }
                 
                 localStorage.removeItem('cart');
-                
+
+                // 📊 Purchase tracking (FB Pixel + GA4)
+                skTrack('Purchase', {
+                    transaction_id: docRef.id,
+                    value: finalTotal,
+                    currency: 'BDT',
+                    num_items: cart.reduce((s, i) => s + i.quantity, 0)
+                });
+
                 document.getElementById('checkoutContent').style.display = 'none';
                 document.getElementById('successPage').classList.add('show');
                 document.getElementById('orderIdDisplay').textContent = '#' + docRef.id.substring(0, 8).toUpperCase();
-                
+
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 
             } catch (error) {
