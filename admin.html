@@ -309,6 +309,9 @@
     <i class="fas fa-star"></i>
     <span>রিভিউ সমূহ</span>
 </button>
+            <button class="menu-item" onclick="showSection('offer-popup', this)">
+                🎁 অফার পপআপ
+            </button>
             <button class="menu-item" onclick="showSection('categories', this)">
     <i class="fas fa-layer-group"></i>
     <span>ক্যাটাগরি ম্যানেজার</span>
@@ -443,20 +446,25 @@
                         <label>ক্যাটাগরি *</label>
                         <select id="prodCategory" required onchange="checkCustomCategory(this.value)">
                             <option value="">ক্যাটাগরি নির্বাচন করুন</option>
-                            <option value="ইলেকট্রনিক্স">ইলেকট্রনিক্স</option>
-                            <option value="ফ্যাশন">ফ্যাশন</option>
-                            <option value="বিউটি">বিউটি</option>
-                            <option value="হোম ও লিভিং">হোম ও লিভিং</option>
-                            <option value="খেলনা">খেলনা</option>
-                            <option value="বই ও শিক্ষা">বই ও শিক্ষা</option>
-                            <option value="গ্রোসারি">গ্রোসারি</option>
-                            <option value="অন্যান্য">অন্যান্য</option>
+                            <option value="মহিলা ফ্যাশন">👗 মহিলা ফ্যাশন</option>
+                            <option value="পুরুষ ফ্যাশন">👔 পুরুষ ফ্যাশন</option>
+                            <option value="কাপল">💑 কাপল</option>
+                            <option value="গ্যাজেট">📱 গ্যাজেট</option>
+                            <option value="বাচ্চাদের ফ্যাশন">🧒 বাচ্চাদের ফ্যাশন</option>
+                            <option value="অন্যান্য">📦 অন্যান্য</option>
                             <option value="__custom__">➕ নতুন ক্যাটাগরি যোগ করুন</option>
                         </select>
                         <div id="customCategoryDiv" style="display:none; margin-top:10px;">
                             <input type="text" id="customCategoryInput" placeholder="নতুন ক্যাটাগরির নাম লিখুন (যেমন: গহনা)" style="width:100%; padding:10px; border:2px dashed #10b981; border-radius:8px;">
                             <small style="color:#059669;">এটা লিখলে নতুন ক্যাটাগরি হিসেবে সেভ হবে আর ওয়েবসাইটে দেখা যাবে</small>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label>সাব-ক্যাটাগরি (ঐচ্ছিক)</label>
+                        <select id="prodSubCategory">
+                            <option value="">— সাব-ক্যাটাগরি নির্বাচন করুন —</option>
+                        </select>
+                        <small style="color:#64748b;">ক্যাটাগরি বদলালে সাব-ক্যাটাগরি লিস্ট অটো বদলাবে। সাইটে এই ভাগের নিচে পণ্য দেখাবে।</small>
                     </div>
                     <div class="form-group">
                         <label>বর্তমান দাম (৳) *</label>
@@ -530,6 +538,13 @@
                     <div class="form-group full">
                         <label>পণ্যের বিবরণ</label>
                         <textarea id="prodDescription" placeholder="পণ্যের বিস্তারিত বিবরণ..."></textarea>
+                    </div>
+                    <div class="form-group full" style="background:#fffbeb; border:1.5px solid #fbbf24; border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <input type="checkbox" id="prodFeatured" style="width:22px; height:22px; accent-color:#f59e0b; cursor:pointer; flex-shrink:0;">
+                        <div>
+                            <label for="prodFeatured" style="margin:0; font-size:15px; font-weight:700; color:#92400e; cursor:pointer;">⭐ জনপ্রিয় পণ্য হিসেবে দেখান</label>
+                            <small style="color:#b45309; display:block; margin-top:2px;">টিক দিলে পণ্যটি ওয়েবসাইটের শুরুতে <b>জনপ্রিয় পণ্য</b> সেকশনে দেখা যাবে (সব ক্যাটাগরির সাথে মিশে)</small>
+                        </div>
                     </div>
 <div class="form-group full" style="border-top:2px dashed #10b981; padding-top:20px; margin-top:20px;">
     <h3 style="color:#10b981; margin-bottom:15px;"><i class="fas fa-tags"></i> ভেরিয়েন্ট ও ফ্ল্যাশ সেল (ঐচ্ছিক)</h3>
@@ -697,24 +712,29 @@
                 <form onsubmit="addBanner(event)">
                     <div class="form-grid">
                        <div class="form-group full">
-                            <label>📸 ব্যানার আপলোড করুন</label>
-                            <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:20px; text-align:center; margin-bottom:15px;">
+                            <label>📸 ব্যানার ছবি আপলোড করুন</label>
+                            <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:24px; text-align:center; margin-bottom:12px;">
                                 <input type="file" id="bannerUploader" accept="image/*" style="display:none;" onchange="uploadBannerImage(event)">
-                                <label for="bannerUploader" style="cursor:pointer; display:inline-block; padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:10px; font-weight:600;">
-                                    <i class="fas fa-cloud-upload-alt"></i> Computer থেকে আপলোড
+                                <label for="bannerUploader" style="cursor:pointer; display:inline-flex; align-items:center; gap:10px; padding:13px 28px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:12px; font-weight:700; box-shadow:0 6px 18px rgba(16,185,129,.35); transition:all .2s;">
+                                    <i class="fas fa-cloud-upload-alt"></i> Computer থেকে ছবি তুলুন
                                 </label>
-                                <p id="bannerUploadStatus" style="font-size:12px; margin-top:10px; color:#059669; display:none;"></p>
+                                <p style="font-size:12.5px; color:#059669; margin-top:10px;"><i class="fas fa-check-circle"></i> Cloudinary-এ আপলোড হবে — লিংক নিজে বসে যাবে</p>
+                                <div id="bannerPreviewWrap" style="display:none; margin-top:14px;">
+                                    <img id="bannerPreview" src="" alt="ব্যানার প্রিভিউ" style="max-width:100%; max-height:180px; border-radius:12px; border:3px solid #10b981; box-shadow:0 8px 24px rgba(16,185,129,.25);">
+                                </div>
+                                <p id="bannerUploadStatus" style="font-size:13px; font-weight:700; margin-top:10px; color:#059669; display:none;"></p>
                             </div>
-                            <label>ব্যানার ছবির লিংক *</label>
-                            <input type="url" id="bannerImage" placeholder="Auto fill হবে" required>
+                            <label>ব্যানার ছবির লিংক <span style="color:#94a3b8; font-weight:400;">(আপলোড করলে নিজে বসে — প্রয়োজনে বদলাতে পারেন)</span></label>
+                            <input type="url" id="bannerImage" placeholder="আপলোড করলেই অটো বসবে">
                         </div>
                         <div class="form-group">
                             <label>টাইটেল</label>
                             <input type="text" id="bannerTitle" placeholder="ঈদ অফার">
                         </div>
                         <div class="form-group">
-                            <label>Link</label>
-                            <input type="text" id="bannerLink" placeholder="category.html?cat=ইলেকট্রনিক্স">
+                            <label>🔗 লিংক (ঐচ্ছিক — ক্লিক করলে এখানে যাবে)</label>
+                            <input type="text" id="bannerLink" placeholder="যেমন: category.html?cat=গ্যাজেট বা https://facebook.com/...">
+                            <small>যেকোনো লিংক দিন — <b>category.html?cat=...</b>, <b>product-details.html?id=...</b>, বা বাইরের ওয়েবসাইট। খালি রাখলে ক্লিকে কিছু হবে না।</small>
                         </div>
                         <div class="form-group">
                             <label>ক্রম</label>
@@ -740,6 +760,48 @@
             </div>
         </div>
 
+        <!-- 🎁 OFFER POPUP SECTION -->
+        <div class="section" id="offer-popup-section">
+            <div class="section-title">
+                <h2>🎁 অফার পপআপ (Pop-up)</h2>
+                <button class="btn btn-primary btn-sm" onclick="loadOfferPopup()">
+                    <i class="fas fa-sync"></i> রিফ্রেশ
+                </button>
+            </div>
+            <p style="color:#64748b; font-size:14px; margin-bottom:15px;">💡 সাইটে ঢোকার পর <b>প্রতি ইউজারের জন্য একবার</b> ভেসে উঠবে — যেকোনো অফার/প্রোডাক্ট দেখাতে পারবেন।</p>
+            <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
+                <h3 style="margin-bottom:15px;">⚙️ পপআপ সেটিংস</h3>
+                <form onsubmit="saveOfferPopup(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>সক্রিয়?</label>
+                            <select id="popupEnabled">
+                                <option value="true">✅ চালু</option>
+                                <option value="false">🚫 বন্ধ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>শিরোনাম</label>
+                            <input type="text" id="popupTitle" placeholder="🎉 বিশেষ অফার!">
+                        </div>
+                        <div class="form-group">
+                            <label>ছোট লেখা (বিবরণ)</label>
+                            <input type="text" id="popupText" placeholder="সীমিত সময়ের জন্য ২০% ছাড়!">
+                        </div>
+                        <div class="form-group">
+                            <label>🔗 লিংক (ক্লিক করলে যাবে)</label>
+                            <input type="text" id="popupLink" placeholder="product-details.html?id=... বা category.html?cat=...">
+                        </div>
+                        <div class="form-group full">
+                            <label>🖼️ ছবির লিংক</label>
+                            <input type="url" id="popupImage" placeholder="https://... (খালি রাখলে আইকন দেখাবে)">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> সেভ করুন</button>
+                </form>
+            </div>
+        </div>
+
         <!-- REVIEWS SECTION -->
         <div class="section" id="reviews-section">
             <div class="section-title">
@@ -761,7 +823,7 @@
                     <i class="fas fa-sync"></i> রিফ্রেশ
                 </button>
             </div>
-            <p style="color:#64748b; font-size:14px; margin-bottom:15px;">💡 এখানে ক্যাটাগরি যোগ করলেই <b>হোমপেজ ও ক্যাটাগরি পেজে সাথে সাথে</b> দেখা যাবে।</p>
+            <p style="color:#64748b; font-size:14px; margin-bottom:15px;">💡 <b>৫টা ডিফল্ট ক্যাটাগরি</b> (মহিলা ফ্যাশন 👗, পুরুষ ফ্যাশন 👔, কাপল 💑, গ্যাজেট 📱, অন্যান্য 📦) সাইটে <b>অটো দেখায়</b> — নিচে সবুজ ব্যাজ দিয়ে চেনা যাবে। এখানে নতুন ক্যাটাগরি যোগ করলেই হোমপেজ ও ক্যাটাগরি পেজে সাথে সাথে দেখা যাবে।</p>
             <form class="form-card" onsubmit="saveCategory(event)" style="background:white; padding:20px; border-radius:14px; box-shadow:0 2px 10px rgba(0,0,0,0.06);">
                 <div class="form-grid">
                     <div class="form-group">
@@ -943,15 +1005,48 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
         }
+        // ===== সাব-ক্যাটাগরি লিস্ট (সাইটের মতোই) =====
+        const ADMIN_SUB_CATS = {
+            'মহিলা ফ্যাশন': ['শাড়ি', 'থ্রি-পিস ও ফোর-পিস', 'হিজাব ও খিমার', 'স্কার্ট ও টপস', 'বটম (প্লাজো/ট্রাউজার)', 'লেডিস টি-শার্ট', 'স্কিন কেয়ার ও বিউটি', 'কাপল'],
+            'পুরুষ ফ্যাশন': ['টি-শার্ট', 'পোলো', 'শার্ট', 'পাঞ্জাবি', 'প্যান্ট ও ট্রাউজার', 'গাউন', 'কম্বো সেট', 'কাপল'],
+            'কাপল': ['কাপল'],
+            'গ্যাজেট': ['ঘড়ি', 'হেলথ কেয়ার', 'অডিও', 'মোবাইল এক্সেসরিজ', 'হোম অ্যাপ্লায়েন্স'],
+            'বাচ্চাদের ফ্যাশন': ['ব্যাগ ও ব্যাকপ্যাক', 'বেবি ও প্রিস্কুল', 'স্কুল ও স্টেশনারি', 'খেলনা', 'ছোটদের ফ্যাশন'],
+            'অন্যান্য': ['ব্যাগ ও ব্যাকপ্যাক', 'স্কিন কেয়ার', 'বই ও স্টেশনারি', 'খেলনা']
+        };
+
+        function populateSubCats(cat) {
+            const sel = document.getElementById('prodSubCategory');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">— সাব-ক্যাটাগরি নির্বাচন করুন —</option>';
+            const subs = ADMIN_SUB_CATS[cat] || [];
+            subs.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = s;
+                sel.appendChild(opt);
+            });
+        }
+
         function checkCustomCategory(val) {
             document.getElementById('customCategoryDiv').style.display = val === '__custom__' ? 'block' : 'none';
+            populateSubCats(val === '__custom__' ? '' : val);
         }
         async function loadAdminCategories() {
             try {
                 const snap = await db.collection('categories').get();
                 const sel = document.getElementById('prodCategory');
+                const alias = {
+                    'gadget': 'গ্যাজেট', 'electronics': 'গ্যাজেট', 'ইলেকট্রনিক্স': 'গ্যাজেট',
+                    'ফিমেল ফ্যাশন': 'মহিলা ফ্যাশন', 'female fashion': 'মহিলা ফ্যাশন', 'women fashion': 'মহিলা ফ্যাশন',
+                    'male fashion': 'পুরুষ ফ্যাশন', 'men fashion': 'পুরুষ ফ্যাশন',
+                    'beauty': 'অন্যান্য', 'বিউটি': 'অন্যান্য', 'others': 'অন্যান্য',
+                    'kids': 'বাচ্চাদের ফ্যাশন', 'kids fashion': 'বাচ্চাদের ফ্যাশন', 'শিশু': 'বাচ্চাদের ফ্যাশন', 'বাচ্চা': 'বাচ্চাদের ফ্যাশন'
+                };
                 snap.forEach(doc => {
-                    const cat = doc.data().name;
+                    const raw = doc.data().name;
+                    let cat = alias[String(raw || '').trim().toLowerCase()] || raw;
+                    if (!cat) return;
                     if (![...sel.options].some(o => o.value === cat)) {
                         const opt = document.createElement('option');
                         opt.value = cat; opt.textContent = cat;
@@ -973,6 +1068,7 @@
             if (sectionName === 'coupons') loadCoupons();
             if (sectionName === 'reviews') loadAdminReviews();
             if (sectionName === 'banners') loadBanners();
+            if (sectionName === 'offer-popup') loadOfferPopup();
             if (sectionName === 'categories') loadCategoryManager();
             if (sectionName === 'settings') loadSettingsForm();
             if (sectionName === 'dashboard') loadSalesChart();
@@ -1101,27 +1197,42 @@
                async function uploadBannerImage(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
+            if (file.size > 10 * 1024 * 1024) { showToast('error', '❌ ছবি ১০MB-এর কম হতে হবে'); return; }
+
             const statusEl = document.getElementById('bannerUploadStatus');
+            const previewWrap = document.getElementById('bannerPreviewWrap');
+            const preview = document.getElementById('bannerPreview');
+            // সাথে সাথে প্রিভিউ দেখাই (কম্পিউটার থেকে)
+            const reader = new FileReader();
+            reader.onload = function (e) { preview.src = e.target.result; previewWrap.style.display = 'block'; };
+            reader.readAsDataURL(file);
+
             statusEl.style.display = 'block';
-            statusEl.textContent = '📤 Upload হচ্ছে...';
-            
+            statusEl.style.color = '#b45309';
+            statusEl.textContent = '📤 Cloudinary-এ আপলোড হচ্ছে...';
+
             try {
                 const formData = new FormData();
-                formData.append('file', file);                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-                
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'POST', body: formData
                 });
                 const data = await res.json();
-                
+
                 if (data.secure_url) {
                     document.getElementById('bannerImage').value = data.secure_url;
-                    statusEl.textContent = '✅ Upload সফল!';
-                    showToast('success', '✅ Banner upload হয়েছে!');
+                    statusEl.style.color = '#059669';
+                    statusEl.textContent = '✅ আপলোড সফল! ছবির লিংক বসে গেছে';
+                    showToast('success', '✅ ব্যানার আপলোড হয়েছে!');
+                } else {
+                    statusEl.style.color = '#ef4444';
+                    statusEl.textContent = '❌ আপলোড ব্যর্থ: ' + (data.error && data.error.message || 'আবার চেষ্টা করুন');
                 }
             } catch (error) {
-                statusEl.textContent = '❌ Error';
+                statusEl.style.color = '#ef4444';
+                statusEl.textContent = '❌ আপলোড ব্যর্থ: ' + (error.message || 'নেটওয়ার্ক সমস্যা');
             }
         }
         async function uploadVideo(event) {
@@ -1160,9 +1271,11 @@
             const product = {
     name: document.getElementById('prodName').value.trim(),
     category: (function(){ const v=document.getElementById('prodCategory').value; if(v==='__custom__'){ const c=document.getElementById('customCategoryInput').value.trim(); if(!c){ alert('নতুন ক্যাটাগরির নাম লিখুন'); throw new Error('custom needed'); } db.collection('categories').doc(c).set({name:c, createdAt: firebase.firestore.FieldValue.serverTimestamp()}); return c; } return v; })(),
+    subCategory: document.getElementById('prodSubCategory').value.trim() || '',
     price: Number(document.getElementById('prodPrice').value),
     oldPrice: Number(document.getElementById('prodOldPrice').value) || 0,
     stock: Number(document.getElementById('prodStock').value) || 0,
+    featured: document.getElementById('prodFeatured') ? document.getElementById('prodFeatured').checked : false,
     image: document.getElementById('prodImage').value.trim(),
     image2: document.getElementById('prodImage2').value.trim(),
     image3: document.getElementById('prodImage3').value.trim(),
@@ -1239,11 +1352,11 @@ flashEnd: (function(){ const v = document.getElementById('prodFlashEnd').value; 
                 const profitColor = profit > 0 ? '#10b981' : '#ef4444';
                 html += '<div class="product-item" onclick="showProductDetails(\'' + id + '\')" style="cursor:pointer;">';
                 html += '<div class="product-item-image"><img src="' + (p[p.thumbnail] || p.image) + '" onerror="this.src=\'https://via.placeholder.com/280x180\'"></div>';
-                html += '<div class="product-item-info"><div class="cat">' + (p.category || '') + '</div><h4>' + p.name + '</h4><div class="price">বিক্রয়: ৳' + p.price + '</div>';
+                html += '<div class="product-item-info"><div class="cat">' + (p.category || '') + '</div><h4>' + p.name + (p.featured ? ' <span style="background:#f59e0b;color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;margin-left:4px;">⭐ জনপ্রিয়</span>' : '') + '</h4><div class="price">বিক্রয়: ৳' + p.price + '</div>';
                 if (p.supplier || p.buyPrice) {
                     html += '<div style="background:#fef3c7; padding:10px; border-radius:8px; margin:10px 0; font-size:12px;"><strong>🔒 ' + (p.supplier || '') + '</strong> | 💰 কেনা: ৳' + (p.buyPrice || 0) + ' | লাভ: <span style="color:' + profitColor + '">৳' + (profit || 0) + '</span></div>';
                 }
-                html += '<div class="product-actions"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); editProduct(\'' + id + '\')"><i class="fas fa-edit"></i> এডিট</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteProduct(\'' + id + '\', \'' + p.name.replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> ডিলিট</button></div></div></div>';
+                html += '<div class="product-actions"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); editProduct(\'' + id + '\')"><i class="fas fa-edit"></i> এডিট</button><button class="btn ' + (p.featured ? 'btn-secondary' : 'btn-primary') + ' btn-sm" onclick="event.stopPropagation(); toggleFeatured(\'' + id + '\', ' + (p.featured ? 'false' : 'true') + ')">' + (p.featured ? '⭐ অন করুন' : '⭐ জনপ্রিয়') + '</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteProduct(\'' + id + '\', \'' + p.name.replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> ডিলিট</button></div></div></div>';
             });
             html += '</div>';
             container.innerHTML = html;
@@ -1384,9 +1497,12 @@ function closeProductDetails() {
                 // Fill form with existing data
                 document.getElementById('prodName').value = p.name || '';
                 document.getElementById('prodCategory').value = p.category || '';
+                populateSubCats(p.category || '');
+                document.getElementById('prodSubCategory').value = p.subCategory || '';
                 document.getElementById('prodPrice').value = p.price || '';
                 document.getElementById('prodOldPrice').value = p.oldPrice || '';
                 document.getElementById('prodStock').value = p.stock || '';
+                document.getElementById('prodFeatured').checked = !!p.featured;
                 document.getElementById('prodImage').value = p.image || '';
                 document.getElementById('prodImage2').value = p.image2 || '';
 document.getElementById('prodImage3').value = p.image3 || '';
@@ -1430,6 +1546,15 @@ if (thumbField) {
         }
 
         
+        function toggleFeatured(id, to) {
+            db.collection('products').doc(id).update({ featured: to })
+                .then(() => {
+                    showToast('success', to ? '⭐ জনপ্রিয় হিসেবে মার্ক করা হয়েছে!' : '⭐ সরানো হয়েছে');
+                    loadProducts();
+                })
+                .catch(e => showToast('error', '❌ ' + e.message));
+        }
+
         function deleteProduct(id, name) {
             if (!confirm('"' + name + '" ডিলিট করতে চান?')) return;
             db.collection('products').doc(id).delete()
@@ -1721,14 +1846,24 @@ function deleteCoupon(id, code) {
  // ===== BANNER FUNCTIONS =====
 function addBanner(event) {
     event.preventDefault();
+    const imgVal = document.getElementById('bannerImage').value.trim();
+    if (!imgVal) {
+        showToast('error', '❌ আগে ব্যানার ছবি আপলোড করুন');
+        return;
+    }
     const btn = document.getElementById('addBannerBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যোগ হচ্ছে...';
     
+    let bannerLinkVal = document.getElementById('bannerLink').value.trim() || null;
+    // auto-fix: http:// ছাড়া লিখলে যোগ করে দিই (বাইরের লিংক কাজ করার জন্য)
+    if (bannerLinkVal && !/^https?:\/\//i.test(bannerLinkVal) && !bannerLinkVal.startsWith('index.html') && !bannerLinkVal.startsWith('category.html') && !bannerLinkVal.startsWith('product-details.html') && !bannerLinkVal.startsWith('checkout.html') && !bannerLinkVal.startsWith('wishlist.html') && !bannerLinkVal.startsWith('tracking.html') && !bannerLinkVal.startsWith('pages.html') && !bannerLinkVal.startsWith('#')) {
+        bannerLinkVal = 'https://' + bannerLinkVal;
+    }
     const banner = {
         image: document.getElementById('bannerImage').value.trim(),
         title: document.getElementById('bannerTitle').value.trim() || null,
-        link: document.getElementById('bannerLink').value.trim() || null,
+        link: bannerLinkVal,
         order: parseInt(document.getElementById('bannerOrder').value) || 1,
         active: document.getElementById('bannerActive').value === 'true',
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -1774,7 +1909,9 @@ function loadBanners() {
                 html += '<div style="padding:15px;">';
                 html += '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">';
                 html += '<div><h4 style="margin:0;">' + (b.title || 'শিরোনামহীন') + '</h4>';
-                html += '<p style="font-size:12px; color:#64748b; margin:5px 0;">ক্রম: ' + (b.order || 1) + ' | <span style="color:' + statusColor + '; font-weight:700;">' + statusText + '</span></p></div>';
+                html += '<p style="font-size:12px; color:#64748b; margin:5px 0;">ক্রম: ' + (b.order || 1) + ' | <span style="color:' + statusColor + '; font-weight:700;">' + statusText + '</span></p>';
+                html += (b.link ? '<p style="font-size:12px; color:#059669; margin:3px 0;"><i class="fas fa-link"></i> <a href="' + b.link + '" target="_blank" style="color:#059669; text-decoration:none; word-break:break-all;">' + b.link + '</a></p>' : '<p style="font-size:12px; color:#94a3b8; margin:3px 0;">🔗 লিংক নেই</p>');
+                html += '</div>';
                 html += '<div style="display:flex; gap:8px;">';
                 html += '<button class="btn ' + (b.active ? 'btn-danger' : 'btn-primary') + ' btn-sm" onclick="toggleBanner(\'' + b.id + '\', ' + !b.active + ')">' + (b.active ? '⏸️ Off' : '▶️ On') + '</button>';
                 html += '<button class="btn btn-danger btn-sm" onclick="deleteBanner(\'' + b.id + '\')"><i class="fas fa-trash"></i></button>';
@@ -2132,28 +2269,56 @@ function deleteReview(id) {
         // ============================================================
         // ===== 🗂️ CATEGORY MANAGER =====
         // ============================================================
+        // ডিফল্ট ক্যাটাগরি — সাইটে অটো দেখায় (কোডে hardcoded), Firestore-এ না থাকলেও admin-এ দেখানো হয়
+        const DEFAULT_CATS_ADMIN = [
+            { name: 'মহিলা ফ্যাশন', icon: '👗', isDefault: true },
+            { name: 'পুরুষ ফ্যাশন', icon: '👔', isDefault: true },
+            { name: 'কাপল', icon: '💑', isDefault: true },
+            { name: 'গ্যাজেট', icon: '📱', isDefault: true },
+            { name: 'বাচ্চাদের ফ্যাশন', icon: '🧒', isDefault: true },
+            { name: 'অন্যান্য', icon: '📦', isDefault: true }
+        ];
+
         function loadCategoryManager() {
             const wrap = document.getElementById('categoryManagerList');
             wrap.innerHTML = '<div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>';
             db.collection('categories').get().then(snap => {
                 const cats = [];
                 snap.forEach(doc => cats.push({ id: doc.id, ...doc.data() }));
-                if (!cats.length) {
-                    wrap.innerHTML = '<div class="empty-state"><i class="fas fa-layer-group"></i><h3>কোনো ক্যাটাগরি নেই</h3><p>উপরের ফর্মে নতুন ক্যাটাগরি যোগ করুন</p></div>';
-                    return;
-                }
-                cats.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-                let html = '<div style="display:grid; gap:10px;">';
+                // ডিফল্ট + Firestore merge (একই নাম একবারই)
+                const seen = {}, merged = [];
+                DEFAULT_CATS_ADMIN.forEach(c => { seen[c.name] = 1; merged.push(Object.assign({}, c)); });
                 cats.forEach(c => {
-                    const icon = c.image ? `<img src="${c.image}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">` : `<span style="font-size:24px;">${c.icon || '📦'}</span>`;
-                    const active = c.active !== false;
-                    html += `<div style="display:flex; align-items:center; gap:14px; background:white; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0;">
-                        ${icon}
-                        <span style="flex:1; font-weight:700; color:#0f172a;">${skEscape(c.name)}</span>
-                        <button class="btn ${active ? 'btn-secondary' : 'btn-primary'} btn-sm" onclick="toggleCategoryActive('${c.id}', ${active})">${active ? '🙈 লুকান' : '👁️ দেখান'}</button>
-                        <button class="btn btn-primary btn-sm" onclick="editCategory('${c.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteCategory('${c.id}', '${String(c.name).replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i></button>
-                    </div>`;
+                    if (seen[c.name]) return;
+                    seen[c.name] = 1;
+                    merged.push(c);
+                });
+                merged.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                let html = '<div style="display:grid; gap:10px;">';
+                merged.forEach(c => {
+                    if (c.isDefault) {
+                        const subs = (ADMIN_SUB_CATS[c.name] || []).map(s =>
+                            `<span style="background:#d1fae5; color:#065f46; font-size:11px; font-weight:600; padding:3px 10px; border-radius:999px; white-space:nowrap;">${skEscape(s)}</span>`
+                        ).join('');
+                        html += `<div style="background:#ecfdf5; padding:12px 16px; border-radius:12px; border:1.5px solid #10b981;">
+                            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                                <span style="font-size:24px;">${c.icon || '📦'}</span>
+                                <span style="flex:1; font-weight:700; color:#0f172a;">${skEscape(c.name)} <span style="font-size:11px; background:#10b981; color:#fff; padding:2px 8px; border-radius:20px; margin-left:6px;">ডিফল্ট</span></span>
+                                <span style="font-size:12px; color:#059669;"><i class="fas fa-check-circle"></i> সাইটে অটো দেখায়</span>
+                            </div>
+                            ${subs ? `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px dashed #a7f3d0;">${subs}</div>` : ''}
+                        </div>`;
+                    } else {
+                        const icon = c.image ? `<img src="${c.image}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">` : `<span style="font-size:24px;">${c.icon || '📦'}</span>`;
+                        const active = c.active !== false;
+                        html += `<div style="display:flex; align-items:center; gap:14px; background:white; padding:12px 16px; border-radius:12px; border:1px solid #e2e8f0;">
+                            ${icon}
+                            <span style="flex:1; font-weight:700; color:#0f172a;">${skEscape(c.name)}</span>
+                            <button class="btn ${active ? 'btn-secondary' : 'btn-primary'} btn-sm" onclick="toggleCategoryActive('${c.id}', ${active})">${active ? '🙈 লুকান' : '👁️ দেখান'}</button>
+                            <button class="btn btn-primary btn-sm" onclick="editCategory('${c.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteCategory('${c.id}', '${String(c.name).replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i></button>
+                        </div>`;
+                    }
                 });
                 html += '</div>';
                 wrap.innerHTML = html;
@@ -2233,13 +2398,13 @@ function deleteReview(id) {
         // ============================================================
         // ===== 📦 BULK UPLOAD (Excel/CSV — SheetJS) =====
         // ============================================================
-        const BULK_COLUMNS = ['name', 'category', 'price', 'oldPrice', 'stock', 'image', 'image2', 'image3', 'description', 'sizes', 'colors', 'buyPrice', 'supplier', 'supplierPhone', 'source', 'privateNote'];
+        const BULK_COLUMNS = ['name', 'category', 'subCategory', 'featured', 'price', 'oldPrice', 'stock', 'image', 'image2', 'image3', 'description', 'sizes', 'colors', 'buyPrice', 'supplier', 'supplierPhone', 'source', 'privateNote'];
 
         function downloadBulkTemplate() {
             const ws = XLSX.utils.aoa_to_sheet([
-                ['name', 'category', 'price', 'oldPrice', 'stock', 'image', 'image2', 'image3', 'description', 'sizes', 'colors', 'buyPrice', 'supplier', 'supplierPhone', 'source', 'privateNote'],
-                ['উদাহরণ: স্মার্ট ওয়াচ X9', 'ইলেকট্রনিক্স', 1299, 1999, 50, 'https://i.ibb.co/example.jpg', '', '', 'চমৎকার স্মার্ট ওয়াচ', '', '', 900, 'রহিম ট্রেডার্স', '017XXXXXXXX', 'নিউমার্কেট', 'নোট...'],
-                ['কটন টি-শার্ট (প্রিমিয়াম)', 'ফ্যাশন', 450, 650, 100, 'https://i.ibb.co/example2.jpg', '', '', '১০০% কটন', 'M, L, XL', 'লাল, নীল, কালো', 300, '', '', '', '']
+                ['name', 'category', 'subCategory', 'featured', 'price', 'oldPrice', 'stock', 'image', 'image2', 'image3', 'description', 'sizes', 'colors', 'buyPrice', 'supplier', 'supplierPhone', 'source', 'privateNote'],
+                ['উদাহরণ: স্মার্ট ওয়াচ X9', 'গ্যাজেট', 'হেলথ কেয়ার', 'true', 1299, 1999, 50, 'https://i.ibb.co/example.jpg', '', '', 'চমৎকার স্মার্ট ওয়াচ', '', '', 900, 'রহিম ট্রেডার্স', '017XXXXXXXX', 'নিউমার্কেট', 'নোট...'],
+                ['কটন টি-শার্ট (প্রিমিয়াম)', 'পুরুষ ফ্যাশন', 'টি-শার্ট', '', 450, 650, 100, 'https://i.ibb.co/example2.jpg', '', '', '১০০% কটন', 'M, L, XL', 'লাল, নীল, কালো', 300, '', '', '', '']
             ]);
             ws['!cols'] = BULK_COLUMNS.map(() => ({ wch: 22 }));
             const wb = XLSX.utils.book_new();
@@ -2292,6 +2457,8 @@ function deleteReview(id) {
                 const docData = {
                     name: name,
                     category: String(r.category || 'সাধারণ').trim() || 'সাধারণ',
+                    subCategory: String(r.subCategory || '').trim(),
+                    featured: String(r.featured || '').trim().toLowerCase() === 'true',
                     price: price,
                     oldPrice: Number(r.oldPrice) || 0,
                     stock: Number(r.stock) || 0,
@@ -2344,6 +2511,45 @@ function deleteReview(id) {
             </div>`;
             loadDashboardStats();
             loadProducts();
+        }
+
+        // ============================================================
+        // ===== 🎁 OFFER POPUP =====
+        // ============================================================
+        const OFFER_POPUP_DOC = 'offerPopup';
+
+        function loadOfferPopup() {
+            db.collection('settings').doc(OFFER_POPUP_DOC).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const v = doc.data();
+                        document.getElementById('popupEnabled').value = v.enabled !== false ? 'true' : 'false';
+                        document.getElementById('popupTitle').value = v.title || '';
+                        document.getElementById('popupText').value = v.text || '';
+                        document.getElementById('popupLink').value = v.link || '';
+                        document.getElementById('popupImage').value = v.image || '';
+                    }
+                })
+                .catch(() => {});
+        }
+
+        async function saveOfferPopup(event) {
+            event.preventDefault();
+            const data = {
+                enabled: document.getElementById('popupEnabled').value === 'true',
+                title: document.getElementById('popupTitle').value.trim(),
+                text: document.getElementById('popupText').value.trim(),
+                link: document.getElementById('popupLink').value.trim(),
+                image: document.getElementById('popupImage').value.trim(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            try {
+                await db.collection('settings').doc(OFFER_POPUP_DOC).set(data, { merge: true });
+                try { localStorage.removeItem('sk_offer_popup_seen'); } catch (e) {}
+                showToast('success', '✅ অফার পপআপ সেভ হয়েছে — সাইটে লাইভ!');
+            } catch (e) {
+                showToast('error', '❌ ' + e.message);
+            }
         }
 
         // ============================================================
