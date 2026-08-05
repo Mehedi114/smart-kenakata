@@ -852,6 +852,11 @@
                 hasMore = fresh.length === PAGE_SIZE;
                 loadedProducts = loadedProducts.concat(fresh);
                 if (loadedProducts.length === 0 && !hasMore) {
+                    // পুরনো প্রোডাক্টে keywords ফিল্ড নেই — সার্চে কিছু না পেলে wide fallback
+                    if (searchQuery && !fallbackDone) {
+                        fallbackLoad();
+                        return;
+                    }
                     renderGrid([]);
                     return;
                 }
@@ -868,11 +873,9 @@
             if (fallbackDone) return;
             fallbackDone = true;
             let q = db.collection('products');
+            // NB: সার্চের fallback-এ keywords ছাড়াই সব টেনে client-side ফিল্টার করি
+            // (পুরনো প্রোডাক্টে keywords ফিল্ড নেই)
             if (!searchQuery && category !== 'all') q = q.where('category', '==', category);
-            else if (searchQuery) {
-                const token = searchQuery.toLowerCase().split(/\s+/).sort((a, b) => b.length - a.length)[0];
-                q = q.where('keywords', 'array-contains', token);
-            }
             q.limit(100).get().then(snap => {
                 loadedProducts = [];
                 snap.forEach(doc => loadedProducts.push({ id: doc.id, ...doc.data() }));
