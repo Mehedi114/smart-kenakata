@@ -705,16 +705,20 @@
                 <form onsubmit="addBanner(event)">
                     <div class="form-grid">
                        <div class="form-group full">
-                            <label>📸 ব্যানার আপলোড করুন</label>
-                            <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:20px; text-align:center; margin-bottom:15px;">
+                            <label>📸 ব্যানার ছবি আপলোড করুন</label>
+                            <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:24px; text-align:center; margin-bottom:12px;">
                                 <input type="file" id="bannerUploader" accept="image/*" style="display:none;" onchange="uploadBannerImage(event)">
-                                <label for="bannerUploader" style="cursor:pointer; display:inline-block; padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:10px; font-weight:600;">
-                                    <i class="fas fa-cloud-upload-alt"></i> Computer থেকে আপলোড
+                                <label for="bannerUploader" style="cursor:pointer; display:inline-flex; align-items:center; gap:10px; padding:13px 28px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:12px; font-weight:700; box-shadow:0 6px 18px rgba(16,185,129,.35); transition:all .2s;">
+                                    <i class="fas fa-cloud-upload-alt"></i> Computer থেকে ছবি তুলুন
                                 </label>
-                                <p id="bannerUploadStatus" style="font-size:12px; margin-top:10px; color:#059669; display:none;"></p>
+                                <p style="font-size:12.5px; color:#059669; margin-top:10px;"><i class="fas fa-check-circle"></i> Cloudinary-এ আপলোড হবে — লিংক নিজে বসে যাবে</p>
+                                <div id="bannerPreviewWrap" style="display:none; margin-top:14px;">
+                                    <img id="bannerPreview" src="" alt="ব্যানার প্রিভিউ" style="max-width:100%; max-height:180px; border-radius:12px; border:3px solid #10b981; box-shadow:0 8px 24px rgba(16,185,129,.25);">
+                                </div>
+                                <p id="bannerUploadStatus" style="font-size:13px; font-weight:700; margin-top:10px; color:#059669; display:none;"></p>
                             </div>
-                            <label>ব্যানার ছবির লিংক *</label>
-                            <input type="url" id="bannerImage" placeholder="Auto fill হবে" required>
+                            <label>ব্যানার ছবির লিংক <span style="color:#94a3b8; font-weight:400;">(আপলোড করলে নিজে বসে — প্রয়োজনে বদলাতে পারেন)</span></label>
+                            <input type="url" id="bannerImage" placeholder="আপলোড করলেই অটো বসবে">
                         </div>
                         <div class="form-group">
                             <label>টাইটেল</label>
@@ -1186,27 +1190,42 @@
                async function uploadBannerImage(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
+            if (file.size > 10 * 1024 * 1024) { showToast('error', '❌ ছবি ১০MB-এর কম হতে হবে'); return; }
+
             const statusEl = document.getElementById('bannerUploadStatus');
+            const previewWrap = document.getElementById('bannerPreviewWrap');
+            const preview = document.getElementById('bannerPreview');
+            // সাথে সাথে প্রিভিউ দেখাই (কম্পিউটার থেকে)
+            const reader = new FileReader();
+            reader.onload = function (e) { preview.src = e.target.result; previewWrap.style.display = 'block'; };
+            reader.readAsDataURL(file);
+
             statusEl.style.display = 'block';
-            statusEl.textContent = '📤 Upload হচ্ছে...';
-            
+            statusEl.style.color = '#b45309';
+            statusEl.textContent = '📤 Cloudinary-এ আপলোড হচ্ছে...';
+
             try {
                 const formData = new FormData();
-                formData.append('file', file);                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-                
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
                     method: 'POST', body: formData
                 });
                 const data = await res.json();
-                
+
                 if (data.secure_url) {
                     document.getElementById('bannerImage').value = data.secure_url;
-                    statusEl.textContent = '✅ Upload সফল!';
-                    showToast('success', '✅ Banner upload হয়েছে!');
+                    statusEl.style.color = '#059669';
+                    statusEl.textContent = '✅ আপলোড সফল! ছবির লিংক বসে গেছে';
+                    showToast('success', '✅ ব্যানার আপলোড হয়েছে!');
+                } else {
+                    statusEl.style.color = '#ef4444';
+                    statusEl.textContent = '❌ আপলোড ব্যর্থ: ' + (data.error && data.error.message || 'আবার চেষ্টা করুন');
                 }
             } catch (error) {
-                statusEl.textContent = '❌ Error';
+                statusEl.style.color = '#ef4444';
+                statusEl.textContent = '❌ আপলোড ব্যর্থ: ' + (error.message || 'নেটওয়ার্ক সমস্যা');
             }
         }
         async function uploadVideo(event) {
@@ -1809,6 +1828,11 @@ function deleteCoupon(id, code) {
  // ===== BANNER FUNCTIONS =====
 function addBanner(event) {
     event.preventDefault();
+    const imgVal = document.getElementById('bannerImage').value.trim();
+    if (!imgVal) {
+        showToast('error', '❌ আগে ব্যানার ছবি আপলোড করুন');
+        return;
+    }
     const btn = document.getElementById('addBannerBtn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যোগ হচ্ছে...';
@@ -1867,7 +1891,9 @@ function loadBanners() {
                 html += '<div style="padding:15px;">';
                 html += '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">';
                 html += '<div><h4 style="margin:0;">' + (b.title || 'শিরোনামহীন') + '</h4>';
-                html += '<p style="font-size:12px; color:#64748b; margin:5px 0;">ক্রম: ' + (b.order || 1) + ' | <span style="color:' + statusColor + '; font-weight:700;">' + statusText + '</span></p></div>';
+                html += '<p style="font-size:12px; color:#64748b; margin:5px 0;">ক্রম: ' + (b.order || 1) + ' | <span style="color:' + statusColor + '; font-weight:700;">' + statusText + '</span></p>';
+                html += (b.link ? '<p style="font-size:12px; color:#059669; margin:3px 0;"><i class="fas fa-link"></i> <a href="' + b.link + '" target="_blank" style="color:#059669; text-decoration:none; word-break:break-all;">' + b.link + '</a></p>' : '<p style="font-size:12px; color:#94a3b8; margin:3px 0;">🔗 লিংক নেই</p>');
+                html += '</div>';
                 html += '<div style="display:flex; gap:8px;">';
                 html += '<button class="btn ' + (b.active ? 'btn-danger' : 'btn-primary') + ' btn-sm" onclick="toggleBanner(\'' + b.id + '\', ' + !b.active + ')">' + (b.active ? '⏸️ Off' : '▶️ On') + '</button>';
                 html += '<button class="btn btn-danger btn-sm" onclick="deleteBanner(\'' + b.id + '\')"><i class="fas fa-trash"></i></button>';
