@@ -971,6 +971,25 @@
         let loadedProducts = [];       // এ পর্যন্ত লোড হওয়া সব পণ্য
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
+        // ===== ক্যাশ — ক্যাটাগরি পেজ দ্রুত খুলতে (৫ মিনিট) =====
+        const CAT_CACHE_PREFIX = 'sk_cat_cache';
+        const CAT_CACHE_TTL = 5 * 60 * 1000;
+        let cachedCategoryData = null;
+        function catCacheKey() {
+            // 'all' → sk_cat_cache_all; গ্রুপ/সার্চ → আলাদা key
+            return CAT_CACHE_PREFIX + '_' + (searchQuery ? 'q_' + searchQuery : (category || 'all'));
+        }
+        function readCatCache() {
+            try {
+                const c = JSON.parse(localStorage.getItem(catCacheKey()) || 'null');
+                if (c && c.v === 1 && c.t && (Date.now() - c.t < CAT_CACHE_TTL) && c.list && c.list.length) return c.list;
+            } catch (e) {}
+            return null;
+        }
+        function writeCatCache(list) {
+            try { localStorage.setItem(catCacheKey(), JSON.stringify({ v: 1, t: Date.now(), list: list })); } catch (e) {}
+        }
+
         // ===== Pagination state =====
         const PAGE_SIZE = 10;
         let lastDoc = null;
@@ -989,6 +1008,15 @@
             highlightActiveCategory();
             loadQuickCategories();
             setupFilters();
+            // ১) ক্যাশ থাকলে সাথে সাথে দেখাই (instant) — তারপর Firestore থেকে refresh
+            const cacheList = readCatCache();
+            if (cacheList) {
+                loadedProducts = cacheList;
+                fallbackDone = true; // ক্যাশ ইতিমধ্যে সব পণ্য
+                lastDoc = null; hasMore = false;
+                applyClientFilters();
+                return; // ক্যাশ থেকে দেখালেই হলো — background refresh দরকার নেই (TTL ৫ মিনিট)
+            }
             resetAndReload();
             updateCartCount();
             if (searchQuery) {
@@ -1095,6 +1123,12 @@
                 history.replaceState(null, '', u.toString());
             } catch (e) {}
             renderSubChips();
+            // ডেটা লোড হওয়ার আগেই chip-এ ক্লিক করলে — খালি দেখানোর বদলে reload
+            if (!loadedProducts.length && !pageLoading) {
+                fallbackDone = false;
+                resetAndReload();
+                return;
+            }
             applyClientFilters();
         }
 
@@ -1243,7 +1277,7 @@
         function loadNextPage() {
             if (pageLoading) return;
             pageLoading = true;
-            // গ্রুপ ক্যাটাগরি (মহিলা/পুরুষ/গ্যাজেট/অন্যান্য) — সরাসরি সব fetch + ক্লায়েন্ট-সাইড সাজানো
+            // গ্রুপ ক্যাটাগরি (মহিলা/পুরুষ/কাপল/বাচ্চা/গ্যাজেট/অন্যান্য) — সরাসরি সব fetch + ক্লায়েন্ট-সাইড সাজানো
             if (GROUP_CATS[category]) {
                 pageLoading = false;
                 fallbackLoad();
@@ -1278,19 +1312,40 @@
         }
 
         let fallbackDone = false;
+        let fallbackTimer = null;
         function fallbackLoad() {
             if (fallbackDone) return;
             fallbackDone = true;
+            // ৮ সেকেন্ডের মধ্যে না এলে — error state (চিরকাল skeleton ঘোরে না)
+            clearTimeout(fallbackTimer);
+            fallbackTimer = setTimeout(() => {
+                const grid = document.getElementById('productsGrid');
+                if (grid && grid.querySelector('.sk-skeleton-card')) {
+                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-wifi"></i><h2>ধীর সংযোগ</h2><p>আবার চেষ্টা করুন</p>' +
+                        '<button onclick="fallbackDone=false;resetAndReload()" style="margin-top:10px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
+                }
+            }, 8000);
             let q = db.collection('products');
             // NB: সার্চের fallback-এ keywords ছাড়াই সব টেনে client-side ফিল্টার করি
             // (পুরনো প্রোডাক্টে keywords ফিল্ড নেই)
             if (!searchQuery && category !== 'all' && !GROUP_CATS[category]) q = q.where('category', '==', category);
-            q.limit(200).get().then(snap => {
+            q.limit(400).get().then(snap => {
                 loadedProducts = [];
                 snap.forEach(doc => loadedProducts.push({ id: doc.id, ...doc.data() }));
+                // ৪০০-এর বেশি পণ্য থাকলে — আরেকটা ব্যাচ (মোট ৮০০)
+                if (snap.size === 400) {
+                    return q.limit(400).startAfter(snap.docs[snap.docs.length - 1]).get().then(snap2 => {
+                        snap2.forEach(doc => loadedProducts.push({ id: doc.id, ...doc.data() }));
+                    }).catch(() => {});
+                }
+            }).then(() => {
                 lastDoc = null; hasMore = false;
+                // ক্যাশ সেভ — পরেরবার instant (সব ক্যাটাগরি/সার্চ আলাদা)
+                if (!searchQuery || category === 'all') writeCatCache(loadedProducts);
+                clearTimeout(fallbackTimer);
                 applyClientFilters();
             }).catch(e => {
+                clearTimeout(fallbackTimer);
                 document.getElementById('productsGrid').innerHTML =
                     '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h2>লোড করতে সমস্যা</h2><p>' + skEscape(e.message || '') + '</p>' +
                     '<button onclick="fallbackDone=false;resetAndReload()" style="margin-top:10px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
@@ -1482,7 +1537,15 @@
             // পুরনো "আরো পণ্য দেখুন" বাটন সরানো হয়েছে — এখন pagination ব্যবহার হয়
         }
 
-        function applySorting() { fallbackDone = false; resetAndReload(); }
+        function applySorting() {
+            // fallback (সব পণ্য client-side) চললে — আবার indexed query-তে যাওয়ার দরকার নেই, দ্রুত filter
+            if (fallbackDone && loadedProducts.length) {
+                applyClientFilters();
+                return;
+            }
+            fallbackDone = false;
+            resetAndReload();
+        }
 
         // ===== SEARCH (এই পেজের ভেতর) =====
         document.getElementById('searchInput').addEventListener('input', function(e) {
