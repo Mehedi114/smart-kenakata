@@ -443,14 +443,12 @@
                         <label>ক্যাটাগরি *</label>
                         <select id="prodCategory" required onchange="checkCustomCategory(this.value)">
                             <option value="">ক্যাটাগরি নির্বাচন করুন</option>
-                            <option value="ইলেকট্রনিক্স">ইলেকট্রনিক্স</option>
-                            <option value="ফ্যাশন">ফ্যাশন</option>
-                            <option value="বিউটি">বিউটি</option>
-                            <option value="হোম ও লিভিং">হোম ও লিভিং</option>
-                            <option value="খেলনা">খেলনা</option>
-                            <option value="বই ও শিক্ষা">বই ও শিক্ষা</option>
-                            <option value="গ্রোসারি">গ্রোসারি</option>
-                            <option value="অন্যান্য">অন্যান্য</option>
+                            <option value="মহিলা ফ্যাশন">👗 মহিলা ফ্যাশন</option>
+                            <option value="পুরুষ ফ্যাশন">👔 পুরুষ ফ্যাশন</option>
+                            <option value="কাপল">💑 কাপল</option>
+                            <option value="গ্যাজেট">📱 গ্যাজেট</option>
+                            <option value="বাচ্চাদের ফ্যাশন">🧒 বাচ্চাদের ফ্যাশন</option>
+                            <option value="অন্যান্য">📦 অন্যান্য</option>
                             <option value="__custom__">➕ নতুন ক্যাটাগরি যোগ করুন</option>
                         </select>
                         <div id="customCategoryDiv" style="display:none; margin-top:10px;">
@@ -950,8 +948,17 @@
             try {
                 const snap = await db.collection('categories').get();
                 const sel = document.getElementById('prodCategory');
+                const alias = {
+                    'gadget': 'গ্যাজেট', 'electronics': 'গ্যাজেট', 'ইলেকট্রনিক্স': 'গ্যাজেট',
+                    'ফিমেল ফ্যাশন': 'মহিলা ফ্যাশন', 'female fashion': 'মহিলা ফ্যাশন', 'women fashion': 'মহিলা ফ্যাশন',
+                    'male fashion': 'পুরুষ ফ্যাশন', 'men fashion': 'পুরুষ ফ্যাশন',
+                    'beauty': 'অন্যান্য', 'বিউটি': 'অন্যান্য', 'others': 'অন্যান্য',
+                    'kids': 'বাচ্চাদের ফ্যাশন', 'kids fashion': 'বাচ্চাদের ফ্যাশন', 'শিশু': 'বাচ্চাদের ফ্যাশন', 'বাচ্চা': 'বাচ্চাদের ফ্যাশন'
+                };
                 snap.forEach(doc => {
-                    const cat = doc.data().name;
+                    const raw = doc.data().name;
+                    let cat = alias[String(raw || '').trim().toLowerCase()] || raw;
+                    if (!cat) return;
                     if (![...sel.options].some(o => o.value === cat)) {
                         const opt = document.createElement('option');
                         opt.value = cat; opt.textContent = cat;
@@ -2260,8 +2267,8 @@ function deleteReview(id) {
         function downloadBulkTemplate() {
             const ws = XLSX.utils.aoa_to_sheet([
                 ['name', 'category', 'price', 'oldPrice', 'stock', 'image', 'image2', 'image3', 'description', 'sizes', 'colors', 'buyPrice', 'supplier', 'supplierPhone', 'source', 'privateNote'],
-                ['উদাহরণ: স্মার্ট ওয়াচ X9', 'ইলেকট্রনিক্স', 1299, 1999, 50, 'https://i.ibb.co/example.jpg', '', '', 'চমৎকার স্মার্ট ওয়াচ', '', '', 900, 'রহিম ট্রেডার্স', '017XXXXXXXX', 'নিউমার্কেট', 'নোট...'],
-                ['কটন টি-শার্ট (প্রিমিয়াম)', 'ফ্যাশন', 450, 650, 100, 'https://i.ibb.co/example2.jpg', '', '', '১০০% কটন', 'M, L, XL', 'লাল, নীল, কালো', 300, '', '', '', '']
+                ['উদাহরণ: স্মার্ট ওয়াচ X9', 'গ্যাজেট', 1299, 1999, 50, 'https://i.ibb.co/example.jpg', '', '', 'চমৎকার স্মার্ট ওয়াচ', '', '', 900, 'রহিম ট্রেডার্স', '017XXXXXXXX', 'নিউমার্কেট', 'নোট...'],
+                ['কটন টি-শার্ট (প্রিমিয়াম)', 'পুরুষ ফ্যাশন', 450, 650, 100, 'https://i.ibb.co/example2.jpg', '', '', '১০০% কটন', 'M, L, XL', 'লাল, নীল, কালো', 300, '', '', '', '']
             ]);
             ws['!cols'] = BULK_COLUMNS.map(() => ({ wch: 22 }));
             const wb = XLSX.utils.book_new();
