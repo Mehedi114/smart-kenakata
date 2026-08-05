@@ -992,6 +992,7 @@
             resetAndReload();
             updateCartCount();
             if (searchQuery) {
+                try { skTrack('Search', { search_term: searchQuery }); } catch (e) {}
                 document.getElementById('searchInput').value = searchQuery;
                 document.getElementById('categoryName').textContent = '🔍 ' + searchQuery;
                 document.getElementById('breadcrumbCat').textContent = 'সার্চ: ' + searchQuery;

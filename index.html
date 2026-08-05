@@ -1083,6 +1083,7 @@
         function goToSearch(q) {
             if (!q) return;
             saveSearchHistory(q);
+            try { skTrack('Search', { search_term: q }); } catch (e) {}
             window.location.href = 'category.html?cat=all&q=' + encodeURIComponent(q);
         }
         function showSearchHome() {

@@ -70,6 +70,12 @@
     const FB_PIXEL_ID = 'YOUR_PIXEL_ID';   // ← Facebook Pixel ID (যেমন: 1234567890123456)
     const GA4_ID      = 'YOUR_GA4_ID';     // ← GA4 Measurement ID (যেমন: G-ABCDEF1234)
 
+    // ⚠️ ID বসানো না থাকলে কনসোলে সতর্কবার্তা (কাজ শুরু করার আগে মনে করিয়ে দেয়)
+    if (FB_PIXEL_ID === 'YOUR_PIXEL_ID' || GA4_ID === 'YOUR_GA4_ID') {
+        console.warn('%c📊 Ads Tracking', 'font-weight:bold; color:#f59e0b;',
+            'Facebook Pixel/GA4 ID এখনো বসানো হয়নি — site-core.js-এর উপরে FB_PIXEL_ID ও GA4_ID বসান।');
+    }
+
     if (FB_PIXEL_ID && FB_PIXEL_ID !== 'YOUR_PIXEL_ID') {
         (function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
         n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
