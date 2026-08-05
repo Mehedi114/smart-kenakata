@@ -982,12 +982,12 @@
         function readCatCache() {
             try {
                 const c = JSON.parse(localStorage.getItem(catCacheKey()) || 'null');
-                if (c && c.v === 1 && c.t && (Date.now() - c.t < CAT_CACHE_TTL) && c.list && c.list.length) return c.list;
+                if (c && c.v === 2 && c.t && (Date.now() - c.t < CAT_CACHE_TTL) && c.list && c.list.length) return c.list;
             } catch (e) {}
             return null;
         }
         function writeCatCache(list) {
-            try { localStorage.setItem(catCacheKey(), JSON.stringify({ v: 1, t: Date.now(), list: list })); } catch (e) {}
+            try { localStorage.setItem(catCacheKey(), JSON.stringify({ v: 2, t: Date.now(), list: list })); } catch (e) {}
         }
 
         // ===== Pagination state =====
@@ -1008,14 +1008,19 @@
             highlightActiveCategory();
             loadQuickCategories();
             setupFilters();
-            // ১) ক্যাশ থাকলে সাথে সাথে দেখাই (instant) — তারপর Firestore থেকে refresh
+            // ১) ক্যাশ থাকলে সাথে সাথে দেখাই (instant) — সাথে background refresh
             const cacheList = readCatCache();
             if (cacheList) {
                 loadedProducts = cacheList;
                 fallbackDone = true; // ক্যাশ ইতিমধ্যে সব পণ্য
                 lastDoc = null; hasMore = false;
                 applyClientFilters();
-                return; // ক্যাশ থেকে দেখালেই হলো — background refresh দরকার নেই (TTL ৫ মিনিট)
+                // background refresh — ১.৫ সেকেন্ড পরে fresh ডেটা আনে (পুরনো cache আটকে থাকে না)
+                setTimeout(() => {
+                    fallbackDone = false;
+                    resetAndReload();
+                }, 1500);
+                return;
             }
             resetAndReload();
             updateCartCount();
@@ -1438,6 +1443,15 @@
             if (total === 0) {
                 document.getElementById('pagination').style.display = 'none';
                 document.getElementById('pageInfo').style.display = 'none';
+                // cache-এ ডেটা থাকলেও filter-এ সব বাদ পড়েছে? তাহলে 'সব' দেখাই
+                if (all.length === 0 && readCatCache()) {
+                    loadedProducts = readCatCache();
+                    allLoadedProducts = loadedProducts;
+                    fallbackDone = true;
+                    activeSub = 'সব';
+                    applyClientFilters();
+                    return;
+                }
                 if (category === 'কাপল' || activeSub === 'কাপল') {
                     grid.innerHTML = `
                         <div class="empty-state">

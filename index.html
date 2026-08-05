@@ -559,9 +559,26 @@
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
 
-        const HOME_CACHE_KEY = 'sk_home_products';
+        const HOME_CACHE_KEY = 'sk_home_products_v2';
         const HOME_CACHE_TTL = 5 * 60 * 1000; // ৫ মিনিট — Firestore read বাঁচায়
         const HOME_LIMIT = 12;
+
+        // ===== ক্যাটাগরি ক্লাসিফায়ার (হোমপেজের balanced list-এর জন্য) =====
+        const HOME_MALE_KW = ['shirt', 'tshirt', 't-shirt', 't shirt', 'polo', 'pant', 'trouser', 'panjabi', 'পাঞ্জাবি', 'পাঞ্জাবী', ' men', 'men ', 'for men', 'man', 'boy', 'boys', 'gents', 'tank top', 'smoking', 'tie'];
+        const HOME_FEMALE_KW = ['three piece', 'থ্রি পিস', 'থ্রী পিস', 'saree', 'শাড়ি', 'শাড়ি', 'salwar', 'kameez', 'ladies', 'women', 'woman', 'female', 'girls', 'skirt', 'plazoo', 'প্লাজো', 'khimar', 'georgette', 'lehenga', 'dupatta', 'burqa', 'hijab', 'ব্লাউজ', 'হেয়ার', 'piece'];
+        const HOME_GADGET_KW = ['ঘড়ি', 'ঘড়ি', 'watch', 'থার্মোমিটার', 'thermometer', 'হিটিং', 'প্যাড', 'earbuds', 'earphone', 'headphone', 'headset', 'চার্জার', 'charger', 'cable', 'speaker', 'মোবাইল', 'mobile', 'phone', 'বাতি', 'lamp', 'light', 'fan', 'পাখা', 'kettle', 'কেটলি', 'iron', 'ইস্ত্রি', 'মিক্সার', 'টিভি', 'tv', 'dryer', 'trimmer', 'shaver', 'শেভার'];
+        const HOME_KIDS_KW = ['kids', 'কিডস', 'children', 'child', 'baby', 'বেবি', 'preschool', 'প্রিস্কুল', 'backpack', 'ব্যাকপ্যাক', 'school', 'স্কুল', 'student', 'ছোটদের', 'বাচ্চাদের', 'toys', 'খেলনা', 'টয়'];
+        const HOME_COUPLE_KW = ['couple', 'কাপল', 'matching', 'ম্যাচিং', 'জোড়া', 'জোড়', 'pair', 'পেয়ার'];
+
+        function classifyProduct(p) {
+            const text = ((p.name || '') + ' ' + (p.category || '')).toLowerCase();
+            if (HOME_COUPLE_KW.some(k => text.includes(k))) return 'কাপল';
+            if (HOME_KIDS_KW.some(k => text.includes(k))) return 'বাচ্চাদের ফ্যাশন';
+            if (HOME_FEMALE_KW.some(k => text.includes(k))) return 'মহিলা ফ্যাশন';
+            if (HOME_MALE_KW.some(k => text.includes(k))) return 'পুরুষ ফ্যাশন';
+            if (HOME_GADGET_KW.some(k => text.includes(k))) return 'গ্যাজেট';
+            return 'অন্যান্য';
+        }
 
         // ===== জনপ্রিয় পণ্য — সব ক্যাটাগরি থেকে balanced (featured আগে) =====
         function buildBalancedHomeList(list) {
@@ -606,7 +623,7 @@
             if (!forceRefresh) {
                 try {
                     const cached = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
-                    if (cached && cached.t && (Date.now() - cached.t < HOME_CACHE_TTL) && cached.list.length) {
+                    if (cached && cached.v === 2 && cached.t && (Date.now() - cached.t < HOME_CACHE_TTL) && cached.list.length) {
                         renderHome(cached.list);
                         return;
                     }
@@ -619,37 +636,39 @@
                 if (!grid.querySelector('.sk-skeleton-card')) return;
                 try {
                     const stale = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
-                    if (stale && stale.list && stale.list.length) renderHome(stale.list);
+                    if (stale && stale.v === 2 && stale.list && stale.list.length) renderHome(stale.list);
                 } catch (e) {}
             }, 3500);
 
-            const loadFeatured = () => db.collection('products').where('featured', '==', true).limit(12).get().catch(() => null);
-            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(30).get();
-            const loadSimple = () => db.collection('products').limit(30).get();
+            // সিম্পল + robust: একটা query-ই যথেষ্ট — featured প্রথমে sort করা হয় client-side
+            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(40).get();
+            const loadSimple = () => db.collection('products').limit(40).get();
+            const loadFallback3 = () => db.collection('products').limit(12).get();
 
-            Promise.all([loadFeatured(), loadOrdered().catch(() => loadSimple())])
-                .then(([fSnap, snapshot]) => {
-                    const map = {};
-                    if (snapshot) snapshot.forEach(doc => { map[doc.id] = { id: doc.id, ...doc.data() }; });
-                    if (fSnap) fSnap.forEach(doc => { if (!map[doc.id]) map[doc.id] = { id: doc.id, ...doc.data() }; });
-                    const list = Object.values(map);
+            loadOrdered()
+                .catch(() => loadSimple())
+                .catch(() => loadFallback3())
+                .then((snapshot) => {
+                    clearTimeout(slowTimer);
+                    if (!snapshot) throw new Error('empty');
+                    const list = [];
+                    snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
                     list.sort((a, b) => {
                         const timeA = a.createdAt?.seconds || 0;
                         const timeB = b.createdAt?.seconds || 0;
                         return timeB - timeA;
                     });
-                    clearTimeout(slowTimer);
                     if (!list.length) {
                         grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
                         return;
                     }
-                    try { localStorage.setItem(HOME_CACHE_KEY, JSON.stringify({ t: Date.now(), list: list })); } catch (e) {}
+                    try { localStorage.setItem(HOME_CACHE_KEY, JSON.stringify({ v: 2, t: Date.now(), list: list })); } catch (e) {}
                     renderHome(list);
                 })
                 .catch((error) => {
                     clearTimeout(slowTimer);
                     console.error('Error loading products:', error);
-                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>' + error.message + '</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
+                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>নেটওয়ার্ক/ডেটাবেস সমস্যা</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
                 });
         }
 
@@ -947,6 +966,62 @@
         }
         loadOfferPopup();
 
+        // ===== ⚡ কুইক ভিউ =====
+        function openQuickView(pid) {
+            const p = allProducts.find(x => x.id === pid)
+                || flashProductsCache.find(x => x.id === pid)
+                || (window._recentProducts || []).find(x => x.id === pid);
+            if (!p) return;
+            const modal = document.getElementById('qvModal');
+            const body = document.getElementById('qvBody');
+            const overlay = document.getElementById('qvOverlay');
+            if (!modal || !body) return;
+            const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+            const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeImage = (p.image || 'https://via.placeholder.com/300').replace(/'/g, "\\'");
+            const stockOut = (p.stock !== undefined && p.stock !== null && p.stock <= 0);
+            let html = '<div class="sk-qv-img"><img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" onerror="this.src=\'https://via.placeholder.com/300\'">';
+            if (discount > 0) html += '<span class="sk-qv-off">-' + discount + '%</span>';
+            html += '</div>';
+            html += '<div class="sk-qv-info">';
+            html += '<div class="sk-qv-cat">' + escapeHtml(p.category || 'সাধারণ') + '</div>';
+            html += '<h3>' + escapeHtml(p.name) + '</h3>';
+            html += '<div class="sk-qv-price"><span class="current-price">৳' + p.price + '</span>';
+            if (p.oldPrice) html += '<span class="old-price">৳' + p.oldPrice + '</span></div>';
+            html += '<div class="sk-qv-actions">';
+            if (stockOut) {
+                html += '<button class="add-cart-btn" disabled><i class="fas fa-ban"></i> স্টক শেষ</button>';
+            } else if (skHasVariants(p)) {
+                html += '<button class="add-cart-btn variant-btn" onclick="closeQuickView(); viewProduct(\'' + p.id + '\')"><i class="fas fa-list-ul"></i> অপশন দেখুন</button>';
+            } else {
+                html += '<button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(\'' + p.id + '\', \'' + safeName + '\', ' + p.price + ', \'' + safeImage + '\'); closeQuickView();">';
+                html += '<i class="fas fa-cart-plus"></i> কার্টে যোগ করুন</button>';
+            }
+            html += '</div>';
+            html += '<button class="sk-qv-detail" onclick="closeQuickView(); viewProduct(\'' + p.id + '\')">বিস্তারিত দেখুন <i class="fas fa-arrow-right"></i></button>';
+            html += '</div>';
+            body.innerHTML = html;
+            modal.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            try {
+                skLoadRatings([p.id], map => {
+                    const starsHtml = skRatingStarsHtml(p, map);
+                    if (starsHtml && body.querySelector('.sk-qv-cat')) {
+                        body.querySelector('.sk-qv-cat').insertAdjacentHTML('afterend', starsHtml);
+                    }
+                });
+            } catch (e) {}
+        }
+        function closeQuickView() {
+            const modal = document.getElementById('qvModal');
+            const overlay = document.getElementById('qvOverlay');
+            if (modal) modal.classList.remove('open');
+            if (overlay) overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeQuickView(); });
+
         // ===== 🕘 রিসেন্টলি ভিউড — প্রোডাক্ট পেজে দেখার সময় সেভ হয় =====
         function loadRecentProducts() {
             const section = document.getElementById('recentSection');
@@ -1025,7 +1100,7 @@
             const grid = document.getElementById('productsGrid');
             
             if (products.length === 0) {
-                grid.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><h3>কোন পণ্য পাওয়া যায়নি</h3></div>';
+                grid.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><h3>কোন পণ্য পাওয়া যায়নি</h3><p>আবার চেষ্টা করুন</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
                 return;
             }
 
