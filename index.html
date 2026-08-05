@@ -392,6 +392,17 @@
         </div>
     </section>
 
+    <!-- 🕘 Recently Viewed -->
+    <section class="sk-recent-section" id="recentSection" style="display:none;">
+        <div class="sk-section-head">
+            <div class="sk-head-text">
+                <h2 class="section-title">🕘 আপনি আগে দেখেছেন</h2>
+                <p class="section-subtitle">আবার দেখে নিন — হয়তো এটাই আপনার পছন্দ</p>
+            </div>
+        </div>
+        <div class="sk-flash-scroll" id="recentGrid"></div>
+    </section>
+
     <section class="features">
         <div class="features-grid">
             <div class="feature-card">
@@ -499,6 +510,16 @@
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage">সফল হয়েছে!</span>
+    </div>
+
+    <!-- 🔥 লাইভ কেনাকাটার নোটিফিকেশন (AliExpress-স্টাইল) -->
+    <div class="sk-buy-popup" id="buyPopup" onclick="viewProduct(window._buyPopupPid || '')" style="display:none;">
+        <img id="buyPopupImg" src="" alt="">
+        <div class="sk-buy-popup-text">
+            <div class="sk-buy-popup-title"><span id="buyPopupName"></span></div>
+            <div class="sk-buy-popup-sub" id="buyPopupSub"></div>
+        </div>
+        <button class="sk-buy-popup-close" onclick="event.stopPropagation(); closeBuyPopup()" aria-label="বন্ধ করুন">✕</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -731,7 +752,7 @@
         function flashCardHtml(p) {
             const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
             const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            let html = '<div class="sk-flash-card" onclick="viewProduct(\'' + p.id + '\')">';
+            let html = '<div class="sk-flash-card" data-pid="' + p.id + '" onclick="viewProduct(\'' + p.id + '\')">';
             html += '<div class="sk-flash-img">';
             if (discount > 0) html += '<span class="sk-flash-off">-' + discount + '%</span>';
             html += '<img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
@@ -742,6 +763,24 @@
             if (p.oldPrice) html += '<s>৳' + p.oldPrice + '</s>';
             html += '</div></div></div>';
             return html;
+        }
+        function injectFlashRatings(list) {
+            try {
+                const src = list || flashProductsCache;
+                const ids = src.map(p => p.id);
+                if (!ids.length) return;
+                skLoadRatings(ids, map => {
+                    document.querySelectorAll('#flashGrid .sk-flash-card[data-pid], #recentGrid .sk-flash-card[data-pid]').forEach(card => {
+                        const pid = card.getAttribute('data-pid');
+                        const p = src.find(x => x.id === pid);
+                        if (!p) return;
+                        const starsHtml = skRatingStarsHtml(p, map);
+                        if (!starsHtml) return;
+                        const info = card.querySelector('.sk-flash-info');
+                        if (info) info.insertAdjacentHTML('afterbegin', starsHtml);
+                    });
+                });
+            } catch (e) {}
         }
 
         function startFlashCountdown(endTime) {
@@ -800,6 +839,7 @@
                 startFlashCountdown(nearest);
             }
             grid.innerHTML = flashProductsCache.map(flashCardHtml).join('');
+            injectFlashRatings();
         }
 
         // ফ্ল্যাশ পণ্য হিসেবে ধরা হবে: flashEnd ভবিষ্যতে অথবা গত ২৪ ঘণ্টার মধ্যে শেষ হয়েছে (দেখানোর জন্য)
@@ -808,6 +848,90 @@
             if (!end) return false;
             return end > Date.now() - 24 * 60 * 60 * 1000;
         }
+        // ===== 🔥 লাইভ কেনাকাটার নোটিফিকেশন (সোশ্যাল প্রুফ) =====
+        const BUY_NAMES = ['রহিম', 'করিম', 'ফাতেমা', 'আয়েশা', 'সুমন', 'নাজমা', 'তানভীর', 'সাদিয়া', 'ইমন', 'রুমানা', 'আরিফ', 'শারমিন', 'জামাল', 'লিমা', 'হাসান', 'মিম', 'রাকিব', 'নুসরাত', 'সাকিব', 'তania'];
+        const BUY_CITIES = ['ঢাকা', 'চট্টগ্রাম', 'সিলেট', 'রাজশাহী', 'খুলনা', 'বরিশাল', 'কুমিল্লা', 'নারায়ণগঞ্জ', 'গাজীপুর', 'ময়মনসিংহ', 'রংপুর', 'ফরিদপুর'];
+        let buyPopupTimer = null;
+        let buyPopupShown = 0;
+        const BUY_POPUP_MAX = 4; // প্রতি সেশনে সর্বোচ্চ ৪টা
+
+        function showBuyPopup() {
+            if (buyPopupShown >= BUY_POPUP_MAX) return;
+            if (!allProducts.length) return;
+            const p = allProducts[Math.floor(Math.random() * allProducts.length)];
+            if (!p) return;
+            const name = BUY_NAMES[Math.floor(Math.random() * BUY_NAMES.length)];
+            const city = BUY_CITIES[Math.floor(Math.random() * BUY_CITIES.length)];
+            const mins = 1 + Math.floor(Math.random() * 25);
+            const popup = document.getElementById('buyPopup');
+            if (!popup) return;
+            window._buyPopupPid = p.id;
+            document.getElementById('buyPopupImg').src = p.image || 'https://via.placeholder.com/60';
+            document.getElementById('buyPopupName').textContent = p.name.length > 42 ? p.name.slice(0, 40) + '…' : p.name;
+            document.getElementById('buyPopupSub').textContent = '🔥 ' + name + ' (' + city + ') ' + mins + ' মিনিট আগে কিনেছেন';
+            popup.style.display = 'flex';
+            popup.classList.remove('show');
+            setTimeout(() => popup.classList.add('show'), 30);
+            buyPopupShown++;
+            clearTimeout(buyPopupTimer);
+            buyPopupTimer = setTimeout(closeBuyPopup, 7000);
+        }
+
+        function closeBuyPopup() {
+            const popup = document.getElementById('buyPopup');
+            if (!popup) return;
+            popup.classList.remove('show');
+            setTimeout(() => { popup.style.display = 'none'; }, 400);
+        }
+
+        // প্রতি ১৮-৩০ সেকেন্ডে একটি পপআপ
+        function startBuyPopups() {
+            setTimeout(function tick() {
+                if (document.hidden !== true) showBuyPopup();
+                if (buyPopupShown < BUY_POPUP_MAX) {
+                    buyPopupTimer = setTimeout(tick, 18000 + Math.random() * 12000);
+                }
+            }, 8000);
+        }
+        startBuyPopups();
+
+        // ===== 🕘 রিসেন্টলি ভিউড — প্রোডাক্ট পেজে দেখার সময় সেভ হয় =====
+        function loadRecentProducts() {
+            const section = document.getElementById('recentSection');
+            const grid = document.getElementById('recentGrid');
+            if (!section || !grid) return;
+            let ids = [];
+            try { ids = JSON.parse(localStorage.getItem('sk_recent') || '[]'); } catch (e) {}
+            ids = ids.slice(0, 10);
+            if (!ids.length) { section.style.display = 'none'; return; }
+            try {
+                const db2 = firebase.firestore();
+                const idField = firebase.firestore.FieldPath.documentId();
+                const pending = [];
+                for (let i = 0; i < ids.length; i += 10) {
+                    pending.push(db2.collection('products').where(idField, 'in', ids.slice(i, i + 10)).get());
+                }
+                Promise.all(pending).then(results => {
+                    const map = {};
+                    results.forEach(snap => snap.forEach(doc => { map[doc.id] = { id: doc.id, ...doc.data() }; }));
+                    const list = ids.map(id => map[id]).filter(Boolean);
+                    if (!list.length) { section.style.display = 'none'; return; }
+                    grid.innerHTML = list.map(p => {
+                        const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        let h = '<div class="sk-flash-card" data-pid="' + p.id + '" onclick="viewProduct(\'' + p.id + '\')">';
+                        h += '<div class="sk-flash-img"><img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'"></div>';
+                        h += '<div class="sk-flash-info"><div class="sk-flash-name">' + escapeHtml(p.name) + '</div>';
+                        h += '<div class="sk-flash-price"><b>৳' + p.price + '</b>';
+                        if (p.oldPrice) h += '<s>৳' + p.oldPrice + '</s>';
+                        h += '</div></div></div>';
+                        return h;
+                    }).join('');
+                    section.style.display = 'block';
+                    injectFlashRatings(list); // রেটিং inject
+                }).catch(() => { section.style.display = 'none'; });
+            } catch (e) { section.style.display = 'none'; }
+        }
+
         function loadFlashProducts() {
             const section = document.getElementById('flashSection');
             if (!section) return;
@@ -860,7 +984,7 @@
                 const stockOut = (product.stock !== undefined && product.stock !== null && product.stock <= 0);
                 const hasVariants = skHasVariants(product);
 
-                html += '<div class="product-card" onclick="viewProduct(\'' + product.id + '\')">';
+                html += '<div class="product-card" data-pid="' + product.id + '" onclick="viewProduct(\'' + product.id + '\')">';
                 html += '<div class="product-image">';
                 if (discount > 0) html += '<span class="discount-badge">-' + discount + '%</span>';
                 if (skHasFlash(product)) html += '<span class="badge-flash">⚡ ফ্ল্যাশ সেল</span>';
@@ -887,6 +1011,20 @@
             });
 
             grid.innerHTML = html;
+            // স্টার রেটিং — রিভিউ থেকে (অ্যাসিন্ক্রোনাস, থাকলে দেখাবে)
+            try {
+                skLoadRatings(products.map(p => p.id), map => {
+                    document.querySelectorAll('#productsGrid .product-card[data-pid]').forEach(card => {
+                        const pid = card.getAttribute('data-pid');
+                        const p = products.find(x => x.id === pid);
+                        if (!p) return;
+                        const starsHtml = skRatingStarsHtml(p, map);
+                        if (!starsHtml) return;
+                        const priceEl = card.querySelector('.product-price');
+                        if (priceEl) priceEl.insertAdjacentHTML('beforebegin', starsHtml);
+                    });
+                });
+            } catch (e) {}
         }
 
         function viewProduct(productId) {
@@ -1245,6 +1383,7 @@ loadBanners();
         loadHomeCategories();
         loadNavMenu();
         loadFlashProducts();
+        loadRecentProducts();
         updateCartCount();
         updateWishlistCount();
     </script>

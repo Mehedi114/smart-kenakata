@@ -1404,6 +1404,20 @@
             renderSubChips();
             updateLoadMoreBtn();
             updatePagination(total, totalPages);
+            // স্টার রেটিং — রিভিউ থেকে (যদি থাকে)
+            try {
+                skLoadRatings(products.map(p => p.id), map => {
+                    document.querySelectorAll('#productsGrid .product-card[data-pid]').forEach(card => {
+                        const pid = card.getAttribute('data-pid');
+                        const p = products.find(x => x.id === pid);
+                        if (!p) return;
+                        const starsHtml = skRatingStarsHtml(p, map);
+                        if (!starsHtml) return;
+                        const priceEl = card.querySelector('.product-price');
+                        if (priceEl) priceEl.insertAdjacentHTML('beforebegin', starsHtml);
+                    });
+                });
+            } catch (e) {}
         }
 
         // ===== Pagination UI — পেজ নাম্বার + prev/next =====

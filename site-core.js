@@ -136,4 +136,78 @@
     window.skHasVariants = function (p) {
         return !!((p.sizes && p.sizes.length) || (p.colors && p.colors.length));
     };
+
+    // ===== ৫) রেটিং — রিভিউ থেকে গড় স্টার (কার্ডে দেখানোর জন্য) =====
+    // reviews কালেকশন থেকে productId 'in' query; ক্যাশ ৫ মিনিট
+    const RATINGS_CACHE_KEY = 'sk_ratings';
+    const RATINGS_TTL = 5 * 60 * 1000;
+
+    function readRatingsCache() {
+        try {
+            const c = JSON.parse(localStorage.getItem(RATINGS_CACHE_KEY) || 'null');
+            if (c && c.t && (Date.now() - c.t < RATINGS_TTL)) return c.map || {};
+        } catch (e) {}
+        return null;
+    }
+
+    window.skLoadRatings = function (ids, cb) {
+        cb = cb || function () {};
+        const clean = (ids || []).filter(Boolean).slice(0, 30);
+        if (!clean.length) return cb({});
+        const cache = readRatingsCache() || {};
+        const need = clean.filter(id => !cache[id]);
+        if (!need.length) return cb(cache);
+        try {
+            if (typeof firebase === 'undefined' || !firebase.firestore) return cb(cache);
+            const db = firebase.firestore();
+            const out = Object.assign({}, cache);
+            let pending = 0;
+            // 'in' query-তে সর্বোচ্চ ১০টা id — chunk করে query
+            for (let i = 0; i < need.length; i += 10) {
+                const chunk = need.slice(i, i + 10);
+                pending++;
+                db.collection('reviews').where('productId', 'in', chunk).get()
+                    .then(snap => {
+                        const counts = {}, sums = {};
+                        chunk.forEach(id => { counts[id] = 0; sums[id] = 0; });
+                        snap.forEach(doc => {
+                            const d = doc.data();
+                            if (counts[d.productId] !== undefined && Number(d.rating)) {
+                                counts[d.productId]++;
+                                sums[d.productId] += Number(d.rating);
+                            }
+                        });
+                        chunk.forEach(id => {
+                            if (counts[id] > 0) {
+                                out[id] = { avg: Math.round(sums[id] / counts[id] * 10) / 10, count: counts[id] };
+                            }
+                        });
+                    })
+                    .catch(() => {})
+                    .finally(() => {
+                        pending--;
+                        if (pending === 0) {
+                            try { localStorage.setItem(RATINGS_CACHE_KEY, JSON.stringify({ t: Date.now(), map: out })); } catch (e) {}
+                            cb(out);
+                        }
+                    });
+            }
+        } catch (e) {
+            cb(cache);
+        }
+    };
+
+    // কার্ডে স্টার HTML — ডেটা না থাকলে খালি (লুকানো থাকবে)
+    window.skRatingStarsHtml = function (p, ratingsMap) {
+        const r = (ratingsMap || {})[p.id];
+        if (!r || !r.count) return '';
+        const avg = r.avg;
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            stars += i <= Math.round(avg) ? '★' : '☆';
+        }
+        return '<div class="sk-rating-row"><span class="sk-rating-stars">' + stars + '</span>'
+            + '<span class="sk-rating-avg">' + avg + '</span>'
+            + '<span class="sk-rating-count">(' + r.count + ')</span></div>';
+    };
 })();

@@ -833,6 +833,14 @@
                 currentProduct = { id: doc.id, ...doc.data() };
                 renderProduct();
                 startFlashTimer(currentProduct);
+                // 🕘 রিসেন্টলি ভিউড — localStorage-এ সেভ
+                try {
+                    let recent = JSON.parse(localStorage.getItem('sk_recent') || '[]');
+                    recent = recent.filter(id => id !== productId);
+                    recent.unshift(productId);
+                    recent = recent.slice(0, 10);
+                    localStorage.setItem('sk_recent', JSON.stringify(recent));
+                } catch (e) {}
                 loadRelated();
                 loadReviews();
                 skTrack('ViewContent', { value: Number(currentProduct.price) || 0, currency: 'BDT', content_name: currentProduct.name, content_ids: [currentProduct.id] });
@@ -866,6 +874,15 @@
                 stockLine = `<div class="sk-stock-line low">🔥 স্টক সীমিত! আর মাত্র <b>${stock}</b> টি পণ্য বাকি!</div>`;
             } else if (inStock && stock < 900) {
                 stockLine = `<div class="sk-stock-line ok">✅ স্টকে আছে (${stock}টি)</div>`;
+            }
+            // 📊 স্টক প্রোগ্রেস বার — জরুরি ভাব (শুধু কম স্টকে)
+            let stockBar = '';
+            if (inStock && stock < 60 && stock < 900) {
+                const pct = Math.min(92, Math.max(15, 100 - Math.round(stock * 1.8)));
+                stockBar = `<div class="sk-stock-bar">
+                    <div class="sk-stock-bar-top"><span>🔥 ইতিমধ্যে <b>${pct}%</b> বিক্রি হয়েছে</span><span>আর মাত্র ${stock}টি বাকি!</span></div>
+                    <div class="sk-stock-bar-track"><div class="sk-stock-bar-fill" style="width:${pct}%"></div></div>
+                </div>`;
             }
 
             // Variant UI
@@ -1000,9 +1017,19 @@
                                 <li><i class="fas fa-money-bill-wave"></i> ক্যাশ অন ডেলিভারি সুবিধা</li>
                                 <li><i class="fas fa-undo"></i> ৭ দিনের রিটার্ন পলিসি</li>
                             </ul>
+
+                            <!-- 🚚 ডেলিভারি ইনফো বক্স -->
+                            <div class="sk-delivery-box">
+                                <div class="sk-delivery-title"><i class="fas fa-truck-fast"></i> ডেলিভারি তথ্য</div>
+                                <div class="sk-delivery-row"><span>ঢাকার ভিতরে</span><b>৳${SKS('deliveryInside')} — ২৪ ঘণ্টায়</b></div>
+                                <div class="sk-delivery-row"><span>ঢাকার বাইরে</span><b>৳${SKS('deliveryOutside')} — ৩-৫ দিনে</b></div>
+                                ${SKS('freeDeliveryMin') > 0 ? `<div class="sk-delivery-free">🎉 ৳${SKS('freeDeliveryMin')}+ অর্ডারে ফ্রি ডেলিভারি!</div>` : ''}
+                                <div class="sk-delivery-row"><span>পেমেন্ট</span><b>💵 ক্যাশ অন ডেলিভারি / বিকাশ / নগদ</b></div>
+                            </div>
                             
                             ${flashHtml}
                             ${stockLine}
+                            ${stockBar}
                             ${variantHtml}
 
                             ${inStock ? `
