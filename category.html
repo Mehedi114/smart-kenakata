@@ -432,6 +432,89 @@
             font-weight: 600;
         }
 
+        /* PAGINATION */
+        .sk-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin: 30px 0 10px;
+            flex-wrap: wrap;
+        }
+        .sk-page-btn {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            border: 2px solid var(--gray-200);
+            background: #fff;
+            color: var(--gray-700);
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+            touch-action: manipulation;
+        }
+        .sk-page-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+        .sk-page-btn:disabled { opacity: .4; cursor: not-allowed; }
+        .sk-page-numbers { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .sk-page-num {
+            min-width: 44px; height: 44px;
+            padding: 0 10px;
+            border-radius: 12px;
+            border: 2px solid var(--gray-200);
+            background: #fff;
+            color: var(--gray-700);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all .2s;
+            touch-action: manipulation;
+        }
+        .sk-page-num:hover { border-color: var(--primary); color: var(--primary); }
+        .sk-page-num.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(16,185,129,.3);
+        }
+        .sk-page-info {
+            text-align: center;
+            color: var(--gray-500);
+            font-size: 13px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        /* PRICE QUICK CHIPS */
+        .sk-price-quick {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .sk-price-quick-label { font-size: 13px; font-weight: 700; color: var(--gray-700); }
+        .sk-price-chip {
+            padding: 8px 14px;
+            min-height: 38px;
+            border-radius: 999px;
+            border: 1.5px solid var(--gray-200);
+            background: #fff;
+            color: var(--gray-700);
+            font-family: inherit;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            touch-action: manipulation;
+        }
+        .sk-price-chip:hover { border-color: var(--primary); color: var(--primary); }
+        .sk-price-chip.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(16,185,129,.3);
+        }
+
         /* SUB-CATEGORY CHIPS */
         .subcat-strip {
             display: flex;
@@ -657,11 +740,19 @@
             <label class="sk-chip-toggle" title="শুধু স্টকে থাকা পণ্য">
                 <input type="checkbox" id="inStockOnly" onchange="resetAndReload()"> ✅ শুধু স্টকে আছে
             </label>
+            <div class="sk-price-quick">
+                <span class="sk-price-quick-label">দাম:</span>
+                <button class="sk-price-chip" data-min="0" data-max="500" onclick="setPriceQuick(0,500)">৳৫০০ পর্যন্ত</button>
+                <button class="sk-price-chip" data-min="500" data-max="1000" onclick="setPriceQuick(500,1000)">৳৫০০–১০০০</button>
+                <button class="sk-price-chip" data-min="1000" data-max="2000" onclick="setPriceQuick(1000,2000)">৳১০০০–২০০০</button>
+                <button class="sk-price-chip" data-min="2000" data-max="5000" onclick="setPriceQuick(2000,5000)">৳২০০০+</button>
+                <button class="sk-price-chip active" data-min="0" data-max="99999" onclick="setPriceQuick(0,99999)">সব দাম</button>
+            </div>
             <div class="sk-range-wrap">
                 <div class="sk-track"><div class="sk-fill" id="rangeFill"></div></div>
-                <input type="range" id="priceMin" min="0" max="5000" value="0" step="10" oninput="onPriceInput()">
-                <input type="range" id="priceMax" min="0" max="5000" value="5000" step="10" oninput="onPriceInput()">
-                <div class="sk-range-vals">৳<span id="priceMinVal">0</span> — ৳<span id="priceMaxVal">5000</span>+</div>
+                <input type="range" id="priceMin" min="0" max="20000" value="0" step="50" oninput="onPriceInput()">
+                <input type="range" id="priceMax" min="0" max="20000" value="20000" step="50" oninput="onPriceInput()">
+                <div class="sk-range-vals">৳<span id="priceMinVal">0</span> — ৳<span id="priceMaxVal">20000+</span></div>
             </div>
         </div>
 
@@ -672,9 +763,12 @@
             <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
             <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
         </div>
-        <div class="sk-load-more">
-            <button id="loadMoreBtn" onclick="loadNextPage()" style="display:none;">আরো পণ্য দেখুন <i class="fas fa-chevron-down"></i></button>
+        <div class="sk-pagination" id="pagination" style="display:none;">
+            <button class="sk-page-btn" id="pagePrevBtn" onclick="goPage(currentPage - 1)" aria-label="আগের পেজ"><i class="fas fa-chevron-left"></i></button>
+            <div class="sk-page-numbers" id="pageNumbers"></div>
+            <button class="sk-page-btn" id="pageNextBtn" onclick="goPage(currentPage + 1)" aria-label="পরের পেজ"><i class="fas fa-chevron-right"></i></button>
         </div>
+        <div class="sk-page-info" id="pageInfo" style="display:none;"></div>
     </div>
 
     <!-- WhatsApp Float -->
@@ -725,6 +819,7 @@
             'পুরুষ ফ্যাশন': '👔',
             'কাপল': '💑',
             'গ্যাজেট': '📱',
+            'বাচ্চাদের ফ্যাশন': '🧒',
             'অন্যান্য': '📦'
         };
 
@@ -763,6 +858,14 @@
                 { n: 'মোবাইল এক্সেসরিজ', kw: ['charger', 'চার্জার', 'cable', 'power bank', 'পাওয়ার ব্যাংক'] },
                 { n: 'হোম অ্যাপ্লায়েন্স', kw: ['বাতি', 'lamp', 'light', 'fan', 'পাখা', 'kettle', 'কেটলি', 'iron', 'ইস্ত্রি', 'mixer', 'মিক্সার', 'টিভি', 'tv', 'dryer', 'trimmer', 'shaver', 'শেভার', 'ব্লেন্ডার'] }
             ],
+            'বাচ্চাদের ফ্যাশন': [
+                { n: 'সব', kw: null },
+                { n: 'ব্যাগ ও ব্যাকপ্যাক', kw: ['bag', 'ব্যাগ', 'backpack'] },
+                { n: 'বেবি ও প্রিস্কুল', kw: ['baby', 'বেবি', 'preschool', 'প্রিস্কুল', 'kids', 'কিডস', 'children', 'child'] },
+                { n: 'স্কুল ও স্টেশনারি', kw: ['school', 'স্কুল', 'student', 'স্টুডেন্ট', 'বই', 'book', 'কলম', 'খাতা'] },
+                { n: 'খেলনা', kw: ['toys', 'খেলনা', 'toy', 'টয়'] },
+                { n: 'ছোটদের ফ্যাশন', kw: ['বাচ্চাদের', 'ছোটদের', 'কিডস', 'kids'] }
+            ],
             'অন্যান্য': [
                 { n: 'সব', kw: null },
                 { n: 'ব্যাগ ও ব্যাকপ্যাক', kw: ['bag', 'ব্যাগ', 'backpack'] },
@@ -796,7 +899,8 @@
                 'ফিমেল ফ্যাশন': 'মহিলা ফ্যাশন', 'female fashion': 'মহিলা ফ্যাশন', 'women fashion': 'মহিলা ফ্যাশন',
                 'male fashion': 'পুরুষ ফ্যাশন', 'men fashion': 'পুরুষ ফ্যাশন',
                 'beauty': 'অন্যান্য', 'বিউটি': 'অন্যান্য', 'others': 'অন্যান্য',
-                'মহিলা ফ্যাশন': 'মহিলা ফ্যাশন', 'পুরুষ ফ্যাশন': 'পুরুষ ফ্যাশন', 'গ্যাজেট': 'গ্যাজেট', 'অন্যান্য': 'অন্যান্য'
+                'kids': 'বাচ্চাদের ফ্যাশন', 'kids fashion': 'বাচ্চাদের ফ্যাশন', 'বাচ্চা': 'বাচ্চাদের ফ্যাশন', 'শিশু': 'বাচ্চাদের ফ্যাশন',
+                'মহিলা ফ্যাশন': 'মহিলা ফ্যাশন', 'পুরুষ ফ্যাশন': 'পুরুষ ফ্যাশন', 'কাপল': 'কাপল', 'গ্যাজেট': 'গ্যাজেট', 'বাচ্চাদের ফ্যাশন': 'বাচ্চাদের ফ্যাশন', 'অন্যান্য': 'অন্যান্য'
             };
             const key = String(name || '').trim().toLowerCase();
             return m[key] || name;
@@ -830,10 +934,12 @@
         const MALE_KW = ['shirt', 'tshirt', 't-shirt', 't shirt', 'polo', 'pant', 'trouser', 'panjabi', 'পাঞ্জাবি', 'পাঞ্জাবী', ' men', 'men ', 'for men', 'man', 'boy', 'boys', 'gents', 'tank top', 'smoking', 'tie'];
         const FEMALE_KW = ['three piece', 'থ্রি পিস', 'থ্রী পিস', 'saree', 'শাড়ি', 'শাড়ি', 'salwar', 'kameez', 'ladies', 'women', 'woman', 'female', 'girls', 'skirt', 'plazoo', 'প্লাজো', 'khimar', 'georgette', 'lehenga', 'dupatta', 'burqa', 'hijab', 'ব্লাউজ', 'হেয়ার', 'piece'];
         const GADGET_KW = ['ঘড়ি', 'ঘড়ি', 'watch', 'থার্মোমিটার', 'thermometer', 'হিটিং', 'প্যাড', 'earbuds', 'earphone', 'headphone', 'headset', 'চার্জার', 'charger', 'cable', 'speaker', 'মোবাইল', 'mobile', 'phone', 'বাতি', 'lamp', 'light', 'fan', 'পাখা', 'kettle', 'কেটলি', 'blender', 'iron', 'ইস্ত্রি', 'মিক্সার', 'টিভি', 'tv', 'হেয়ার ড্রায়ার', 'dryer', 'ব্লেন্ডার', 'trimmer', 'shaver', 'শেভার'];
+        const KIDS_KW = ['kids', 'কিডস', 'children', 'child', 'baby', 'বেবি', 'preschool', 'প্রিস্কুল', 'backpack', 'ব্যাকপ্যাক', 'school', 'স্কুল', 'student', 'ছোটদের', 'বাচ্চাদের', 'toys', 'খেলনা', 'টয়'];
 
         function classifyProduct(p) {
             const text = ((p.name || '') + ' ' + (p.category || '')).toLowerCase();
             if (COUPLE_KW.some(k => text.includes(k))) return 'কাপল';
+            if (KIDS_KW.some(k => text.includes(k))) return 'বাচ্চাদের ফ্যাশন';
             if (FEMALE_KW.some(k => text.includes(k))) return 'মহিলা ফ্যাশন';
             if (MALE_KW.some(k => text.includes(k))) return 'পুরুষ ফ্যাশন';
             if (GADGET_KW.some(k => text.includes(k))) return 'গ্যাজেট';
@@ -849,11 +955,13 @@
         let loadedProducts = [];       // এ পর্যন্ত লোড হওয়া সব পণ্য
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-        // ===== Server-side Pagination state =====
-        const PAGE_SIZE = 12;
+        // ===== Pagination state =====
+        const PAGE_SIZE = 10;
         let lastDoc = null;
         let hasMore = false;
         let pageLoading = false;
+        let currentPage = 1;
+        let allLoadedProducts = [];   // গ্রুপ ক্যাটাগরির জন্য সব লোড হওয়া পণ্য (client-side পেজিং)
 
         // ===== Filter state =====
         let priceMin = 0, priceMax = 5000, inStockOnly = false;
@@ -996,6 +1104,7 @@
             { name: 'পুরুষ ফ্যাশন', icon: '👔' },
             { name: 'কাপল', icon: '💑' },
             { name: 'গ্যাজেট', icon: '📱' },
+            { name: 'বাচ্চাদের ফ্যাশন', icon: '🧒' },
             { name: 'অন্যান্য', icon: '📦' }
         ];
         function mergeCats(base, live) {
@@ -1040,33 +1149,55 @@
 
 
         // ===== FILTER SETUP =====
+        const PRICE_MAX_RANGE = 20000;
         function setupFilters() {
-            priceMin = 0; priceMax = 5000; inStockOnly = false;
+            priceMin = 0; priceMax = PRICE_MAX_RANGE; inStockOnly = false;
             updateRangeUI();
+            markPriceChip();
+        }
+        function setPriceQuick(min, max) {
+            priceMin = min; priceMax = max;
+            const mnEl = document.getElementById('priceMin');
+            const mxEl = document.getElementById('priceMax');
+            if (mnEl) mnEl.value = Math.min(min, PRICE_MAX_RANGE);
+            if (mxEl) mxEl.value = Math.min(max, PRICE_MAX_RANGE);
+            updateRangeUI();
+            markPriceChip();
+            clearTimeout(window._priceTimer);
+            window._priceTimer = setTimeout(() => { currentPage = 1; applyClientFilters(); }, 50);
+        }
+        function markPriceChip() {
+            document.querySelectorAll('.sk-price-chip').forEach(ch => {
+                const mn = Number(ch.getAttribute('data-min'));
+                const mx = Number(ch.getAttribute('data-max'));
+                ch.classList.toggle('active', priceMin === mn && priceMax === mx);
+            });
         }
         function onPriceInput() {
             let mn = Number(document.getElementById('priceMin').value);
             let mx = Number(document.getElementById('priceMax').value);
-            if (mn > mx - 10) {
-                if (document.activeElement && document.activeElement.id === 'priceMin') mn = mx - 10;
-                else mx = mn + 10;
+            if (mn > mx - 50) {
+                if (document.activeElement && document.activeElement.id === 'priceMin') mn = mx - 50;
+                else mx = mn + 50;
                 document.getElementById('priceMin').value = mn;
                 document.getElementById('priceMax').value = mx;
             }
             priceMin = mn; priceMax = mx;
             updateRangeUI();
+            markPriceChip();
             clearTimeout(window._priceTimer);
-            window._priceTimer = setTimeout(applyClientFilters, 250);
+            window._priceTimer = setTimeout(() => { currentPage = 1; applyClientFilters(); }, 250);
         }
         function updateRangeUI() {
             document.getElementById('priceMinVal').textContent = priceMin;
-            document.getElementById('priceMaxVal').textContent = priceMax >= 5000 ? '5000' : priceMax;
+            document.getElementById('priceMaxVal').textContent = priceMax >= PRICE_MAX_RANGE ? '20000+' : priceMax;
             const fill = document.getElementById('rangeFill');
-            fill.style.left = (priceMin / 5000 * 100) + '%';
-            fill.style.right = (100 - priceMax / 5000 * 100) + '%';
+            fill.style.left = (priceMin / PRICE_MAX_RANGE * 100) + '%';
+            fill.style.right = (100 - priceMax / PRICE_MAX_RANGE * 100) + '%';
         }
 
         function resetAndReload() {
+            currentPage = 1;
             inStockOnly = document.getElementById('inStockOnly') ? document.getElementById('inStockOnly').checked : false;
             loadedProducts = [];
             lastDoc = null;
@@ -1103,8 +1234,6 @@
                 fallbackLoad();
                 return;
             }
-            const btn = document.getElementById('loadMoreBtn');
-            btn.style.display = 'none';
             const grid = document.getElementById('productsGrid');
 
             let query = buildQuery().limit(PAGE_SIZE);
@@ -1141,7 +1270,7 @@
             // NB: সার্চের fallback-এ keywords ছাড়াই সব টেনে client-side ফিল্টার করি
             // (পুরনো প্রোডাক্টে keywords ফিল্ড নেই)
             if (!searchQuery && category !== 'all' && !GROUP_CATS[category]) q = q.where('category', '==', category);
-            q.limit(100).get().then(snap => {
+            q.limit(200).get().then(snap => {
                 loadedProducts = [];
                 snap.forEach(doc => loadedProducts.push({ id: doc.id, ...doc.data() }));
                 lastDoc = null; hasMore = false;
@@ -1156,6 +1285,8 @@
         // ===== CLIENT FILTERS (দাম/স্টক/সার্চ-রিফাইন) =====
         function applyClientFilters() {
             let list = loadedProducts.slice();
+            // client-side pagination-এর জন্য filtered সব পণ্য রাখি
+            allLoadedProducts = [];
             if (searchQuery) {
                 const terms = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
                 list = list.filter(p => {
@@ -1164,7 +1295,7 @@
                 });
             }
             if (inStockOnly) list = list.filter(p => (p.stock === undefined || p.stock === null) || p.stock > 0);
-            list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= 5000 || Number(p.price) <= priceMax));
+            list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= PRICE_MAX_RANGE || Number(p.price) <= priceMax));
             // নতুন গ্রুপ ক্যাটাগরি — নাম দেখে অটো সাজানো
             if (GROUP_CATS[category]) {
                 list = list.filter(p => classifyProduct(p) === category);
@@ -1188,6 +1319,7 @@
                 else if (sortBy === 'priceHigh') list.sort((a, b) => (b.price || 0) - (a.price || 0));
                 else list.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
             }
+            allLoadedProducts = list;
             renderGrid(list);
         }
 
@@ -1226,11 +1358,18 @@
             return html;
         }
 
-        function renderGrid(products) {
+        function renderGrid(all) {
             const grid = document.getElementById('productsGrid');
             const info = document.getElementById('resultsInfo');
+            // client-side pagination — সবসময় ১০টা করে
+            const total = all.length;
+            const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+            if (currentPage > totalPages) currentPage = totalPages;
+            const products = all.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-            if (products.length === 0) {
+            if (total === 0) {
+                document.getElementById('pagination').style.display = 'none';
+                document.getElementById('pageInfo').style.display = 'none';
                 if (category === 'কাপল' || activeSub === 'কাপল') {
                     grid.innerHTML = `
                         <div class="empty-state">
@@ -1258,19 +1397,63 @@
             }
 
             info.style.display = 'flex';
-            document.getElementById('resultsCount').textContent = products.length;
-            document.getElementById('categoryCount').textContent = products.length + ' টি পণ্য পাওয়া গেছে';
+            document.getElementById('resultsCount').textContent = total;
+            document.getElementById('categoryCount').textContent = total + ' টি পণ্য পাওয়া গেছে';
 
             grid.innerHTML = products.map(productCardHtml).join('');
             renderSubChips();
             updateLoadMoreBtn();
+            updatePagination(total, totalPages);
+        }
+
+        // ===== Pagination UI — পেজ নাম্বার + prev/next =====
+        function updatePagination(total, totalPages) {
+            const wrap = document.getElementById('pagination');
+            const info = document.getElementById('pageInfo');
+            if (total <= PAGE_SIZE) {
+                wrap.style.display = 'none';
+                info.style.display = 'none';
+                return;
+            }
+            wrap.style.display = 'flex';
+            info.style.display = 'block';
+            info.textContent = 'পেজ ' + currentPage + ' / ' + totalPages + ' — মোট ' + total + ' টি পণ্য';
+
+            document.getElementById('pagePrevBtn').disabled = currentPage <= 1;
+            document.getElementById('pageNextBtn').disabled = currentPage >= totalPages;
+
+            // ১ ২ ৩ ... শেষ (সবসময় ৫টার বেশি দেখাই না)
+            const nums = [];
+            const start = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
+            const end = Math.min(totalPages, start + 4);
+            if (start > 1) nums.push(1);
+            if (start > 2) nums.push('...');
+            for (let i = start; i <= end; i++) nums.push(i);
+            if (end < totalPages - 1) nums.push('...');
+            if (end < totalPages) nums.push(totalPages);
+
+            document.getElementById('pageNumbers').innerHTML = nums.map(n =>
+                n === '...'
+                    ? '<span class="sk-page-dots">…</span>'
+                    : '<button class="sk-page-num' + (n === currentPage ? ' active' : '') + '" onclick="goPage(' + n + ')">' + n + '</button>'
+            ).join('');
+            // scroll to top of grid
+            try {
+                const g = document.getElementById('productsGrid');
+                if (g && currentPage > 1) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (e) {}
+        }
+
+        function goPage(p) {
+            const total = allLoadedProducts.length;
+            const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+            if (p < 1 || p > totalPages) return;
+            currentPage = p;
+            applyClientFilters();
         }
 
         function updateLoadMoreBtn() {
-            const btn = document.getElementById('loadMoreBtn');
-            // ফিল্টার লাগানো থাকলে নতুন পেজ আনলেও সেটা filter হয়ে যাবে — তাই চালু রাখি
-            if (hasMore && !fallbackDone) { btn.style.display = 'inline-flex'; btn.disabled = false; btn.innerHTML = 'আরো পণ্য দেখুন <i class="fas fa-chevron-down"></i>'; }
-            else btn.style.display = 'none';
+            // পুরনো "আরো পণ্য দেখুন" বাটন সরানো হয়েছে — এখন pagination ব্যবহার হয়
         }
 
         function applySorting() { fallbackDone = false; resetAndReload(); }
@@ -1293,7 +1476,7 @@
                 );
             }
             if (inStockOnly) list = list.filter(p => (p.stock === undefined || p.stock === null) || p.stock > 0);
-            list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= 5000 || Number(p.price) <= priceMax));
+            list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= PRICE_MAX_RANGE || Number(p.price) <= priceMax));
             if (GROUP_CATS[category]) {
                 list = list.filter(p => classifyProduct(p) === category);
                 if (activeSub && activeSub !== 'সব') {
@@ -1311,6 +1494,7 @@
             if (sortBy === 'priceLow') list.sort((a, b) => (a.price || 0) - (b.price || 0));
             else if (sortBy === 'priceHigh') list.sort((a, b) => (b.price || 0) - (a.price || 0));
             else if (sortBy === 'nameAZ') list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            allLoadedProducts = list;
             renderGrid(list);
         }
 

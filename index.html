@@ -591,7 +591,8 @@
             'ফিমেল ফ্যাশন': 'মহিলা ফ্যাশন', 'female fashion': 'মহিলা ফ্যাশন', 'women fashion': 'মহিলা ফ্যাশন',
             'male fashion': 'পুরুষ ফ্যাশন', 'men fashion': 'পুরুষ ফ্যাশন',
             'beauty': 'অন্যান্য', 'বিউটি': 'অন্যান্য', 'others': 'অন্যান্য',
-            'মহিলা ফ্যাশন': 'মহিলা ফ্যাশন', 'পুরুষ ফ্যাশন': 'পুরুষ ফ্যাশন', 'গ্যাজেট': 'গ্যাজেট', 'অন্যান্য': 'অন্যান্য'
+            'kids': 'বাচ্চাদের ফ্যাশন', 'kids fashion': 'বাচ্চাদের ফ্যাশন', 'বাচ্চা': 'বাচ্চাদের ফ্যাশন', 'শিশু': 'বাচ্চাদের ফ্যাশন',
+            'মহিলা ফ্যাশন': 'মহিলা ফ্যাশন', 'পুরুষ ফ্যাশন': 'পুরুষ ফ্যাশন', 'কাপল': 'কাপল', 'গ্যাজেট': 'গ্যাজেট', 'বাচ্চাদের ফ্যাশন': 'বাচ্চাদের ফ্যাশন', 'অন্যান্য': 'অন্যান্য'
         };
         function normalizeCatName(name) {
             const key = String(name || '').trim().toLowerCase();
@@ -650,6 +651,7 @@
             const DEFAULT_CATS = [
                 { name: 'মহিলা ফ্যাশন', icon: '👗' }, { name: 'পুরুষ ফ্যাশন', icon: '👔' },
                 { name: 'কাপল', icon: '💑' }, { name: 'গ্যাজেট', icon: '📱' },
+                { name: 'বাচ্চাদের ফ্যাশন', icon: '🧒' },
                 { name: 'অন্যান্য', icon: '📦' }
             ];
             // ডিফল্ট + লাইভ merge — হার্ডকোড/পুরনো ক্যাটাগরি কখনো হারায় না
@@ -693,6 +695,7 @@
             const FALLBACK_NAV = [
                 { name: 'মহিলা ফ্যাশন', icon: '👗' }, { name: 'পুরুষ ফ্যাশন', icon: '👔' },
                 { name: 'কাপল', icon: '💑' }, { name: 'গ্যাজেট', icon: '📱' },
+                { name: 'বাচ্চাদের ফ্যাশন', icon: '🧒' },
                 { name: 'অন্যান্য', icon: '📦' }
             ];
             const mergeCats = (base, live) => {
@@ -746,8 +749,10 @@
             const tick = () => {
                 const remain = Number(endTime) - Date.now();
                 if (remain <= 0) {
-                    // সময় শেষ — তালিকা আবার ফিল্টার করে render
-                    renderFlashSection();
+                    // সময় শেষ — কাউন্টডাউন UI-তে 'শেষ' দেখাই (বারবার render না করে)
+                    const cd = document.getElementById('flashCountdown');
+                    if (cd) cd.innerHTML = '<span class="sk-cd-label sk-cd-ended">⏰ এই অফার শেষ! নতুন অফার শীঘ্রই আসছে 🔥</span>';
+                    clearInterval(flashTimerId);
                     return;
                 }
                 const h = Math.floor(remain / 3600000);
@@ -767,9 +772,11 @@
         function renderFlashSection() {
             const section = document.getElementById('flashSection');
             const grid = document.getElementById('flashGrid');
+            const cd = document.getElementById('flashCountdown');
             if (!section || !grid) return;
-            flashProductsCache = flashProductsCache.filter(p => skHasFlash(p));
+            flashProductsCache = flashProductsCache.filter(p => isFlashVisible(p));
             if (!flashProductsCache.length) {
+                // কোনো ফ্ল্যাশ পণ্যই নেই — সেকশন লুকাই
                 section.style.display = 'none';
                 clearInterval(flashTimerId);
                 return;
@@ -777,10 +784,30 @@
             section.style.display = 'block';
             flashProductsCache.sort((a, b) => Number(a.flashEnd) - Number(b.flashEnd));
             const nearest = Math.min.apply(null, flashProductsCache.map(p => Number(p.flashEnd)));
+            const remaining = nearest - Date.now();
+            if (remaining <= 0) {
+                // শেষ হয়ে গেছে — countdown-এর বদলে "শেষ হয়েছে" + নতুন অফার শীঘ্রই
+                if (cd) cd.innerHTML = '<span class="sk-cd-label sk-cd-ended">⏰ এই অফার শেষ! নতুন অফার শীঘ্রই আসছে 🔥</span>';
+            } else {
+                if (cd) cd.innerHTML = '<span class="sk-cd-label">শেষ হতে বাকি</span>'
+                    + '<div class="sk-cd-cells">'
+                    + '<span class="sk-cd-cell"><span id="flashH">00</span><small>ঘণ্টা</small></span>'
+                    + '<span class="sk-cd-sep">:</span>'
+                    + '<span class="sk-cd-cell"><span id="flashM">00</span><small>মিনিট</small></span>'
+                    + '<span class="sk-cd-sep">:</span>'
+                    + '<span class="sk-cd-cell"><span id="flashS">00</span><small>সেকেন্ড</small></span>'
+                    + '</div>';
+                startFlashCountdown(nearest);
+            }
             grid.innerHTML = flashProductsCache.map(flashCardHtml).join('');
-            startFlashCountdown(nearest);
         }
 
+        // ফ্ল্যাশ পণ্য হিসেবে ধরা হবে: flashEnd ভবিষ্যতে অথবা গত ২৪ ঘণ্টার মধ্যে শেষ হয়েছে (দেখানোর জন্য)
+        function isFlashVisible(p) {
+            const end = Number(p.flashEnd);
+            if (!end) return false;
+            return end > Date.now() - 24 * 60 * 60 * 1000;
+        }
         function loadFlashProducts() {
             const section = document.getElementById('flashSection');
             if (!section) return;
@@ -790,7 +817,7 @@
                     flashProductsCache = [];
                     snap.forEach(doc => {
                         const d = doc.data();
-                        if (skHasFlash(d)) flashProductsCache.push({ id: doc.id, ...d });
+                        if (isFlashVisible(d)) flashProductsCache.push({ id: doc.id, ...d });
                     });
                     renderFlashSection();
                 })
@@ -801,7 +828,7 @@
                         flashProductsCache = [];
                         snap.forEach(doc => {
                             const d = doc.data();
-                            if (skHasFlash(d)) flashProductsCache.push({ id: doc.id, ...d });
+                            if (isFlashVisible(d)) flashProductsCache.push({ id: doc.id, ...d });
                         });
                         renderFlashSection();
                     }).catch(() => {

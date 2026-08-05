@@ -966,3 +966,24 @@ body { animation: skPageIn .25s ease-out; }
     .sk-banner-next { right: 10px; }
     .sk-banner-dots { bottom: 12px !important; }
 }
+
+/* Flash countdown — শেষ হলে */
+.sk-cd-ended {
+    color: #fbbf24 !important;
+    font-size: 15px !important;
+    background: rgba(245,158,11,.12);
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1px dashed rgba(245,158,11,.45);
+}
+/* Price chips dark mode */
+:root body.dark-mode .sk-price-chip { background: #1e293b; color: #e2e8f0; border-color: #334155; }
+:root body.dark-mode .sk-price-chip:hover { border-color: #10b981; color: #34d399; }
+:root body.dark-mode .sk-price-chip.active { background: var(--sk-grad); color: #fff; }
+:root body.dark-mode .sk-page-btn,
+:root body.dark-mode .sk-page-num { background: #1e293b; color: #e2e8f0; border-color: #334155; }
+:root body.dark-mode .sk-page-btn:hover:not(:disabled),
+:root body.dark-mode .sk-page-num:hover { border-color: #10b981; color: #34d399; }
+:root body.dark-mode .sk-page-num.active { background: var(--sk-grad); color: #fff; border-color: transparent; }
+:root body.dark-mode .sk-page-info { color: #94a3b8; }
+:root body.dark-mode .sk-price-quick-label { color: #cbd5e1; }
