@@ -12,13 +12,13 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/891/891462.png",
+      "src": "https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/891/891462.png",
+      "src": "https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -29,12 +29,12 @@
     {
       "name": "শপিং",
       "url": "/smart-kenakata/",
-      "icons": [{"src": "https://cdn-icons-png.flaticon.com/512/891/891462.png", "sizes": "96x96"}]
+      "icons": [{"src": "https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png", "sizes": "96x96"}]
     },
     {
       "name": "কার্ট",
       "url": "/smart-kenakata/checkout.html",
-      "icons": [{"src": "https://cdn-icons-png.flaticon.com/512/891/891462.png", "sizes": "96x96"}]
+      "icons": [{"src": "https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png", "sizes": "96x96"}]
     }
   ]
 }

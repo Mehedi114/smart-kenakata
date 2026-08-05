@@ -84,22 +84,6 @@
         .nav-menu-container { max-width: 1400px; margin: 0 auto; padding: 12px 20px; display: flex; gap: 30px; overflow-x: auto; }
         .nav-menu a { color: var(--gray-700); text-decoration: none; font-weight: 500; font-size: 15px; white-space: nowrap; cursor: pointer; }
         .nav-menu a:hover, .nav-menu a.active { color: var(--primary); }
-        .hero { background: linear-gradient(135deg, var(--dark) 0%, var(--dark-2) 100%); color: white; padding: 80px 20px; position: relative; overflow: hidden; }
-        .hero::before { content: ''; position: absolute; top: -50%; right: -20%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%); border-radius: 50%; }
-        .hero-content { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
-        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); color: var(--primary); padding: 8px 18px; border-radius: 50px; font-size: 14px; font-weight: 600; margin-bottom: 25px; }
-        .hero-badge::before { content: ''; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .hero h1 { font-size: 68px; font-weight: 800; line-height: 1.1; margin-bottom: 25px; }
-        .hero p { font-size: 18px; color: rgba(255,255,255,0.7); max-width: 600px; margin-bottom: 35px; }
-        .hero-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.2); padding: 14px 30px; border-radius: 12px; font-size: 16px; font-weight: 600; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
-        .btn-outline:hover { border-color: var(--primary); background: rgba(16, 185, 129, 0.1); }
-        .stats { max-width: 1400px; margin: 60px auto 0; padding: 40px 0 0; border-top: 1px solid rgba(255,255,255,0.1); display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
-        .stat-item h3 { font-size: 42px; font-weight: 800; color: var(--primary); margin-bottom: 5px; }
-        .stat-item p { color: rgba(255,255,255,0.6); font-size: 14px; }
         .categories { padding: 80px 20px; background: var(--gray-50); }
         .section-header { max-width: 1400px; margin: 0 auto 50px; text-align: center; }
         .section-title { font-size: 40px; font-weight: 800; color: var(--dark); margin-bottom: 10px; }
@@ -203,25 +187,20 @@
         .empty-cart { text-align: center; padding: 40px; color: var(--gray-500); }
         .empty-cart i { font-size: 60px; color: var(--gray-300); margin-bottom: 15px; }
         @media (max-width: 1024px) {
-            .hero h1 { font-size: 48px; }
             .categories-grid { grid-template-columns: repeat(3, 1fr); }
             .products-grid { grid-template-columns: repeat(3, 1fr); }
             .features-grid { grid-template-columns: repeat(2, 1fr); }
-            .stats { grid-template-columns: repeat(2, 1fr); }
             .footer-content { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 768px) {
             .search-box { display: none; }
-            .hero h1 { font-size: 36px; }
             .section-title { font-size: 28px; }
             .categories-grid { grid-template-columns: repeat(2, 1fr); }
             .products-grid { grid-template-columns: repeat(2, 1fr); }
             .footer-content { grid-template-columns: 1fr; }
-            .stat-item h3 { font-size: 32px; }
         }
         @media (max-width: 480px) {
             .logo-text h1 { font-size: 18px; }
-            .hero h1 { font-size: 28px; }
             .categories-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
             .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
         }
@@ -315,7 +294,7 @@
             </div>
         </div>
         <div class="nav-menu">
-            <div class="nav-menu-container">
+            <div class="nav-menu-container" id="navMenuContainer">
                 <a href="index.html" class="active">হোম</a>
                 <a href="category.html?cat=ইলেকট্রনিক্স">ইলেকট্রনিক্স</a>
                 <a href="category.html?cat=ফ্যাশন">ফ্যাশন</a>
@@ -325,16 +304,17 @@
             </div>
         </div>
     </nav>
-<!-- Dynamic Banner Slider -->
-<section style="padding:20px; background:white;">
-    <div style="max-width:1400px; margin:0 auto; border-radius:20px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.1); position:relative;">
-        <div id="bannerSlider" style="position:relative; width:100%;">
-            <div class="loading" style="padding:100px 20px; text-align:center;">
-                <div class="spinner"></div>
-                <p>ব্যানার লোড হচ্ছে...</p>
+<!-- Dynamic Banner Slider — 3D Premium -->
+<section class="sk-banner-section">
+    <div class="sk-banner-stage">
+        <div class="sk-banner-card" id="bannerCard">
+            <div id="bannerSlider" style="position:relative; width:100%;">
+                <div class="sk-banner-skeleton"></div>
             </div>
+            <div id="bannerDots" class="sk-banner-dots"></div>
+            <button class="sk-banner-arrow sk-banner-prev" onclick="bannerPrev()" aria-label="আগের ব্যানার"><i class="fas fa-chevron-left"></i></button>
+            <button class="sk-banner-arrow sk-banner-next" onclick="bannerNext()" aria-label="পরের ব্যানার"><i class="fas fa-chevron-right"></i></button>
         </div>
-        <div id="bannerDots" style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:10;"></div>
     </div>
 </section>
 
@@ -354,38 +334,52 @@
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
     
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-badge">বিশেষ অফার চলছে</div>
-            <h1>সেরা পণ্য,<br>সেরা দামে!</h1>
-            <p>বাংলাদেশের সবচেয়ে বিশ্বস্ত অনলাইন শপে আপনাকে স্বাগতম</p>
-            <div class="hero-buttons">
-                <a href="#products" class="btn-primary"><i class="fas fa-shopping-bag"></i> শপিং শুরু করুন</a>
-                <a href="#categories" class="btn-outline">সব ক্যাটাগরি <i class="fas fa-arrow-right"></i></a>
+    <!-- ⚡ FLASH SALE SECTION -->
+    <section class="sk-flash-section" id="flashSection" style="display:none;">
+        <div class="sk-section-head">
+            <div class="sk-head-text">
+                <h2 class="section-title"><span class="sk-flash-icon">⚡</span> ফ্ল্যাশ সেল</h2>
+                <p class="section-subtitle">সীমিত সময়ের অফার — এখনই কিনুন!</p>
             </div>
-            <div class="stats">
-                <div class="stat-item"><h3>১০,০০০+</h3><p>সন্তুষ্ট গ্রাহক</p></div>
-                <div class="stat-item"><h3>৫,০০০+</h3><p>পণ্য সংগ্রহ</p></div>
-                <div class="stat-item"><h3>৬৪</h3><p>জেলায় ডেলিভারি</p></div>
-                <div class="stat-item"><h3>২৪/৭</h3><p>সাপোর্ট</p></div>
+            <div class="sk-flash-countdown" id="flashCountdown">
+                <span class="sk-cd-label">শেষ হতে বাকি</span>
+                <div class="sk-cd-cells">
+                    <span class="sk-cd-cell"><span id="flashH">00</span><small>ঘণ্টা</small></span>
+                    <span class="sk-cd-sep">:</span>
+                    <span class="sk-cd-cell"><span id="flashM">00</span><small>মিনিট</small></span>
+                    <span class="sk-cd-sep">:</span>
+                    <span class="sk-cd-cell"><span id="flashS">00</span><small>সেকেন্ড</small></span>
+                </div>
             </div>
+            <a href="category.html?cat=all" class="sk-view-all">সব দেখুন <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="sk-flash-scroll" id="flashGrid">
+            <div class="sk-skeleton-card" style="flex:0 0 172px;"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+            <div class="sk-skeleton-card" style="flex:0 0 172px;"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+            <div class="sk-skeleton-card" style="flex:0 0 172px;"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
         </div>
     </section>
 
     <section class="categories" id="categories">
-        <div class="section-header">
-            <h2 class="section-title">ক্যাটাগরি সমূহ</h2>
-            <p class="section-subtitle">পছন্দের ক্যাটাগরি বেছে নিন</p>
+        <div class="sk-section-head">
+            <div class="sk-head-text">
+                <h2 class="section-title">ক্যাটাগরি সমূহ</h2>
+                <p class="section-subtitle">পছন্দের ক্যাটাগরি বেছে নিন</p>
+            </div>
+            <a href="category.html?cat=all" class="sk-view-all">সব দেখুন <i class="fas fa-arrow-right"></i></a>
         </div>
-        <div class="categories-grid" id="homeCategories">
+        <div class="sk-cat-strip" id="homeCategories">
             <!-- ক্যাটাগরি Firestore থেকে লাইভ লোড হবে (Admin Panel থেকে add করলেই এখানে আসবে) -->
         </div>
     </section>
 
     <section class="products-section" id="products">
-        <div class="section-header">
-            <h2 class="section-title" id="productsTitle">জনপ্রিয় পণ্য</h2>
-            <p class="section-subtitle">সবচেয়ে বেশি বিক্রিত পণ্যসমূহ</p>
+        <div class="sk-section-head">
+            <div class="sk-head-text">
+                <h2 class="section-title" id="productsTitle">জনপ্রিয় পণ্য</h2>
+                <p class="section-subtitle">সবচেয়ে বেশি বিক্রিত পণ্যসমূহ</p>
+            </div>
+            <a href="category.html?cat=all" class="sk-view-all">সব দেখুন <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="products-grid" id="productsGrid">
             <div class="sk-skeleton-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
@@ -427,7 +421,7 @@
         <div class="footer-content">
             <div class="footer-brand">
                 <a href="#" class="logo">
-                    <div class="logo-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <div class="logo-icon" style="background:transparent; padding:0;"><img src="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png" alt="স্মার্ট কেনাকাটা" style="width:100%; height:100%; object-fit:contain;"></div>
                     <div class="logo-text"><h1>স্মার্ট কেনাকাটা</h1></div>
                 </a>
                 <p>বাংলাদেশের বিশ্বস্ত অনলাইন শপিং প্ল্যাটফর্ম।</p>
@@ -549,6 +543,19 @@
             }
 
             // ২) Firestore থেকে সর্বশেষ পণ্য (মাত্র ১২টা)
+            // ৩.৫ সেকেন্ডের মধ্যে লোড না হলে পুরনো ক্যাশ দেখাই — স্পিনার বেশি ঘোরে না
+            const slowTimer = setTimeout(() => {
+                if (!grid.querySelector('.sk-skeleton-card')) return;
+                try {
+                    const stale = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
+                    if (stale && stale.list && stale.list.length) {
+                        allProducts = stale.list;
+                        displayProducts(allProducts);
+                    }
+                } catch (e) {}
+            }, 3500);
+
+
             const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(HOME_LIMIT).get();
             const loadSimple = () => db.collection('products').limit(HOME_LIMIT).get();
             (loadOrdered().catch(() => {
@@ -564,6 +571,7 @@
                     const timeB = b.createdAt?.seconds || 0;
                     return timeB - timeA;
                 });
+                clearTimeout(slowTimer);
                 if (allProducts.length === 0) {
                     grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
                     return;
@@ -571,55 +579,236 @@
                 try { localStorage.setItem(HOME_CACHE_KEY, JSON.stringify({ t: Date.now(), list: allProducts })); } catch (e) {}
                 displayProducts(allProducts);
             }).catch((error) => {
+                clearTimeout(slowTimer);
                 console.error('Error loading products:', error);
                 grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>' + error.message + '</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
             });
         }
 
-        // ===== হোমপেজের ক্যাটাগরি — Firestore থেকে লাইভ =====
+                // ===== শেয়ার্ড লাইভ ক্যাটাগরি লোডার (১টা Firestore read — হোম, নেভ-মেনু, ড্রয়ার সবাই এটা ব্যবহার করে) =====
+        const CATEGORY_ALIAS = {
+            'gadget': 'গ্যাজেট', 'electronics': 'গ্যাজেট', 'ইলেকট্রনিক্স': 'গ্যাজেট',
+            'ফিমেল ফ্যাশন': 'মহিলা ফ্যাশন', 'female fashion': 'মহিলা ফ্যাশন', 'women fashion': 'মহিলা ফ্যাশন',
+            'male fashion': 'পুরুষ ফ্যাশন', 'men fashion': 'পুরুষ ফ্যাশন',
+            'beauty': 'অন্যান্য', 'বিউটি': 'অন্যান্য', 'others': 'অন্যান্য',
+            'মহিলা ফ্যাশন': 'মহিলা ফ্যাশন', 'পুরুষ ফ্যাশন': 'পুরুষ ফ্যাশন', 'গ্যাজেট': 'গ্যাজেট', 'অন্যান্য': 'অন্যান্য'
+        };
+        function normalizeCatName(name) {
+            const key = String(name || '').trim().toLowerCase();
+            return CATEGORY_ALIAS[key] || name;
+        }
+        // পুরনো/অকেজো ক্যাটাগরি — নতুন ৫-ক্যাটাগরি সিস্টেমে আর দেখানো হবে না
+        const OLD_CAT_NAMES = ['ফ্যাশন', 'ইলেকট্রনিক্স', 'বিউটি', 'হোম ও লিভিং', 'খেলনা', 'বই ও শিক্ষা', 'গ্রোসারি',
+            'gadget', 'ফিমেল ফ্যাশন', 'female fashion', 'male fashion', 'beauty', 'electronics', 'others', 'home', 'toys', 'books', 'grocery'];
+        function cleanCats(list) {
+            const seen = {}, out = [];
+            (list || []).forEach(c => {
+                const nm = normalizeCatName(c.name);
+                const key = String(nm || '').trim().toLowerCase();
+                if (!nm || OLD_CAT_NAMES.includes(key)) return;
+                if (seen[nm]) return;
+                seen[nm] = 1;
+                out.push({ name: nm, icon: c.icon || '', image: c.image || '' });
+            });
+            return out;
+        }
+        function readCatsCache() {
+            try {
+                const c = JSON.parse(localStorage.getItem('sk_categories') || 'null');
+                // v2 চিহ্নিত ক্যাশই শুধু মান্য — পুরনো (Gadget/ফ্যাশন মেশানো) ক্যাশ বাদ
+                if (c && c.v === 2 && c.t && (Date.now() - c.t < 10 * 60 * 1000) && c.list && c.list.length) {
+                    return cleanCats(c.list);
+                }
+            } catch (e) {}
+            return null;
+        }
+        let _catsLivePromise = null;
+        function getCategoriesLive() {
+            if (!_catsLivePromise) {
+                _catsLivePromise = db.collection('categories').get()
+                    .then(snap => {
+                        const live = [];
+                        snap.forEach(doc => {
+                            const d = doc.data();
+                            if (d.active !== false && d.name) live.push({ name: normalizeCatName(d.name), icon: d.icon || '', image: d.image || '' });
+                        });
+                        live = cleanCats(live);
+                        if (live.length) {
+                            live.sort((a, b) => a.name.localeCompare(b.name));
+                            try { localStorage.setItem('sk_categories', JSON.stringify({ v: 2, t: Date.now(), list: live })); } catch (e) {}
+                        }
+                        return live;
+                    })
+                    .catch(err => { _catsLivePromise = null; throw err; });
+            }
+            return _catsLivePromise;
+        }
+
+        // ===== হোমপেজের ক্যাটাগরি — Firestore থেকে লাইভ (গোল আইকন স্ট্রিপ, ডিফল্টের সাথে merge) =====
         function loadHomeCategories() {
             const wrap = document.getElementById('homeCategories');
             const DEFAULT_CATS = [
-                { name: 'ইলেকট্রনিক্স', icon: '📱' }, { name: 'ফ্যাশন', icon: '👕' },
-                { name: 'বিউটি', icon: '💄' }, { name: 'হোম ও লিভিং', icon: '🏠' },
-                { name: 'খেলনা', icon: '🧸' }, { name: 'বই ও শিক্ষা', icon: '📚' },
-                { name: 'গ্রোসারি', icon: '🛒' }
+                { name: 'মহিলা ফ্যাশন', icon: '👗' }, { name: 'পুরুষ ফ্যাশন', icon: '👔' },
+                { name: 'কাপল', icon: '💑' }, { name: 'গ্যাজেট', icon: '📱' },
+                { name: 'অন্যান্য', icon: '📦' }
             ];
+            // ডিফল্ট + লাইভ merge — হার্ডকোড/পুরনো ক্যাটাগরি কখনো হারায় না
+            const mergeCats = (base, live) => {
+                const seen = {}, out = [];
+                base.forEach(c => { if (!seen[c.name]) { seen[c.name] = 1; out.push(c); } });
+                (live || []).forEach(c => { if (!seen[c.name]) { seen[c.name] = 1; out.push(c); } });
+                return out;
+            };
             const render = (cats) => {
                 let html = '';
                 cats.forEach(c => {
                     const iconHtml = c.image
-                        ? '<img src="' + c.image + '" alt="' + skEscape(c.name) + '" style="width:52px;height:52px;border-radius:50%;object-fit:cover;">'
-                        : '<span class="category-icon">' + (c.icon || '📦') + '</span>';
-                    html += '<div class="category-card" onclick="filterCategory(\'' + String(c.name).replace(/'/g, "\\'") + '\', event)">'
-                        + '<div class="category-icon-wrapper">' + iconHtml + '</div>'
-                        + '<h3 class="category-name">' + skEscape(c.name) + '</h3>'
-                        + '<p class="category-count">পণ্য দেখুন</p></div>';
+                        ? '<img src="' + c.image + '" alt="' + skEscape(c.name) + '" loading="lazy">'
+                        : '<span>' + (c.icon || '📦') + '</span>';
+                    html += '<a class="sk-cat-item" href="category.html?cat=' + encodeURIComponent(c.name) + '" onclick="filterCategory(\'' + String(c.name).replace(/'/g, "\\'") + '\', event)">'
+                        + '<span class="sk-cat-icon">' + iconHtml + '</span>'
+                        + '<span class="sk-cat-name">' + skEscape(c.name) + '</span></a>';
                 });
-                html += '<div class="category-card" onclick="filterCategory(\'all\', event)">'
-                    + '<div class="category-icon-wrapper"><span class="category-icon">🛍️</span></div>'
-                    + '<h3 class="category-name">সব দেখুন</h3><p class="category-count">সকল পণ্য</p></div>';
+                html += '<a class="sk-cat-item" href="category.html?cat=all" onclick="filterCategory(\'all\', event)">'
+                    + '<span class="sk-cat-icon"><span>🛍️</span></span>'
+                    + '<span class="sk-cat-name">সব দেখুন</span></a>';
                 wrap.innerHTML = html;
             };
-            // ক্যাশ আগে (instant)
-            try {
-                const cached = JSON.parse(localStorage.getItem('sk_categories') || 'null');
-                if (cached && cached.t && (Date.now() - cached.t < 10 * 60 * 1000) && cached.list.length) render(cached.list);
-            } catch (e) {}
-            db.collection('categories').get().then(snap => {
-                const live = [];
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    if (d.active !== false && d.name) live.push({ name: d.name, icon: d.icon || '', image: d.image || '' });
+            // ১) ক্যাশ/ডিফল্ট — সাথে সাথেই render (সেকশন কখনো খালি দেখাবে না)
+            let current = null;
+            const cachedCats = readCatsCache();
+            if (cachedCats && cachedCats.length) current = mergeCats(DEFAULT_CATS, cachedCats);
+            render(current || DEFAULT_CATS);
+            // ২) Firestore লাইভ — merge করে আপডেট (পুরনো মুছে যায় না)
+            getCategoriesLive().then(live => {
+                render(mergeCats(DEFAULT_CATS, live));
+            }).catch(() => {});
+        }
+
+
+        // ===== ডেস্কটপ নেভ-মেনু ক্যাটাগরি — Firestore লাইভ + ডিফল্ট merge (ক্যাশ + fallback) =====
+        function loadNavMenu() {
+            const wrap = document.getElementById('navMenuContainer');
+            if (!wrap) return;
+            const FALLBACK_NAV = [
+                { name: 'মহিলা ফ্যাশন', icon: '👗' }, { name: 'পুরুষ ফ্যাশন', icon: '👔' },
+                { name: 'কাপল', icon: '💑' }, { name: 'গ্যাজেট', icon: '📱' },
+                { name: 'অন্যান্য', icon: '📦' }
+            ];
+            const mergeCats = (base, live) => {
+                const seen = {}, out = [];
+                base.forEach(c => { if (!seen[c.name]) { seen[c.name] = 1; out.push(c); } });
+                (live || []).forEach(c => { if (!seen[c.name]) { seen[c.name] = 1; out.push(c); } });
+                return out;
+            };
+            const render = (cats) => {
+                let html = '<a href="index.html" class="active">হোম</a>';
+                cats.forEach(c => {
+                    html += '<a href="category.html?cat=' + encodeURIComponent(c.name) + '">' + (c.icon ? c.icon + ' ' : '') + skEscape(c.name) + '</a>';
                 });
-                if (live.length) {
-                    live.sort((a, b) => a.name.localeCompare(b.name));
-                    render(live);
-                    try { localStorage.setItem('sk_categories', JSON.stringify({ t: Date.now(), list: live })); } catch (e) {}
-                } else if (!wrap.querySelector('.category-card')) {
-                    render(DEFAULT_CATS); // কালেকশন খালি থাকলে ডিফল্ট
+                html += '<a href="category.html?cat=all">সব পণ্য</a>';
+                wrap.innerHTML = html;
+            };
+            // ১) ক্যাশ/ডিফল্ট — সাথে সাথেই (মেনু কখনো খালি থাকে না)
+            let current = null;
+            const cachedCats = readCatsCache();
+            if (cachedCats && cachedCats.length) current = mergeCats(FALLBACK_NAV, cachedCats);
+            render(current || FALLBACK_NAV);
+            // ২) Firestore লাইভ — merge করে আপডেট
+            getCategoriesLive().then(live => {
+                render(mergeCats(FALLBACK_NAV, live));
+            }).catch(() => {});
+        }
+
+
+        // ===== ⚡ ফ্ল্যাশ সেল — ব্যানারের নিচে ডেডিকেটেড সেকশন =====
+        let flashTimerId = null;
+        let flashProductsCache = [];
+
+        function flashCardHtml(p) {
+            const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+            const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            let html = '<div class="sk-flash-card" onclick="viewProduct(\'' + p.id + '\')">';
+            html += '<div class="sk-flash-img">';
+            if (discount > 0) html += '<span class="sk-flash-off">-' + discount + '%</span>';
+            html += '<img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
+            html += '</div>';
+            html += '<div class="sk-flash-info">';
+            html += '<div class="sk-flash-name">' + escapeHtml(p.name) + '</div>';
+            html += '<div class="sk-flash-price"><b>৳' + p.price + '</b>';
+            if (p.oldPrice) html += '<s>৳' + p.oldPrice + '</s>';
+            html += '</div></div></div>';
+            return html;
+        }
+
+        function startFlashCountdown(endTime) {
+            clearInterval(flashTimerId);
+            const tick = () => {
+                const remain = Number(endTime) - Date.now();
+                if (remain <= 0) {
+                    // সময় শেষ — তালিকা আবার ফিল্টার করে render
+                    renderFlashSection();
+                    return;
                 }
-            }).catch(() => { if (!wrap.querySelector('.category-card')) render(DEFAULT_CATS); });
+                const h = Math.floor(remain / 3600000);
+                const m = Math.floor((remain % 3600000) / 60000);
+                const s = Math.floor((remain % 60000) / 1000);
+                const eH = document.getElementById('flashH');
+                const eM = document.getElementById('flashM');
+                const eS = document.getElementById('flashS');
+                if (eH) eH.textContent = String(h).padStart(2, '0');
+                if (eM) eM.textContent = String(m).padStart(2, '0');
+                if (eS) eS.textContent = String(s).padStart(2, '0');
+            };
+            tick();
+            flashTimerId = setInterval(tick, 1000);
+        }
+
+        function renderFlashSection() {
+            const section = document.getElementById('flashSection');
+            const grid = document.getElementById('flashGrid');
+            if (!section || !grid) return;
+            flashProductsCache = flashProductsCache.filter(p => skHasFlash(p));
+            if (!flashProductsCache.length) {
+                section.style.display = 'none';
+                clearInterval(flashTimerId);
+                return;
+            }
+            section.style.display = 'block';
+            flashProductsCache.sort((a, b) => Number(a.flashEnd) - Number(b.flashEnd));
+            const nearest = Math.min.apply(null, flashProductsCache.map(p => Number(p.flashEnd)));
+            grid.innerHTML = flashProductsCache.map(flashCardHtml).join('');
+            startFlashCountdown(nearest);
+        }
+
+        function loadFlashProducts() {
+            const section = document.getElementById('flashSection');
+            if (!section) return;
+            const queryNow = Date.now();
+            db.collection('products').where('flashEnd', '>', queryNow).limit(10).get()
+                .then(snap => {
+                    flashProductsCache = [];
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        if (skHasFlash(d)) flashProductsCache.push({ id: doc.id, ...d });
+                    });
+                    renderFlashSection();
+                })
+                .catch(err => {
+                    console.log('flash query failed, using fallback:', err.code || err.message);
+                    // Index/টাইপ সমস্যা হলে: সাম্প্রতিক ৫০টা পণ্য এনে client-side ফিল্টার
+                    db.collection('products').limit(50).get().then(snap => {
+                        flashProductsCache = [];
+                        snap.forEach(doc => {
+                            const d = doc.data();
+                            if (skHasFlash(d)) flashProductsCache.push({ id: doc.id, ...d });
+                        });
+                        renderFlashSection();
+                    }).catch(() => {
+                        flashProductsCache = [];
+                        renderFlashSection();
+                    });
+                });
         }
 
         function escapeHtml(text) {
@@ -899,25 +1088,67 @@ function toggleWishlist(productId, btn) {
             toast.classList.add('show');
             setTimeout(function() { toast.classList.remove('show'); }, 2500);
         }
-// ===== BANNER SLIDER =====
+// ===== BANNER SLIDER — 3D premium + arrow + swipe =====
 let bannerSlideIndex = 0;
 let bannerSlideInterval = null;
+let bannerList = [];
+
+function restartBannerTimer() {
+    if (bannerSlideInterval) { clearInterval(bannerSlideInterval); bannerSlideInterval = null; }
+    if (bannerList.length > 1) {
+        bannerSlideInterval = setInterval(() => {
+            bannerSlideIndex = (bannerSlideIndex + 1) % bannerList.length;
+            showBannerSlide(bannerSlideIndex);
+        }, 4000);
+    }
+}
+
+function updateBannerArrows() {
+    const arrows = document.querySelectorAll('.sk-banner-arrow');
+    arrows.forEach(a => { a.style.display = bannerList.length > 1 ? 'flex' : 'none'; });
+}
+
+function bannerPrev() {
+    if (bannerList.length < 2) return;
+    bannerSlideIndex = (bannerSlideIndex - 1 + bannerList.length) % bannerList.length;
+    showBannerSlide(bannerSlideIndex);
+    restartBannerTimer();
+}
+
+function bannerNext() {
+    if (bannerList.length < 2) return;
+    bannerSlideIndex = (bannerSlideIndex + 1) % bannerList.length;
+    showBannerSlide(bannerSlideIndex);
+    restartBannerTimer();
+}
 
 function loadBanners() {
+    const slider = document.getElementById('bannerSlider');
+    const dots = document.getElementById('bannerDots');
+    const showDefaultBanner = () => {
+        // Query fail বা ব্যানার না থাকলে — ডিফল্ট স্ট্যাটিক ব্যানার (spinner কখনো আটকে থাকবে না)
+        bannerList = [];
+        slider.innerHTML = '<img src="https://i.ibb.co.com/1tqfvKxj/Chat-GPT-Image-Jul-15-2026-11-33-06-PM.png" style="width:100%; display:block;" alt="স্মার্ট কেনাকাটা">';
+        if (dots) dots.innerHTML = '';
+        updateBannerArrows();
+    };
+    // ৩ সেকেন্ড পরও ব্যানার না এলে ডিফল্ট দেখাই — shimmer বেশি ঘোরে না
+    setTimeout(() => {
+        if (slider.querySelector('.sk-banner-skeleton')) showDefaultBanner();
+    }, 3000);
+
     db.collection('banners').where('active', '==', true).get()
         .then(snapshot => {
             const banners = [];
             snapshot.forEach(doc => banners.push({ id: doc.id, ...doc.data() }));
             banners.sort((a, b) => (a.order || 0) - (b.order || 0));
             
-            const slider = document.getElementById('bannerSlider');
-            const dots = document.getElementById('bannerDots');
-            
             if (banners.length === 0) {
-                slider.innerHTML = '<img src="https://i.ibb.co.com/1tqfvKxj/Chat-GPT-Image-Jul-15-2026-11-33-06-PM.png" style="width:100%; display:block;">';
+                showDefaultBanner();
                 return;
             }
             
+            bannerList = banners;
             let sliderHtml = '';
             let dotsHtml = '';
             banners.forEach((b, i) => {
@@ -928,13 +1159,12 @@ function loadBanners() {
             
             slider.innerHTML = sliderHtml;
             dots.innerHTML = dotsHtml;
-            
-            if (banners.length > 1) {
-                bannerSlideInterval = setInterval(() => {
-                    bannerSlideIndex = (bannerSlideIndex + 1) % banners.length;
-                    showBannerSlide(bannerSlideIndex);
-                }, 4000);
-            }
+            updateBannerArrows();
+            restartBannerTimer();
+        })
+        .catch((error) => {
+            console.error('ব্যানার লোড করতে সমস্যা:', error);
+            showDefaultBanner();
         });
 }
 
@@ -943,6 +1173,28 @@ function showBannerSlide(index) {
     document.querySelectorAll('.banner-dot').forEach((d, i) => d.classList.toggle('active', i === index));
     bannerSlideIndex = index;
 }
+
+// ===== Touch swipe — audience নিজে হাতে টেনে slide করতে পারবে =====
+(function () {
+    const slider = document.getElementById('bannerSlider');
+    if (!slider) return;
+    let startX = 0, startY = 0, tracking = false;
+    slider.addEventListener('touchstart', function (e) {
+        if (e.touches.length !== 1) return;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        tracking = true;
+    }, { passive: true });
+    slider.addEventListener('touchend', function (e) {
+        if (!tracking) return;
+        tracking = false;
+        const dx = e.changedTouches[0].clientX - startX;
+        const dy = e.changedTouches[0].clientY - startY;
+        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+            if (dx < 0) bannerNext(); else bannerPrev();
+        }
+    }, { passive: true });
+})();
 
 loadBanners();
 
@@ -959,16 +1211,19 @@ loadBanners();
                     splash.style.animation = 'fadeOut 0.5s ease-in-out forwards';
                     setTimeout(() => splash.style.display = 'none', 500);
                     localStorage.setItem('splashSeen', now.toString());
-                }, 1800);
+                }, 900);
             }
         })();
         loadProducts();
         loadHomeCategories();
+        loadNavMenu();
+        loadFlashProducts();
         updateCartCount();
         updateWishlistCount();
     </script>
     <script src="chatbot.js"></script>
     <script src="theme.js"></script>
+    <script src="nav-drawer.js?v=1"></script>
     <!-- পুরনো দুই pagination স্ক্রিপ্ট সরানো হয়েছে (ডুপ্লিকেট কনফ্লিক্ট বাগ ফিক্স) -->
   
 </body>

@@ -3,6 +3,7 @@
 <head>
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png">
     <title id="pageTitle">ক্যাটাগরি - স্মার্ট কেনাকাটা | Best Price BD</title>
     <meta name="description" id="metaDesc" content="স্মার্ট কেনাকাটা ক্যাটাগরি - সেরা পণ্য সেরা দামে। ঢাকায় ২৪ ঘন্টায় ডেলিভারি।">
     <meta name="robots" content="index, follow">
@@ -431,6 +432,52 @@
             font-weight: 600;
         }
 
+        /* SUB-CATEGORY CHIPS */
+        .subcat-strip {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 4px 2px 14px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .subcat-strip::-webkit-scrollbar { display: none; }
+        .subcat-chip {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
+            min-height: 40px;
+            border-radius: 999px;
+            border: 1.5px solid var(--gray-200);
+            background: #fff;
+            color: var(--gray-700);
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.2s;
+        }
+        .subcat-chip:hover { border-color: var(--primary); color: var(--primary); }
+        .subcat-chip:active { transform: scale(0.95); }
+        .subcat-chip.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(16,185,129,.3);
+        }
+        .subcat-chip .sub-count {
+            background: rgba(16,185,129,.12);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 1px 8px;
+            border-radius: 999px;
+        }
+        .subcat-chip.active .sub-count { background: rgba(255,255,255,.25); color: #fff; }
+
         /* PRODUCT COUNT INFO */
         .results-info {
             background: white;
@@ -521,7 +568,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <div class="logo-icon"><i class="fas fa-shopping-bag"></i></div>
+                <div class="logo-icon" style="background:transparent; padding:0;"><img src="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png" alt="স্মার্ট কেনাকাটা" style="width:100%; height:100%; object-fit:contain;"></div>
                 <div class="logo-text">
                     <h1>স্মার্ট কেনাকাটা</h1>
                     <span>Trusted Online Shop</span>
@@ -575,6 +622,9 @@
             <a href="category.html?cat=বই ও শিক্ষা" class="quick-cat">📚 বই ও শিক্ষা</a>
             <a href="category.html?cat=গ্রোসারি" class="quick-cat">🛒 গ্রোসারি</a>
         </div>
+
+        <!-- Sub-Category Chips (মহিলা/পুরুষ/গ্যাজেট ইত্যাদির ভেতরের ভাগ) -->
+        <div class="subcat-strip" id="subCatStrip" style="display:none;"></div>
 
         <!-- Filter Bar -->
         <div class="filter-bar">
@@ -669,10 +719,132 @@
             'all': '🎯'
         };
 
+        // ===== নতুন ক্যাটাগরি সিস্টেম (৫টা গ্রুপ) =====
+        const GROUP_CATS = {
+            'মহিলা ফ্যাশন': '👗',
+            'পুরুষ ফ্যাশন': '👔',
+            'কাপল': '💑',
+            'গ্যাজেট': '📱',
+            'অন্যান্য': '📦'
+        };
+
+        // কাপল (দম্পতি/জোড়া) পণ্য
+        const COUPLE_KW = ['couple', 'কাপল', 'matching', 'ম্যাচিং', 'জোড়া', 'জোড়', 'pair', 'পেয়ার'];
+
+        // ===== Sub-category (প্রতিটা গ্রুপের ভেতরের ভাগ) =====
+        const SUB_CATS = {
+            'মহিলা ফ্যাশন': [
+                { n: 'সব', kw: null },
+                { n: 'শাড়ি', kw: ['saree', 'শাড়ি', 'শাড়ি'] },
+                { n: 'থ্রি-পিস ও ফোর-পিস', kw: ['three piece', 'থ্রি পিস', 'থ্রী পিস', 'four piece', 'ফোর পিস', 'কালামকারি', 'জর্জেট', 'georgette', 'embroid'] },
+                { n: 'হিজাব ও খিমার', kw: ['khimar', 'hijab', 'বোরকা', 'burqa'] },
+                { n: 'স্কার্ট ও টপস', kw: ['skirt', 'tops', 'লেইস'] },
+                { n: 'বটম (প্লাজো/ট্রাউজার)', kw: ['plazoo', 'প্লাজো', 'trouser', 'ট্রাউজার', 'প্যান্ট'] },
+                { n: 'লেডিস টি-শার্ট', kw: ['ladies', 'women', 'woman', 'female', 'girls'] },
+                { n: 'স্কিন কেয়ার ও বিউটি', kw: ['হলুদ', 'হেয়ার', 'hair', 'স্কিন', 'skin', 'cream', 'সাবান', 'soap', 'শ্যাম্পু', 'shampoo', 'ব্যান্ড', 'গুঁড়া'] },
+                { n: 'কাপল', kw: '__COUPLE__' }
+            ],
+            'পুরুষ ফ্যাশন': [
+                { n: 'সব', kw: null },
+                { n: 'টি-শার্ট', kw: ['tshirt', 't-shirt', 't shirt', 'tank top', 'drop shoulder', 'mash t', 'acid wash'] },
+                { n: 'পোলো', kw: ['polo'] },
+                { n: 'শার্ট', kw: ['shirt'] },
+                { n: 'পাঞ্জাবি', kw: ['panjabi', 'পাঞ্জাবি', 'পাঞ্জাবী'] },
+                { n: 'প্যান্ট ও ট্রাউজার', kw: ['pant', 'trouser', 'প্যান্ট', 'ট্রাউজার'] },
+                { n: 'গাউন', kw: ['smoking', 'gown'] },
+                { n: 'কম্বো সেট', kw: ['combo', 'gift', 'set'] },
+                { n: 'কাপল', kw: '__COUPLE__' }
+            ],
+            'গ্যাজেট': [
+                { n: 'সব', kw: null },
+                { n: 'ঘড়ি', kw: ['ঘড়ি', 'ঘড়ি', 'watch'] },
+                { n: 'হেলথ কেয়ার', kw: ['থার্মোমিটার', 'thermometer', 'হিটিং', 'প্যাড', 'প্রেশার', 'pressure'] },
+                { n: 'অডিও', kw: ['earbuds', 'earphone', 'headphone', 'headset', 'speaker', 'হেডফোন', 'ইয়ারবাড'] },
+                { n: 'মোবাইল এক্সেসরিজ', kw: ['charger', 'চার্জার', 'cable', 'power bank', 'পাওয়ার ব্যাংক'] },
+                { n: 'হোম অ্যাপ্লায়েন্স', kw: ['বাতি', 'lamp', 'light', 'fan', 'পাখা', 'kettle', 'কেটলি', 'iron', 'ইস্ত্রি', 'mixer', 'মিক্সার', 'টিভি', 'tv', 'dryer', 'trimmer', 'shaver', 'শেভার', 'ব্লেন্ডার'] }
+            ],
+            'অন্যান্য': [
+                { n: 'সব', kw: null },
+                { n: 'ব্যাগ ও ব্যাকপ্যাক', kw: ['bag', 'ব্যাগ', 'backpack'] },
+                { n: 'স্কিন কেয়ার', kw: ['হলুদ', 'গুঁড়া', 'cream', 'সাবান'] },
+                { n: 'বই ও স্টেশনারি', kw: ['বই', 'book', 'কলম', 'খাতা'] },
+                { n: 'খেলনা', kw: ['খেলনা', 'toy', 'toys'] }
+            ]
+        };
+
+        // Sub-category ঠিক করা — গ্রুপ + নাম দেখে
+        function classifySub(p, group) {
+            const subs = SUB_CATS[group];
+            if (!subs) return 'সব';
+            const text = ((p.name || '') + ' ' + (p.category || '')).toLowerCase();
+            for (let i = 0; i < subs.length; i++) {
+                const s = subs[i];
+                if (!s.kw) continue;
+                if (s.kw === '__COUPLE__') {
+                    if (COUPLE_KW.some(k => text.includes(k))) return s.n;
+                    continue;
+                }
+                if (s.kw.some(k => text.includes(k))) return s.n;
+            }
+            return 'সব';
+        }
+
+        // পুরনো/ইংরেজি নামকে নতুন বাংলা নামে আনা (Firestore-এর লাইভ ক্যাটাগরি normalize)
+        function normalizeCatName(name) {
+            const m = {
+                'gadget': 'গ্যাজেট', 'electronics': 'গ্যাজেট', 'ইলেকট্রনিক্স': 'গ্যাজেট',
+                'ফিমেল ফ্যাশন': 'মহিলা ফ্যাশন', 'female fashion': 'মহিলা ফ্যাশন', 'women fashion': 'মহিলা ফ্যাশন',
+                'male fashion': 'পুরুষ ফ্যাশন', 'men fashion': 'পুরুষ ফ্যাশন',
+                'beauty': 'অন্যান্য', 'বিউটি': 'অন্যান্য', 'others': 'অন্যান্য',
+                'মহিলা ফ্যাশন': 'মহিলা ফ্যাশন', 'পুরুষ ফ্যাশন': 'পুরুষ ফ্যাশন', 'গ্যাজেট': 'গ্যাজেট', 'অন্যান্য': 'অন্যান্য'
+            };
+            const key = String(name || '').trim().toLowerCase();
+            return m[key] || name;
+        }
+        // পুরনো/অকেজো ক্যাটাগরি — আর দেখানো হবে না
+        const OLD_CAT_NAMES = ['ফ্যাশন', 'ইলেকট্রনিক্স', 'বিউটি', 'হোম ও লিভিং', 'খেলনা', 'বই ও শিক্ষা', 'গ্রোসারি',
+            'gadget', 'ফিমেল ফ্যাশন', 'female fashion', 'male fashion', 'beauty', 'electronics', 'others', 'home', 'toys', 'books', 'grocery'];
+        function cleanCats(list) {
+            const seen = {}, out = [];
+            (list || []).forEach(c => {
+                const nm = normalizeCatName(c.name);
+                const key = String(nm || '').trim().toLowerCase();
+                if (!nm || OLD_CAT_NAMES.includes(key)) return;
+                if (seen[nm]) return;
+                seen[nm] = 1;
+                out.push({ name: nm, icon: c.icon || '' });
+            });
+            return out;
+        }
+        function readCatsCache() {
+            try {
+                const c = JSON.parse(localStorage.getItem('sk_categories') || 'null');
+                if (c && c.v === 2 && c.t && (Date.now() - c.t < 10 * 60 * 1000) && c.list && c.list.length) {
+                    return cleanCats(c.list);
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        // পণ্যের নাম দেখে অটো ক্যাটাগরি — male/female/gadget/other
+        const MALE_KW = ['shirt', 'tshirt', 't-shirt', 't shirt', 'polo', 'pant', 'trouser', 'panjabi', 'পাঞ্জাবি', 'পাঞ্জাবী', ' men', 'men ', 'for men', 'man', 'boy', 'boys', 'gents', 'tank top', 'smoking', 'tie'];
+        const FEMALE_KW = ['three piece', 'থ্রি পিস', 'থ্রী পিস', 'saree', 'শাড়ি', 'শাড়ি', 'salwar', 'kameez', 'ladies', 'women', 'woman', 'female', 'girls', 'skirt', 'plazoo', 'প্লাজো', 'khimar', 'georgette', 'lehenga', 'dupatta', 'burqa', 'hijab', 'ব্লাউজ', 'হেয়ার', 'piece'];
+        const GADGET_KW = ['ঘড়ি', 'ঘড়ি', 'watch', 'থার্মোমিটার', 'thermometer', 'হিটিং', 'প্যাড', 'earbuds', 'earphone', 'headphone', 'headset', 'চার্জার', 'charger', 'cable', 'speaker', 'মোবাইল', 'mobile', 'phone', 'বাতি', 'lamp', 'light', 'fan', 'পাখা', 'kettle', 'কেটলি', 'blender', 'iron', 'ইস্ত্রি', 'মিক্সার', 'টিভি', 'tv', 'হেয়ার ড্রায়ার', 'dryer', 'ব্লেন্ডার', 'trimmer', 'shaver', 'শেভার'];
+
+        function classifyProduct(p) {
+            const text = ((p.name || '') + ' ' + (p.category || '')).toLowerCase();
+            if (COUPLE_KW.some(k => text.includes(k))) return 'কাপল';
+            if (FEMALE_KW.some(k => text.includes(k))) return 'মহিলা ফ্যাশন';
+            if (MALE_KW.some(k => text.includes(k))) return 'পুরুষ ফ্যাশন';
+            if (GADGET_KW.some(k => text.includes(k))) return 'গ্যাজেট';
+            return 'অন্যান্য';
+        }
+
         // Get category from URL
         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('cat') || 'all';
         const searchQuery = (urlParams.get('q') || '').trim();
+        let activeSub = urlParams.get('sub') || 'সব';
 
         let loadedProducts = [];       // এ পর্যন্ত লোড হওয়া সব পণ্য
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -689,6 +861,7 @@
         // ===== INIT =====
         function init() {
             updateCategoryHeader();
+            renderSubChips();
             highlightActiveCategory();
             loadQuickCategories();
             setupFilters();
@@ -706,7 +879,7 @@
             const name = category === 'all' ? 'সকল পণ্য' : category;
             document.getElementById('categoryName').textContent = name;
             document.getElementById('breadcrumbCat').textContent = name;
-            document.getElementById('categoryIconBig').textContent = CATEGORY_ICONS[category] || '📦';
+            document.getElementById('categoryIconBig').textContent = GROUP_CATS[category] || CATEGORY_ICONS[category] || '📦';
             document.title = name + ' - স্মার্ট কেনাকাটা';
             try {
                 const catName = name;
@@ -760,25 +933,111 @@
             } catch(e) { console.log('highlight error', e); }
         }
 
-        // ===== লাইভ Quick Categories (Admin থেকে add করলে এখানেও আসবে) =====
+        // ===== SUB-CATEGORY CHIPS =====
+        function escAttr(text) { return skEscape(String(text || '')); }
+
+        function renderSubChips() {
+            const strip = document.getElementById('subCatStrip');
+            if (!strip) return;
+            const subs = SUB_CATS[category];
+            if (!subs) { strip.style.display = 'none'; strip.innerHTML = ''; return; }
+            const groupList = loadedProducts.filter(p => classifyProduct(p) === category);
+            let html = '';
+            subs.forEach(s => {
+                let count = null;
+                if (!s.kw) count = groupList.length;
+                else if (s.kw === '__COUPLE__') {
+                    count = groupList.filter(p => COUPLE_KW.some(k => ((p.name || '') + ' ' + (p.category || '')).toLowerCase().includes(k))).length;
+                } else {
+                    count = groupList.filter(p => classifySub(p, category) === s.n).length;
+                }
+                // খালি sub লুকাই — কিন্তু 'সব' আর 'কাপল' সবসময় থাকবে
+                if (s.n !== 'সব' && s.kw !== '__COUPLE__' && count === 0) return;
+                html += '<button class="subcat-chip' + (activeSub === s.n ? ' active' : '') + '" data-sub="' + escAttr(s.n) + '">'
+                    + skEscape(s.n)
+                    + (count !== null ? ' <span class="sub-count">' + count + '</span>' : '')
+                    + '</button>';
+            });
+            strip.innerHTML = html;
+            strip.style.display = 'flex';
+        }
+
+        function setSub(sub) {
+            activeSub = sub || 'সব';
+            // URL-ও আপডেট (share করার সময় sub ঠিক থাকে)
+            try {
+                const u = new URL(window.location.href);
+                if (activeSub === 'সব') u.searchParams.delete('sub');
+                else u.searchParams.set('sub', activeSub);
+                history.replaceState(null, '', u.toString());
+            } catch (e) {}
+            renderSubChips();
+            applyClientFilters();
+        }
+
+        // chip ক্লিক ডেলিগেশন
+        (function () {
+            const bind = () => {
+                const strip = document.getElementById('subCatStrip');
+                if (!strip || strip.dataset.bound) return;
+                strip.dataset.bound = '1';
+                strip.addEventListener('click', function (e) {
+                    const b = e.target.closest ? e.target.closest('.subcat-chip') : null;
+                    if (b) setSub(b.getAttribute('data-sub'));
+                });
+            };
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+            else bind();
+        })();
+
+        // ===== লাইভ Quick Categories — ডিফল্ট ৪টা + Firestore merge (কখনো ক্যাটাগরি হারায় না) =====
+        const QUICK_DEFAULTS = [
+            { name: 'মহিলা ফ্যাশন', icon: '👗' },
+            { name: 'পুরুষ ফ্যাশন', icon: '👔' },
+            { name: 'কাপল', icon: '💑' },
+            { name: 'গ্যাজেট', icon: '📱' },
+            { name: 'অন্যান্য', icon: '📦' }
+        ];
+        function mergeCats(base, live) {
+            const seen = {}, out = [];
+            base.forEach(c => { if (!seen[c.name]) { seen[c.name] = 1; out.push(c); } });
+            (live || []).forEach(c => { if (!seen[c.name]) { seen[c.name] = 1; out.push(c); } });
+            return out;
+        }
         function loadQuickCategories() {
+            // ক্যাশ আগে (instant) — ডিফল্ট নিশ্চিত
+            let current = QUICK_DEFAULTS.slice();
+            const cachedCats = readCatsCache();
+            if (cachedCats && cachedCats.length) current = mergeCats(QUICK_DEFAULTS, cachedCats);
+            renderQuickCats(current);
+            // Firestore লাইভ — normalize + clean + merge
             db.collection('categories').get().then(snap => {
                 const live = [];
                 snap.forEach(doc => {
                     const d = doc.data();
-                    if (d.active !== false && d.name) live.push({ name: d.name, icon: d.icon || '' });
+                    if (d.active !== false && d.name) {
+                        const nm = normalizeCatName(d.name);
+                        live.push({ name: nm, icon: d.icon || '' });
+                    }
                 });
+                live = cleanCats(live);
                 if (!live.length) return;
                 live.sort((a, b) => a.name.localeCompare(b.name));
-                const wrap = document.getElementById('quickCategories');
-                let html = '<a href="category.html?cat=all" class="quick-cat"><i class="fas fa-th"></i> সব পণ্য</a>';
-                live.forEach(c => {
-                    html += '<a href="category.html?cat=' + encodeURIComponent(c.name) + '" class="quick-cat">' + (c.icon ? c.icon + ' ' : '') + skEscape(c.name) + '</a>';
-                });
-                wrap.innerHTML = html;
-                highlightActiveCategory();
+                const merged = mergeCats(QUICK_DEFAULTS, live);
+                renderQuickCats(merged);
+                try { localStorage.setItem('sk_categories', JSON.stringify({ v: 2, t: Date.now(), list: merged })); } catch (e) {}
             }).catch(() => {});
         }
+        function renderQuickCats(cats) {
+            const wrap = document.getElementById('quickCategories');
+            let html = '<a href="category.html?cat=all" class="quick-cat"><i class="fas fa-th"></i> সব পণ্য</a>';
+            cats.forEach(c => {
+                html += '<a href="category.html?cat=' + encodeURIComponent(c.name) + '" class="quick-cat">' + (c.icon ? c.icon + ' ' : '') + skEscape(c.name) + '</a>';
+            });
+            wrap.innerHTML = html;
+            highlightActiveCategory();
+        }
+
 
         // ===== FILTER SETUP =====
         function setupFilters() {
@@ -825,7 +1084,7 @@
                 // সার্চ: keywords index দিয়ে
                 const token = searchQuery.toLowerCase().split(/\s+/).sort((a, b) => b.length - a.length)[0];
                 q = q.where('keywords', 'array-contains', token);
-            } else if (category !== 'all') {
+            } else if (category !== 'all' && !GROUP_CATS[category]) {
                 q = q.where('category', '==', category);
             }
             // sort
@@ -838,6 +1097,12 @@
         function loadNextPage() {
             if (pageLoading) return;
             pageLoading = true;
+            // গ্রুপ ক্যাটাগরি (মহিলা/পুরুষ/গ্যাজেট/অন্যান্য) — সরাসরি সব fetch + ক্লায়েন্ট-সাইড সাজানো
+            if (GROUP_CATS[category]) {
+                pageLoading = false;
+                fallbackLoad();
+                return;
+            }
             const btn = document.getElementById('loadMoreBtn');
             btn.style.display = 'none';
             const grid = document.getElementById('productsGrid');
@@ -875,7 +1140,7 @@
             let q = db.collection('products');
             // NB: সার্চের fallback-এ keywords ছাড়াই সব টেনে client-side ফিল্টার করি
             // (পুরনো প্রোডাক্টে keywords ফিল্ড নেই)
-            if (!searchQuery && category !== 'all') q = q.where('category', '==', category);
+            if (!searchQuery && category !== 'all' && !GROUP_CATS[category]) q = q.where('category', '==', category);
             q.limit(100).get().then(snap => {
                 loadedProducts = [];
                 snap.forEach(doc => loadedProducts.push({ id: doc.id, ...doc.data() }));
@@ -900,6 +1165,21 @@
             }
             if (inStockOnly) list = list.filter(p => (p.stock === undefined || p.stock === null) || p.stock > 0);
             list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= 5000 || Number(p.price) <= priceMax));
+            // নতুন গ্রুপ ক্যাটাগরি — নাম দেখে অটো সাজানো
+            if (GROUP_CATS[category]) {
+                list = list.filter(p => classifyProduct(p) === category);
+                // Sub-category ফিল্টার
+                if (activeSub && activeSub !== 'সব') {
+                    const subDef = (SUB_CATS[category] || []).find(s => s.n === activeSub);
+                    if (subDef) {
+                        if (subDef.kw === '__COUPLE__') {
+                            list = list.filter(p => COUPLE_KW.some(k => ((p.name || '') + ' ' + (p.category || '')).toLowerCase().includes(k)));
+                        } else {
+                            list = list.filter(p => classifySub(p, category) === activeSub);
+                        }
+                    }
+                }
+            }
 
             const sortBy = document.getElementById('sortSelect').value;
             if (sortBy === 'nameAZ') list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
@@ -951,16 +1231,28 @@
             const info = document.getElementById('resultsInfo');
 
             if (products.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <h2>কোন পণ্য পাওয়া যায়নি</h2>
-                        <p>ফিল্টার বদলে দেখুন বা অন্য কিছু খুঁজুন</p>
-                        <a href="index.html">← হোমে ফিরে যান</a>
-                    </div>
-                `;
+                if (category === 'কাপল' || activeSub === 'কাপল') {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-heart" style="color:#ec4899;"></i>
+                            <h2>💑 কাপল কালেকশন শীঘ্রই আসছে!</h2>
+                            <p>ম্যাচিং সেট, জোড়া পাঞ্জাবি-শাড়ি, কাপল টি-শার্ট — একসাথে কিনুন</p>
+                            <a href="category.html?cat=all">← সব পণ্য দেখুন</a>
+                        </div>
+                    `;
+                } else {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <h2>কোন পণ্য পাওয়া যায়নি</h2>
+                            <p>ফিল্টার বদলে দেখুন বা অন্য কিছু খুঁজুন</p>
+                            <a href="index.html">← হোমে ফিরে যান</a>
+                        </div>
+                    `;
+                }
                 info.style.display = 'none';
                 document.getElementById('categoryCount').textContent = '০ টি পণ্য';
+                renderSubChips();
                 updateLoadMoreBtn();
                 return;
             }
@@ -970,6 +1262,7 @@
             document.getElementById('categoryCount').textContent = products.length + ' টি পণ্য পাওয়া গেছে';
 
             grid.innerHTML = products.map(productCardHtml).join('');
+            renderSubChips();
             updateLoadMoreBtn();
         }
 
@@ -1001,6 +1294,19 @@
             }
             if (inStockOnly) list = list.filter(p => (p.stock === undefined || p.stock === null) || p.stock > 0);
             list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= 5000 || Number(p.price) <= priceMax));
+            if (GROUP_CATS[category]) {
+                list = list.filter(p => classifyProduct(p) === category);
+                if (activeSub && activeSub !== 'সব') {
+                    const subDef = (SUB_CATS[category] || []).find(s => s.n === activeSub);
+                    if (subDef) {
+                        if (subDef.kw === '__COUPLE__') {
+                            list = list.filter(p => COUPLE_KW.some(k => ((p.name || '') + ' ' + (p.category || '')).toLowerCase().includes(k)));
+                        } else {
+                            list = list.filter(p => classifySub(p, category) === activeSub);
+                        }
+                    }
+                }
+            }
             const sortBy = document.getElementById('sortSelect').value;
             if (sortBy === 'priceLow') list.sort((a, b) => (a.price || 0) - (b.price || 0));
             else if (sortBy === 'priceHigh') list.sort((a, b) => (b.price || 0) - (a.price || 0));
@@ -1057,6 +1363,7 @@
     </script>
     <script src="chatbot.js"></script>
     <script src="theme.js"></script>
+    <script src="nav-drawer.js?v=1"></script>
    
 </body>
 </html>

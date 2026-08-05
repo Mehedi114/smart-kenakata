@@ -3,6 +3,7 @@
 <head>
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png">
     <title>পণ্যের বিস্তারিত - স্মার্ট কেনাকাটা | Best Price in BD</title>
     <meta name="description" content="সেরা দামে অরিজিনাল পণ্য কিনুন স্মার্ট কেনাকাটা থেকে। ঢাকায় ২৪ ঘন্টায় ডেলিভারি, ক্যাশ অন ডেলিভারি।">
     <meta name="robots" content="index, follow, max-image-preview:large">
@@ -438,12 +439,18 @@
             margin-bottom: 25px;
             color: var(--dark);
         }
+        .related-scroll {
+            overflow: hidden;
+        }
         .related-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            display: flex;
             gap: 20px;
+            transition: transform .5s cubic-bezier(.22,.61,.36,1);
+            will-change: transform;
         }
         .related-card {
+            flex: 0 0 calc((100% - 60px) / 4);
+            min-width: 0;
             border: 1px solid var(--gray-200);
             border-radius: 12px;
             overflow: hidden;
@@ -452,6 +459,18 @@
             text-decoration: none;
             color: inherit;
         }
+        .related-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 18px;
+        }
+        .related-dot {
+            width: 8px; height: 8px; border-radius: 999px;
+            background: #cbd5e1; border: none; cursor: pointer; padding: 0;
+            transition: all .25s;
+        }
+        .related-dot.active { width: 24px; background: var(--primary); }
         .related-card:hover {
             border-color: var(--primary);
             transform: translateY(-3px);
@@ -573,7 +592,7 @@
             .product-grid { grid-template-columns: 1fr; gap: 25px; }
             .product-info h1 { font-size: 22px; }
             .current-price { font-size: 28px; }
-            .related-grid { grid-template-columns: repeat(2, 1fr); }
+            .related-card { flex: 0 0 calc((100% - 20px) / 2); }
             .logo-text h1 { font-size: 18px; }
         }
     </style>
@@ -586,7 +605,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <div class="logo-icon"><i class="fas fa-shopping-bag"></i></div>
+                <div class="logo-icon" style="background:transparent; padding:0;"><img src="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png" alt="স্মার্ট কেনাকাটা" style="width:100%; height:100%; object-fit:contain;"></div>
                 <div class="logo-text">
                     <h1>স্মার্ট কেনাকাটা</h1>
                     <span>Trusted Online Shop</span>
@@ -700,10 +719,13 @@
     <div id="reviewsList" style="display:grid; gap:15px;"></div>
 </div>
         
-        <!-- Related Products -->
+        <!-- Related Products (auto-slide carousel) -->
         <div class="related-section" id="relatedSection" style="display:none;">
             <h2>🔥 আরও দেখুন</h2>
-            <div class="related-grid" id="relatedGrid"></div>
+            <div class="related-scroll">
+                <div class="related-grid" id="relatedGrid"></div>
+            </div>
+            <div class="related-dots" id="relatedDots"></div>
         </div>
     </div>
     
@@ -1034,14 +1056,74 @@
             `;
         }
 
-        // ===== LOAD RELATED =====
+        // ===== LOAD RELATED — auto-slide carousel (২ সেকেন্ড পর পর) =====
+        let relatedTimer = null;
+        let relatedIndex = 0;
+        let relatedCount = 0;
+        let relatedPerView = 4;
+
+        function stopRelatedSlider() {
+            if (relatedTimer) { clearInterval(relatedTimer); relatedTimer = null; }
+        }
+
+        function showRelatedIndex(i) {
+            const grid = document.getElementById('relatedGrid');
+            if (!grid) return;
+            relatedIndex = i;
+            const card = grid.querySelector('.related-card');
+            if (!card) return;
+            const step = card.offsetWidth + 20; // card + gap
+            grid.style.transform = 'translateX(-' + (relatedIndex * step) + 'px)';
+            document.querySelectorAll('.related-dot').forEach((d, di) => {
+                d.classList.toggle('active', di === relatedIndex);
+            });
+        }
+
+        function goRelated(i) { showRelatedIndex(i); }
+
+        function startRelatedSlider() {
+            stopRelatedSlider();
+            const grid = document.getElementById('relatedGrid');
+            const dotsWrap = document.getElementById('relatedDots');
+            if (!grid || !dotsWrap) return;
+            const cards = grid.querySelectorAll('.related-card');
+            relatedCount = cards.length;
+            grid.style.transform = 'translateX(0)';
+            relatedIndex = 0;
+            if (relatedCount <= 1) return;
+            if (relatedCount <= relatedPerView) {
+                // সব এক স্ক্রিনে দেখা যায় — slide দরকার নেই, dots-ও নেই
+                dotsWrap.innerHTML = '';
+                return;
+            }
+            // dots বানাই
+            const dotCount = relatedCount - relatedPerView + 1;
+            let dotsHtml = '';
+            for (let i = 0; i < dotCount; i++) {
+                dotsHtml += '<button class="related-dot' + (i === 0 ? ' active' : '') + '" onclick="goRelated(' + i + ')" aria-label="স্লাইড ' + (i + 1) + '"></button>';
+            }
+            dotsWrap.innerHTML = dotsHtml;
+            // ২ সেকেন্ড পর পর এক কার্ড করে স্লাইড — শেষে আবার শুরু
+            relatedTimer = setInterval(() => {
+                const max = relatedCount - relatedPerView;
+                showRelatedIndex(relatedIndex >= max ? 0 : relatedIndex + 1);
+            }, 2000);
+        }
+
+        // ⚠️ hover/touch-এ pause নেই — দর্শক click না করলেও সবসময় অটো-স্লাইড চলবে
+        window.addEventListener('resize', function () {
+            relatedPerView = window.innerWidth < 768 ? 2 : 4;
+            startRelatedSlider();
+        });
+
         async function loadRelated() {
             if (!currentProduct) return;
             
             try {
+                // ১) একই ক্যাটাগরির পণ্য
                 const snapshot = await db.collection('products')
                     .where('category', '==', currentProduct.category)
-                    .limit(5)
+                    .limit(12)
                     .get();
                 
                 const related = [];
@@ -1050,6 +1132,19 @@
                         related.push({ id: doc.id, ...doc.data() });
                     }
                 });
+
+                // ২) কম থাকলে — সাম্প্রতিক অন্যান্য পণ্য দিয়ে fill (স্লাইডার সবসময় চলবে)
+                if (related.length < 8) {
+                    try {
+                        const fillSnap = await db.collection('products').limit(30).get();
+                        fillSnap.forEach(doc => {
+                            if (related.length >= 12) return;
+                            if (doc.id === productId) return;
+                            if (related.some(r => r.id === doc.id)) return;
+                            related.push({ id: doc.id, ...doc.data() });
+                        });
+                    } catch (e) {}
+                }
                 
                 if (related.length === 0) {
                     document.getElementById('relatedSection').style.display = 'none';
@@ -1057,10 +1152,10 @@
                 }
                 
                 document.getElementById('relatedSection').style.display = 'block';
-                document.getElementById('relatedGrid').innerHTML = related.slice(0, 4).map(p => `
+                document.getElementById('relatedGrid').innerHTML = related.slice(0, 12).map(p => `
                     <a href="product-details.html?id=${p.id}" class="related-card">
                         <div class="related-card-img">
-                            <img src="${p.image || 'https://via.placeholder.com/200'}" alt="${p.name}">
+                            <img src="${p.image || 'https://via.placeholder.com/200'}" alt="${p.name}" loading="lazy">
                         </div>
                         <div class="related-card-info">
                             <h4>${p.name}</h4>
@@ -1068,10 +1163,13 @@
                         </div>
                     </a>
                 `).join('');
+                relatedPerView = window.innerWidth < 768 ? 2 : 4;
+                startRelatedSlider();
             } catch (error) {
                 console.error(error);
             }
         }
+
 
         // ===== QUANTITY =====
         function changeQty(delta) {
@@ -1419,6 +1517,7 @@ async function submitReview(event) {
     </script>
     <script src="chatbot.js"></script>
     <script src="theme.js"></script>
+    <script src="nav-drawer.js?v=1"></script>
     
 </body>
 </html>
