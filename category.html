@@ -899,6 +899,15 @@
             return 'সব';
         }
 
+        // পণ্যের sub-category — Admin-এ দেওয়া subCategory থাকলে সেটাই, নাহলে নাম দেখে অটো
+        function productSubCat(p, group) {
+            if (p && p.subCategory) {
+                const subs = SUB_CATS[group] || [];
+                if (subs.some(s => s.n === p.subCategory)) return p.subCategory;
+            }
+            return classifySub(p, group);
+        }
+
         // পুরনো/ইংরেজি নামকে নতুন বাংলা নামে আনা (Firestore-এর লাইভ ক্যাটাগরি normalize)
         function normalizeCatName(name) {
             const m = {
@@ -1061,10 +1070,8 @@
             subs.forEach(s => {
                 let count = null;
                 if (!s.kw) count = groupList.length;
-                else if (s.kw === '__COUPLE__') {
-                    count = groupList.filter(p => COUPLE_KW.some(k => ((p.name || '') + ' ' + (p.category || '')).toLowerCase().includes(k))).length;
-                } else {
-                    count = groupList.filter(p => classifySub(p, category) === s.n).length;
+                else {
+                    count = groupList.filter(p => productSubCat(p, category) === s.n).length;
                 }
                 // খালি sub লুকাই — কিন্তু 'সব' আর 'কাপল' সবসময় থাকবে
                 if (s.n !== 'সব' && s.kw !== '__COUPLE__' && count === 0) return;
@@ -1310,11 +1317,7 @@
                 if (activeSub && activeSub !== 'সব') {
                     const subDef = (SUB_CATS[category] || []).find(s => s.n === activeSub);
                     if (subDef) {
-                        if (subDef.kw === '__COUPLE__') {
-                            list = list.filter(p => COUPLE_KW.some(k => ((p.name || '') + ' ' + (p.category || '')).toLowerCase().includes(k)));
-                        } else {
-                            list = list.filter(p => classifySub(p, category) === activeSub);
-                        }
+                        list = list.filter(p => productSubCat(p, category) === activeSub);
                     }
                 }
             }
@@ -1504,11 +1507,7 @@
                 if (activeSub && activeSub !== 'সব') {
                     const subDef = (SUB_CATS[category] || []).find(s => s.n === activeSub);
                     if (subDef) {
-                        if (subDef.kw === '__COUPLE__') {
-                            list = list.filter(p => COUPLE_KW.some(k => ((p.name || '') + ' ' + (p.category || '')).toLowerCase().includes(k)));
-                        } else {
-                            list = list.filter(p => classifySub(p, category) === activeSub);
-                        }
+                        list = list.filter(p => productSubCat(p, category) === activeSub);
                     }
                 }
             }
