@@ -335,12 +335,14 @@
 </style>
     
     <!-- 🛡️ Trust Badge Strip -->
-    <section class="sk-trust-strip">
-        <div class="sk-trust-item"><i class="fas fa-shield-halved"></i><div><b>১০০% অরিজিনাল</b><span>যাচাইকৃত পণ্য</span></div></div>
-        <div class="sk-trust-item"><i class="fas fa-lock"></i><div><b>সিকিউর পেমেন্ট</b><span>বিকাশ/নগদ/রকেট</span></div></div>
-        <div class="sk-trust-item"><i class="fas fa-rotate-left"></i><div><b>সহজ রিটার্ন</b><span>৭ দিনের পলিসি</span></div></div>
-        <div class="sk-trust-item"><i class="fas fa-money-bill-wave"></i><div><b>ক্যাশ অন ডেলিভারি</b><span>হাতে পেয়ে পেমেন্ট</span></div></div>
-        <div class="sk-trust-item"><i class="fas fa-truck-fast"></i><div><b>দ্রুত ডেলিভারি</b><span>ঢাকায় ২৪ ঘণ্টা</span></div></div>
+    <section class="sk-trust-section">
+        <div class="sk-trust-strip">
+            <div class="sk-trust-item"><i class="fas fa-shield-halved"></i><div><b>১০০% অরিজিনাল</b><span>যাচাইকৃত পণ্য</span></div></div>
+            <div class="sk-trust-item"><i class="fas fa-lock"></i><div><b>সিকিউর পেমেন্ট</b><span>বিকাশ/নগদ/রকেট</span></div></div>
+            <div class="sk-trust-item"><i class="fas fa-rotate-left"></i><div><b>সহজ রিটার্ন</b><span>৭ দিনের পলিসি</span></div></div>
+            <div class="sk-trust-item"><i class="fas fa-money-bill-wave"></i><div><b>ক্যাশ অন ডেলিভারি</b><span>হাতে পেয়ে পেমেন্ট</span></div></div>
+            <div class="sk-trust-item"><i class="fas fa-truck-fast"></i><div><b>দ্রুত ডেলিভারি</b><span>ঢাকায় ২৪ ঘণ্টা</span></div></div>
+        </div>
     </section>
 
     <!-- ⚡ FLASH SALE SECTION -->
@@ -892,11 +894,16 @@
                         const stars = '★'.repeat(Math.min(5, Math.max(1, Math.round(Number(r.rating))))) + '☆'.repeat(5 - Math.min(5, Math.max(1, Math.round(Number(r.rating)))));
                         const initial = (r.name || 'U')[0].toUpperCase();
                         const date = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('bn-BD') : '';
+                        const productLabel = r.productName
+                            ? skEscape(String(r.productName).slice(0, 30))
+                            : (r.productId ? 'এই পণ্যে রিভিউ' : '');
+                        const reviewLink = r.productId ? 'product-details.html?id=' + r.productId : null;
                         let html = '<div class="sk-testi-card">';
                         html += '<div class="sk-testi-stars">' + stars + '</div>';
                         html += '<p class="sk-testi-comment">"' + skEscape(String(r.comment).length > 130 ? String(r.comment).slice(0, 128) + '…' : r.comment) + '"</p>';
                         html += '<div class="sk-testi-user"><div class="sk-testi-avatar">' + skEscape(initial) + '</div>';
-                        html += '<div><b>' + skEscape(r.name) + '</b><span>' + (r.productName ? skEscape(String(r.productName).slice(0, 30)) : '') + (date ? ' • ' + date : '') + '</span></div></div>';
+                        html += '<div><b>' + skEscape(r.name) + '</b>';
+                        html += '<span>' + (reviewLink ? '<a href="' + reviewLink + '" style="color:#059669; text-decoration:none; font-weight:600;">' + productLabel + '</a>' : productLabel) + (date ? ' • ' + date : '') + '</span></div></div>';
                         html += '</div>';
                         return html;
                     }).join('');
