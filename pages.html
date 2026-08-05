@@ -843,6 +843,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="site-core.js?v=1"></script>
 
     <script>
         const firebaseConfig = {
@@ -884,6 +885,12 @@
         async function sendMessage(event) {
             event.preventDefault();
             
+            const phoneVal = document.getElementById('phone').value.trim();
+            if (!/^01[0-9]{9}$/.test(phoneVal)) {
+                showToast('❌ সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (01XXXXXXXXX)');
+                return;
+            }
+
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> পাঠানো হচ্ছে...';

@@ -49,6 +49,7 @@
         @keyframes spin{to{transform:rotate(360deg)}}
         .whatsapp-float{position:fixed;bottom:25px;right:25px;width:60px;height:60px;background:#25D366;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;text-decoration:none;box-shadow:0 5px 20px rgba(37,211,102,0.4);z-index:999}
     </style>
+    <link rel="stylesheet" href="premium.css?v=1">
 </head>
 <body>
     <nav class="navbar">
@@ -84,6 +85,7 @@
     <a href="https://wa.me/8801932211123" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="site-core.js?v=1"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDfnRJ3xyh3rkFD01XS-Zsm-LM1VSPuaJY",
@@ -99,10 +101,12 @@
         function trackOrder() {
             const rawInput = document.getElementById('phoneInput').value.trim();
             let phone = rawInput.replace(/\D/g, '');
-            if (phone.length === 13 && phone.startsWith('880')) {
+            // 8801XXXXXXXXX (13 digit) → 01XXXXXXXXX; +880 বা অন্য leading অংশ স্ট্রিপ
+            if (phone.startsWith('880') && phone.length >= 13) {
                 phone = phone.substring(2);
-            } else if (phone.length === 14 && phone.startsWith('880')) {
-                phone = phone.substring(3);
+            }
+            if (phone.length === 10 && phone.startsWith('1')) {
+                phone = '0' + phone;
             }
             const resultDiv = document.getElementById('result');
             const btn = document.getElementById('trackBtn');
