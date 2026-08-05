@@ -539,6 +539,13 @@
                         <label>পণ্যের বিবরণ</label>
                         <textarea id="prodDescription" placeholder="পণ্যের বিস্তারিত বিবরণ..."></textarea>
                     </div>
+                    <div class="form-group full" style="background:#fffbeb; border:1.5px solid #fbbf24; border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <input type="checkbox" id="prodFeatured" style="width:22px; height:22px; accent-color:#f59e0b; cursor:pointer; flex-shrink:0;">
+                        <div>
+                            <label for="prodFeatured" style="margin:0; font-size:15px; font-weight:700; color:#92400e; cursor:pointer;">⭐ জনপ্রিয় পণ্য হিসেবে দেখান</label>
+                            <small style="color:#b45309; display:block; margin-top:2px;">টিক দিলে পণ্যটি ওয়েবসাইটের শুরুতে <b>জনপ্রিয় পণ্য</b> সেকশনে দেখা যাবে (সব ক্যাটাগরির সাথে মিশে)</small>
+                        </div>
+                    </div>
 <div class="form-group full" style="border-top:2px dashed #10b981; padding-top:20px; margin-top:20px;">
     <h3 style="color:#10b981; margin-bottom:15px;"><i class="fas fa-tags"></i> ভেরিয়েন্ট ও ফ্ল্যাশ সেল (ঐচ্ছিক)</h3>
 </div>
@@ -1268,6 +1275,7 @@
     price: Number(document.getElementById('prodPrice').value),
     oldPrice: Number(document.getElementById('prodOldPrice').value) || 0,
     stock: Number(document.getElementById('prodStock').value) || 0,
+    featured: document.getElementById('prodFeatured') ? document.getElementById('prodFeatured').checked : false,
     image: document.getElementById('prodImage').value.trim(),
     image2: document.getElementById('prodImage2').value.trim(),
     image3: document.getElementById('prodImage3').value.trim(),
@@ -1344,11 +1352,11 @@ flashEnd: (function(){ const v = document.getElementById('prodFlashEnd').value; 
                 const profitColor = profit > 0 ? '#10b981' : '#ef4444';
                 html += '<div class="product-item" onclick="showProductDetails(\'' + id + '\')" style="cursor:pointer;">';
                 html += '<div class="product-item-image"><img src="' + (p[p.thumbnail] || p.image) + '" onerror="this.src=\'https://via.placeholder.com/280x180\'"></div>';
-                html += '<div class="product-item-info"><div class="cat">' + (p.category || '') + '</div><h4>' + p.name + '</h4><div class="price">বিক্রয়: ৳' + p.price + '</div>';
+                html += '<div class="product-item-info"><div class="cat">' + (p.category || '') + '</div><h4>' + p.name + (p.featured ? ' <span style="background:#f59e0b;color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;margin-left:4px;">⭐ জনপ্রিয়</span>' : '') + '</h4><div class="price">বিক্রয়: ৳' + p.price + '</div>';
                 if (p.supplier || p.buyPrice) {
                     html += '<div style="background:#fef3c7; padding:10px; border-radius:8px; margin:10px 0; font-size:12px;"><strong>🔒 ' + (p.supplier || '') + '</strong> | 💰 কেনা: ৳' + (p.buyPrice || 0) + ' | লাভ: <span style="color:' + profitColor + '">৳' + (profit || 0) + '</span></div>';
                 }
-                html += '<div class="product-actions"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); editProduct(\'' + id + '\')"><i class="fas fa-edit"></i> এডিট</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteProduct(\'' + id + '\', \'' + p.name.replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> ডিলিট</button></div></div></div>';
+                html += '<div class="product-actions"><button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); editProduct(\'' + id + '\')"><i class="fas fa-edit"></i> এডিট</button><button class="btn ' + (p.featured ? 'btn-secondary' : 'btn-primary') + ' btn-sm" onclick="event.stopPropagation(); toggleFeatured(\'' + id + '\', ' + (p.featured ? 'false' : 'true') + ')">' + (p.featured ? '⭐ অন করুন' : '⭐ জনপ্রিয়') + '</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteProduct(\'' + id + '\', \'' + p.name.replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> ডিলিট</button></div></div></div>';
             });
             html += '</div>';
             container.innerHTML = html;
@@ -1494,6 +1502,7 @@ function closeProductDetails() {
                 document.getElementById('prodPrice').value = p.price || '';
                 document.getElementById('prodOldPrice').value = p.oldPrice || '';
                 document.getElementById('prodStock').value = p.stock || '';
+                document.getElementById('prodFeatured').checked = !!p.featured;
                 document.getElementById('prodImage').value = p.image || '';
                 document.getElementById('prodImage2').value = p.image2 || '';
 document.getElementById('prodImage3').value = p.image3 || '';
@@ -1537,6 +1546,15 @@ if (thumbField) {
         }
 
         
+        function toggleFeatured(id, to) {
+            db.collection('products').doc(id).update({ featured: to })
+                .then(() => {
+                    showToast('success', to ? '⭐ জনপ্রিয় হিসেবে মার্ক করা হয়েছে!' : '⭐ সরানো হয়েছে');
+                    loadProducts();
+                })
+                .catch(e => showToast('error', '❌ ' + e.message));
+        }
+
         function deleteProduct(id, name) {
             if (!confirm('"' + name + '" ডিলিট করতে চান?')) return;
             db.collection('products').doc(id).delete()
@@ -2380,13 +2398,13 @@ function deleteReview(id) {
         // ============================================================
         // ===== 📦 BULK UPLOAD (Excel/CSV — SheetJS) =====
         // ============================================================
-        const BULK_COLUMNS = ['name', 'category', 'subCategory', 'price', 'oldPrice', 'stock', 'image', 'image2', 'image3', 'description', 'sizes', 'colors', 'buyPrice', 'supplier', 'supplierPhone', 'source', 'privateNote'];
+        const BULK_COLUMNS = ['name', 'category', 'subCategory', 'featured', 'price', 'oldPrice', 'stock', 'image', 'image2', 'image3', 'description', 'sizes', 'colors', 'buyPrice', 'supplier', 'supplierPhone', 'source', 'privateNote'];
 
         function downloadBulkTemplate() {
             const ws = XLSX.utils.aoa_to_sheet([
-                ['name', 'category', 'subCategory', 'price', 'oldPrice', 'stock', 'image', 'image2', 'image3', 'description', 'sizes', 'colors', 'buyPrice', 'supplier', 'supplierPhone', 'source', 'privateNote'],
-                ['উদাহরণ: স্মার্ট ওয়াচ X9', 'গ্যাজেট', 'হেলথ কেয়ার', 1299, 1999, 50, 'https://i.ibb.co/example.jpg', '', '', 'চমৎকার স্মার্ট ওয়াচ', '', '', 900, 'রহিম ট্রেডার্স', '017XXXXXXXX', 'নিউমার্কেট', 'নোট...'],
-                ['কটন টি-শার্ট (প্রিমিয়াম)', 'পুরুষ ফ্যাশন', 'টি-শার্ট', 450, 650, 100, 'https://i.ibb.co/example2.jpg', '', '', '১০০% কটন', 'M, L, XL', 'লাল, নীল, কালো', 300, '', '', '', '']
+                ['name', 'category', 'subCategory', 'featured', 'price', 'oldPrice', 'stock', 'image', 'image2', 'image3', 'description', 'sizes', 'colors', 'buyPrice', 'supplier', 'supplierPhone', 'source', 'privateNote'],
+                ['উদাহরণ: স্মার্ট ওয়াচ X9', 'গ্যাজেট', 'হেলথ কেয়ার', 'true', 1299, 1999, 50, 'https://i.ibb.co/example.jpg', '', '', 'চমৎকার স্মার্ট ওয়াচ', '', '', 900, 'রহিম ট্রেডার্স', '017XXXXXXXX', 'নিউমার্কেট', 'নোট...'],
+                ['কটন টি-শার্ট (প্রিমিয়াম)', 'পুরুষ ফ্যাশন', 'টি-শার্ট', '', 450, 650, 100, 'https://i.ibb.co/example2.jpg', '', '', '১০০% কটন', 'M, L, XL', 'লাল, নীল, কালো', 300, '', '', '', '']
             ]);
             ws['!cols'] = BULK_COLUMNS.map(() => ({ wch: 22 }));
             const wb = XLSX.utils.book_new();
@@ -2440,6 +2458,7 @@ function deleteReview(id) {
                     name: name,
                     category: String(r.category || 'সাধারণ').trim() || 'সাধারণ',
                     subCategory: String(r.subCategory || '').trim(),
+                    featured: String(r.featured || '').trim().toLowerCase() === 'true',
                     price: price,
                     oldPrice: Number(r.oldPrice) || 0,
                     stock: Number(r.stock) || 0,

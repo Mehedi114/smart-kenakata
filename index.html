@@ -563,62 +563,94 @@
         const HOME_CACHE_TTL = 5 * 60 * 1000; // ৫ মিনিট — Firestore read বাঁচায়
         const HOME_LIMIT = 12;
 
+        // ===== জনপ্রিয় পণ্য — সব ক্যাটাগরি থেকে balanced (featured আগে) =====
+        function buildBalancedHomeList(list) {
+            // ১) ⭐ featured পণ্য প্রথমে
+            const featured = list.filter(p => p.featured);
+            const rest = list.filter(p => !p.featured);
+            // ২) বাকিদের ক্যাটাগরি অনুযায়ী ভাগ
+            const groups = {};
+            rest.forEach(p => {
+                let g = p.category || 'অন্যান্য';
+                try {
+                    const cls = classifyProduct(p);
+                    if (cls) g = cls;
+                } catch (e) {}
+                (groups[g] = groups[g] || []).push(p);
+            });
+            // ৩) প্রতিটা ক্যাটাগরি থেকে ২টা করে (সবাই দেখা যায়)
+            const out = featured.slice(0, 6);
+            const MAX_PER_CAT = 2;
+            Object.keys(groups).forEach(g => {
+                groups[g].forEach((p, i) => { if (i < MAX_PER_CAT) out.push(p); });
+            });
+            // ৪) এখনো কম থাকলে বাকিগুলো দিয়ে fill
+            if (out.length < HOME_LIMIT) {
+                rest.forEach(p => { if (out.length < HOME_LIMIT && !out.includes(p)) out.push(p); });
+            }
+            return out.slice(0, HOME_LIMIT);
+        }
+
         function loadProducts(forceRefresh) {
             const grid = document.getElementById('productsGrid');
+            const renderHome = (list) => {
+                allProducts = buildBalancedHomeList(list);
+                if (!allProducts.length) {
+                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
+                    return;
+                }
+                displayProducts(allProducts);
+            };
 
-            // ১) প্রথমে ক্যাশ দেখান (instant render)
+            // ১) প্রথমে ক্যাশ দেখান (instant render) — balanced করে
             if (!forceRefresh) {
                 try {
                     const cached = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
                     if (cached && cached.t && (Date.now() - cached.t < HOME_CACHE_TTL) && cached.list.length) {
-                        allProducts = cached.list;
-                        displayProducts(allProducts);
+                        renderHome(cached.list);
                         return;
                     }
                 } catch (e) {}
             }
 
-            // ২) Firestore থেকে সর্বশেষ পণ্য (মাত্র ১২টা)
+            // ২) Firestore — featured query + সাম্প্রতিক ৩০টা (balanced করতে)
             // ৩.৫ সেকেন্ডের মধ্যে লোড না হলে পুরনো ক্যাশ দেখাই — স্পিনার বেশি ঘোরে না
             const slowTimer = setTimeout(() => {
                 if (!grid.querySelector('.sk-skeleton-card')) return;
                 try {
                     const stale = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
-                    if (stale && stale.list && stale.list.length) {
-                        allProducts = stale.list;
-                        displayProducts(allProducts);
-                    }
+                    if (stale && stale.list && stale.list.length) renderHome(stale.list);
                 } catch (e) {}
             }, 3500);
 
+            const loadFeatured = () => db.collection('products').where('featured', '==', true).limit(12).get().catch(() => null);
+            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(30).get();
+            const loadSimple = () => db.collection('products').limit(30).get();
 
-            const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(HOME_LIMIT).get();
-            const loadSimple = () => db.collection('products').limit(HOME_LIMIT).get();
-            (loadOrdered().catch(() => {
-                console.log('ordered failed, fallback to simple');
-                return loadSimple();
-            })).then((snapshot) => {
-                allProducts = [];
-                snapshot.forEach(doc => {
-                    allProducts.push({ id: doc.id, ...doc.data() });
+            Promise.all([loadFeatured(), loadOrdered().catch(() => loadSimple())])
+                .then(([fSnap, snapshot]) => {
+                    const map = {};
+                    if (snapshot) snapshot.forEach(doc => { map[doc.id] = { id: doc.id, ...doc.data() }; });
+                    if (fSnap) fSnap.forEach(doc => { if (!map[doc.id]) map[doc.id] = { id: doc.id, ...doc.data() }; });
+                    const list = Object.values(map);
+                    list.sort((a, b) => {
+                        const timeA = a.createdAt?.seconds || 0;
+                        const timeB = b.createdAt?.seconds || 0;
+                        return timeB - timeA;
+                    });
+                    clearTimeout(slowTimer);
+                    if (!list.length) {
+                        grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
+                        return;
+                    }
+                    try { localStorage.setItem(HOME_CACHE_KEY, JSON.stringify({ t: Date.now(), list: list })); } catch (e) {}
+                    renderHome(list);
+                })
+                .catch((error) => {
+                    clearTimeout(slowTimer);
+                    console.error('Error loading products:', error);
+                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>' + error.message + '</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
                 });
-                allProducts.sort((a, b) => {
-                    const timeA = a.createdAt?.seconds || 0;
-                    const timeB = b.createdAt?.seconds || 0;
-                    return timeB - timeA;
-                });
-                clearTimeout(slowTimer);
-                if (allProducts.length === 0) {
-                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
-                    return;
-                }
-                try { localStorage.setItem(HOME_CACHE_KEY, JSON.stringify({ t: Date.now(), list: allProducts })); } catch (e) {}
-                displayProducts(allProducts);
-            }).catch((error) => {
-                clearTimeout(slowTimer);
-                console.error('Error loading products:', error);
-                grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>' + error.message + '</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
-            });
         }
 
                 // ===== শেয়ার্ড লাইভ ক্যাটাগরি লোডার (১টা Firestore read — হোম, নেভ-মেনু, ড্রয়ার সবাই এটা ব্যবহার করে) =====
@@ -1009,6 +1041,7 @@
                 html += '<div class="product-image">';
                 if (discount > 0) html += '<span class="discount-badge">-' + discount + '%</span>';
                 if (skHasFlash(product)) html += '<span class="badge-flash">⚡ ফ্ল্যাশ সেল</span>';
+                else if (product.featured) html += '<span class="badge-popular">⭐ জনপ্রিয়</span>';
                 else html += skStockBadge(product);
                 html += '<button class="wishlist-heart" onclick="event.stopPropagation(); toggleWishlist(\'' + product.id + '\', this)" style="position:absolute; top:12px; right:12px; width:38px; height:38px; background:white; border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.1); z-index:2; transition:all 0.3s;"><i class="' + (wishlist.includes(product.id) ? 'fas' : 'far') + ' fa-heart" style="color:' + (wishlist.includes(product.id) ? '#ec4899' : '#94a3b8') + '; font-size:16px;"></i></button>';
                 html += '<button class="sk-qv-btn" onclick="event.stopPropagation(); openQuickView(\'' + product.id + '\')" title="কুইক ভিউ"><i class="fas fa-eye"></i></button>';

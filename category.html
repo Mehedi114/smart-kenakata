@@ -1402,6 +1402,7 @@
             html += '<div class="product-image">';
             if (discount > 0) html += '<span class="discount-badge">-' + discount + '%</span>';
             if (skHasFlash(product)) html += '<span class="badge-flash">⚡ ফ্ল্যাশ সেল</span>';
+            else if (product.featured) html += '<span class="badge-popular">⭐ জনপ্রিয়</span>';
             else html += skStockBadge(product);
             html += '<button class="sk-qv-btn" onclick="event.stopPropagation(); openQuickView(\'' + product.id + '\')" title="কুইক ভিউ"><i class="fas fa-eye"></i></button>';
             html += '<img src="' + (product.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
