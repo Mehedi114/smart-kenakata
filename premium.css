@@ -274,7 +274,7 @@ img { user-select: none; }
 .sk-flash-card:hover { transform: translateY(-4px); box-shadow: 0 14px 32px rgba(0,0,0,.28); }
 .sk-flash-card:active { transform: scale(.97); }
 .sk-flash-card .sk-flash-img { position: relative; aspect-ratio: 1/1; background: #f1f5f9; overflow: hidden; }
-.sk-flash-card .sk-flash-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s var(--sk-ease); }
+.sk-flash-card .sk-flash-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--sk-ease); }
 .sk-flash-card:hover .sk-flash-img img { transform: scale(1.06); }
 .sk-flash-card .sk-flash-off {
     position: absolute; top: 8px; left: 8px; z-index: 2;
@@ -411,7 +411,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     z-index: 10001;
     opacity: 0;
     pointer-events: none;
-    transition: opacity .3s ease;
+    transition: opacity .5s ease;
 }
 .sk-drawer-overlay.show { opacity: 1; pointer-events: auto; }
 .sk-drawer {
@@ -597,7 +597,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     overflow: hidden;
     box-shadow: var(--sk-shadow) !important;
     border: 1px solid rgba(15,23,42,.05);
-    transition: transform .4s var(--sk-ease), box-shadow .4s var(--sk-ease), border-color .4s var(--sk-ease);
+    transition: transform .5s var(--sk-ease), box-shadow .5s var(--sk-ease), border-color .5s var(--sk-ease);
     cursor: pointer;
 }
 .product-card:hover {
@@ -728,7 +728,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     border: 1px solid rgba(15,23,42,.08); overflow: hidden; z-index: 1000;
     max-height: 400px; overflow-y: auto; display: none;
 }
-.sk-suggest.show { display: block; animation: skFadeDown .28s var(--sk-ease); }
+.sk-suggest.show { display: block; animation: skFadeDown .5s var(--sk-ease); }
 @keyframes skFadeDown { from { opacity: 0; transform: translateY(-6px); } }
 .sk-suggest-head {
     padding: 10px 14px; font-size: 12px; font-weight: 800; color: #64748b;
@@ -925,7 +925,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
 }
 
 /* মসৃণ পেজ fade-in */
-body { animation: skPageIn .45s ease-out; }
+body { animation: skPageIn .5s ease-out; }
 @keyframes skPageIn { from { opacity: .35; } }
 
 /* ============ SUB-CATEGORY CHIPS (category পেজ) ============ */
@@ -969,7 +969,7 @@ body { animation: skPageIn .45s ease-out; }
         inset 0 1px 0 rgba(255,255,255,.35);
     transform: perspective(1600px) rotateX(3deg);
     transform-origin: top center;
-    transition: transform .75s var(--sk-ease), box-shadow .75s var(--sk-ease);
+    transition: transform .5s var(--sk-ease), box-shadow .5s var(--sk-ease);
 }
 .sk-banner-card:hover {
     transform: perspective(1600px) rotateX(0deg) translateY(-6px);
@@ -1004,7 +1004,7 @@ body { animation: skPageIn .45s ease-out; }
     border: 1.5px solid rgba(255,255,255,.9);
     cursor: pointer;
     padding: 0;
-    transition: all .3s var(--sk-ease);
+    transition: all .5s var(--sk-ease);
 }
 .sk-banner-dots .banner-dot.active {
     width: 30px;
@@ -1248,7 +1248,7 @@ body { animation: skPageIn .45s ease-out; }
     -webkit-backdrop-filter: blur(4px);
     z-index: 10003;
     opacity: 0; pointer-events: none;
-    transition: opacity .3s;
+    transition: opacity .5s;
 }
 .sk-qv-overlay.show { opacity: 1; pointer-events: auto; }
 .sk-qv-modal {
@@ -1262,7 +1262,7 @@ body { animation: skPageIn .45s ease-out; }
     border-radius: 20px;
     z-index: 10004;
     opacity: 0; pointer-events: none;
-    transition: all .45s var(--sk-ease);
+    transition: all .5s var(--sk-ease);
     box-shadow: 0 40px 80px rgba(2,6,23,.4);
     overflow: hidden;
 }
@@ -1375,7 +1375,7 @@ body { animation: skPageIn .45s ease-out; }
     z-index: 10006;
     box-shadow: 0 40px 90px rgba(2,6,23,.55);
     overflow: hidden;
-    transition: transform .55s var(--sk-ease), opacity .55s var(--sk-ease);
+    transition: transform .5s var(--sk-ease), opacity .5s var(--sk-ease);
     opacity: 0;
     pointer-events: none;
 }
