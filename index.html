@@ -1092,16 +1092,16 @@
             let h = [];
             try { h = JSON.parse(localStorage.getItem('sk_search_history') || '[]'); } catch (e) {}
             const TRENDING = ['টি-শার্ট', 'শার্ট', 'পাঞ্জাবি', 'শাড়ি', 'থ্রি পিস', 'ব্যাকপ্যাক'];
-            let html = '<div class="sk-suggest-title"><i class="fas fa-clock-rotate-left"></i> সাম্প্রতিক সার্চ</div>';
+            let html = '<div class="sk-suggest-head"><i class="fas fa-clock-rotate-left"></i> সাম্প্রতিক সার্চ</div>';
             if (h.length) {
                 h.forEach(q => {
-                    html += '<div class="sk-suggest-item" onclick="goToSearch(\'' + q.replace(/'/g, "\\'") + '\')"><i class="fas fa-history" style="color:#94a3b8; width:20px;"></i><span>' + skEscape(q) + '</span></div>';
+                    html += '<div class="sk-suggest-item sk-hist-item" onclick="goToSearch(\'' + q.replace(/'/g, "\\'") + '\')"><i class="fas fa-history sk-hist-icon"></i><span class="sk-hist-text">' + skEscape(q) + '</span><i class="fas fa-arrow-up-right-from-square sk-hist-go"></i></div>';
                 });
                 html += '<div class="sk-suggest-clear" onclick="clearSearchHistory()"><i class="fas fa-trash"></i> ইতিহাস মুছুন</div>';
             } else {
                 html += '<div class="sk-suggest-empty">আপনার সার্চ ইতিহাস এখানে দেখা যাবে</div>';
             }
-            html += '<div class="sk-suggest-title" style="margin-top:8px;"><i class="fas fa-fire" style="color:#f59e0b;"></i> ট্রেন্ডিং সার্চ</div>';
+            html += '<div class="sk-suggest-head"><i class="fas fa-fire" style="color:#f59e0b;"></i> ট্রেন্ডিং সার্চ</div>';
             html += '<div class="sk-trending-chips">';
             TRENDING.forEach(t => {
                 html += '<button class="sk-trend-chip" onclick="goToSearch(\'' + t + '\')">' + skEscape(t) + '</button>';
@@ -1116,6 +1116,17 @@
         }
         function hideSuggest() { if (suggestBox) suggestBox.classList.remove('show'); }
 
+        // ম্যাচ করা অংশ highlight
+        function highlightMatch(text, q) {
+            const safe = skEscape(text || '');
+            if (!q) return safe;
+            try {
+                const esc = skEscape(q);
+                const re = new RegExp('(' + esc.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+                return safe.replace(re, '<mark class="sk-suggest-mark">$1</mark>');
+            } catch (e) { return safe; }
+        }
+
         function renderSuggestions(list, q) {
             if (!suggestBox) return;
             if (!list.length) {
@@ -1123,14 +1134,21 @@
                 suggestBox.classList.add('show');
                 return;
             }
-            let html = '';
+            let html = '<div class="sk-suggest-head"><i class="fas fa-magnifying-glass"></i> পণ্যের সাজেশন</div>';
             list.forEach(p => {
-                html += '<div class="sk-suggest-item" onclick="viewProduct(\'' + p.id + '\')">'
-                    + '<img src="' + (p.image || 'https://via.placeholder.com/38') + '" alt="" loading="lazy" onerror="this.src=\'https://via.placeholder.com/38\'">'
-                    + '<div><div class="s-name">' + skEscape(p.name) + '</div>'
-                    + '<div class="s-price">৳' + (p.price || 0) + '</div></div></div>';
+                const safeImage = (p.image || 'https://via.placeholder.com/38').replace(/'/g, "\\'");
+                const safeId = (p.id || '').replace(/'/g, "\\'");
+                const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+                html += '<div class="sk-suggest-item" onclick="viewProduct(\'' + safeId + '\')">'
+                    + '<img src="' + safeImage + '" alt="" loading="lazy" onerror="this.src=\'https://via.placeholder.com/38\'">'
+                    + '<div class="sk-suggest-info">'
+                    + '<div class="s-name">' + highlightMatch(p.name, q) + '</div>'
+                    + '<div class="s-meta"><span class="sk-suggest-cat">' + skEscape(p.category || 'সাধারণ') + '</span>'
+                    + (discount > 0 ? '<span class="sk-suggest-off">-' + discount + '%</span>' : '')
+                    + '</div></div>'
+                    + '<div class="s-price">৳' + (p.price || 0) + '</div></div>';
             });
-            html += '<div class="sk-suggest-item" style="justify-content:center;color:#059669;font-weight:700;border-top:1px solid #f1f5f9;" onclick="goToSearch(\'' + q.replace(/'/g, "\\'") + '\')">'
+            html += '<div class="sk-suggest-item sk-suggest-all" onclick="goToSearch(\'' + q.replace(/'/g, "\\'") + '\')">'
                 + '<i class="fas fa-search"></i>&nbsp; "' + skEscape(q) + '" এর সব ফলাফল দেখুন</div>';
             suggestBox.innerHTML = html;
             suggestBox.classList.add('show');
@@ -1139,6 +1157,96 @@
         searchInput.addEventListener('focus', function () {
             if (!searchInput.value.trim()) { clearTimeout(searchTimer); showSearchHome(); }
         });
+        // ===== Fuzzy/partial search — exact match ছাড়াও ফলাফল =====
+        // Levenshtein দূরত্ব (typo tolerance)
+        function levenshtein(a, b) {
+            const m = a.length, n = b.length;
+            if (!m) return n; if (!n) return m;
+            const dp = [];
+            for (let i = 0; i <= m; i++) { dp[i] = [i]; }
+            for (let j = 0; j <= n; j++) { dp[0][j] = j; }
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+                }
+            }
+            return dp[m][n];
+        }
+
+        // পণ্যের সাথে কুয়েরির মিলের স্কোর — বেশি ভালো
+        function searchScore(p, q) {
+            const ql = q.toLowerCase().trim();
+            if (!ql) return -1;
+            const name = (p.name || '').toLowerCase();
+            const cat = (p.category || '').toLowerCase();
+            const desc = (p.description || '').toLowerCase();
+            const terms = ql.split(/\s+/).filter(Boolean);
+
+            let score = -1;
+            // ১) পুরো নামে exact includes — সেরা
+            if (name.includes(ql)) score = Math.max(score, 100 - ql.length);
+            // ২) প্রতিটা শব্দ আলাদা করে ম্যাচ
+            let termScore = 0;
+            terms.forEach(t => {
+                if (t.length < 2) return;
+                if (name.includes(t)) termScore += 50;
+                else if (cat.includes(t)) termScore += 30;
+                else if (desc.includes(t)) termScore += 15;
+            });
+            if (termScore > 0) score = Math.max(score, termScore);
+            // ৩) fuzzy: নামের যেকোনো শব্দের সাথে Levenshtein (typo সহ্য)
+            const nameWords = name.split(/[^a-z0-9\u0980-\u09ff]+/).filter(w => w.length >= 3);
+            terms.forEach(t => {
+                if (t.length < 3) return;
+                nameWords.forEach(w => {
+                    if (Math.abs(w.length - t.length) > 2) return;
+                    const d = levenshtein(w, t);
+                    if (d <= 2) { score = Math.max(score, 40 - d * 8); }
+                });
+            });
+            // ৪) prefix match — নামের শুরুর অংশ মিললে
+            nameWords.forEach(w => {
+                if (w.startsWith(ql) || ql.startsWith(w)) score = Math.max(score, 45);
+            });
+            return score;
+        }
+
+        // বাংলা টাইপ করলেও ইংরেজি নামের পণ্য মিলবে
+        const BN_TRANSLATE = {
+            'শার্ট': 'shirt', 'শার্টস': 'shirts', 'টি-শার্ট': 'tshirt', 'টিশার্ট': 'tshirt', 'টি শার্ট': 'tshirt',
+            'পোলো': 'polo', 'পাঞ্জাবি': 'panjabi', 'প্যান্ট': 'pant', 'ট্রাউজার': 'trouser',
+            'শাড়ি': 'saree', 'শাড়ি': 'saree', 'থ্রি পিস': 'three piece', 'থ্রী পিস': 'three piece',
+            'লেডিস': 'ladies', 'মহিলা': 'women', 'পুরুষ': 'men', 'ব্যাগ': 'bag', 'ব্যাকপ্যাক': 'backpack',
+            'ঘড়ি': 'watch', 'ঘড়ি': 'watch', 'স্কুল': 'school', 'বই': 'book', 'গাউন': 'gown',
+            'কম্বো': 'combo', 'সেট': 'set', 'জুতা': 'shoe', 'জুতো': 'shoe', 'খেলনা': 'toys',
+            'বেবি': 'baby', 'কিডস': 'kids', 'কাপল': 'couple', 'হিজাব': 'hijab', 'খিমার': 'khimar'
+        };
+        function normalizeQuery(q) {
+            let out = q.trim().toLowerCase();
+            // বহু-শব্দের ম্যাপ আগে (যেমন: থ্রি পিস, টি শার্ট)
+            const extra = [];
+            Object.keys(BN_TRANSLATE).forEach(k => {
+                if (k.includes(' ') && out.includes(k)) extra.push(BN_TRANSLATE[k]);
+            });
+            // এক-শব্দের ম্যাপ
+            const parts = out.split(/\s+/).filter(Boolean);
+            parts.forEach(w => {
+                if (BN_TRANSLATE[w]) extra.push(BN_TRANSLATE[w]);
+            });
+            return (out + ' ' + extra.join(' ')).trim();
+        }
+
+        function fuzzySearch(q) {
+            const scored = [];
+            const qn = normalizeQuery(q);
+            allProducts.forEach(p => {
+                const s = searchScore(p, qn);
+                if (s >= 20) scored.push({ p, s });
+            });
+            scored.sort((a, b) => b.s - a.s);
+            return scored.slice(0, 6).map(x => x.p);
+        }
+
         searchInput.addEventListener('input', function () {
             const q = searchInput.value.trim();
             clearTimeout(searchTimer);
@@ -1152,20 +1260,16 @@
                             const list = [];
                             snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
                             if (list.length) { renderSuggestions(list, q); return; }
-                            // ২) fallback: লোড করা পণ্যের মধ্যে client-side ম্যাচ
-                            const local = allProducts.filter(p =>
-                                (p.name && p.name.toLowerCase().includes(q.toLowerCase())) ||
-                                (p.category && p.category.toLowerCase().includes(q.toLowerCase())));
-                            renderSuggestions(local.slice(0, 6), q);
+                            // ২) fallback: fuzzy/partial client-side
+                            renderSuggestions(fuzzySearch(q), q);
                         })
                         .catch(() => {
-                            const local = allProducts.filter(p =>
-                                (p.name && p.name.toLowerCase().includes(q.toLowerCase())) ||
-                                (p.category && p.category.toLowerCase().includes(q.toLowerCase())));
-                            renderSuggestions(local.slice(0, 6), q);
+                            renderSuggestions(fuzzySearch(q), q);
                         });
+                } else {
+                    renderSuggestions(fuzzySearch(q), q);
                 }
-            }, 300);
+            }, 250);
         });
         searchInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') { e.preventDefault(); goToSearch(searchInput.value.trim()); }
