@@ -309,6 +309,9 @@
     <i class="fas fa-star"></i>
     <span>রিভিউ সমূহ</span>
 </button>
+            <button class="menu-item" onclick="showSection('offer-popup', this)">
+                🎁 অফার পপআপ
+            </button>
             <button class="menu-item" onclick="showSection('categories', this)">
     <i class="fas fa-layer-group"></i>
     <span>ক্যাটাগরি ম্যানেজার</span>
@@ -718,8 +721,9 @@
                             <input type="text" id="bannerTitle" placeholder="ঈদ অফার">
                         </div>
                         <div class="form-group">
-                            <label>Link</label>
-                            <input type="text" id="bannerLink" placeholder="category.html?cat=ইলেকট্রনিক্স">
+                            <label>🔗 লিংক (ঐচ্ছিক — ক্লিক করলে এখানে যাবে)</label>
+                            <input type="text" id="bannerLink" placeholder="যেমন: category.html?cat=গ্যাজেট বা https://facebook.com/...">
+                            <small>যেকোনো লিংক দিন — <b>category.html?cat=...</b>, <b>product-details.html?id=...</b>, বা বাইরের ওয়েবসাইট। খালি রাখলে ক্লিকে কিছু হবে না।</small>
                         </div>
                         <div class="form-group">
                             <label>ক্রম</label>
@@ -742,6 +746,48 @@
             <h3 style="margin-bottom:15px;">📋 সব ব্যানার</h3>
             <div id="bannersList">
                 <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
+            </div>
+        </div>
+
+        <!-- 🎁 OFFER POPUP SECTION -->
+        <div class="section" id="offer-popup-section">
+            <div class="section-title">
+                <h2>🎁 অফার পপআপ (Pop-up)</h2>
+                <button class="btn btn-primary btn-sm" onclick="loadOfferPopup()">
+                    <i class="fas fa-sync"></i> রিফ্রেশ
+                </button>
+            </div>
+            <p style="color:#64748b; font-size:14px; margin-bottom:15px;">💡 সাইটে ঢোকার পর <b>প্রতি ইউজারের জন্য একবার</b> ভেসে উঠবে — যেকোনো অফার/প্রোডাক্ট দেখাতে পারবেন।</p>
+            <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
+                <h3 style="margin-bottom:15px;">⚙️ পপআপ সেটিংস</h3>
+                <form onsubmit="saveOfferPopup(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>সক্রিয়?</label>
+                            <select id="popupEnabled">
+                                <option value="true">✅ চালু</option>
+                                <option value="false">🚫 বন্ধ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>শিরোনাম</label>
+                            <input type="text" id="popupTitle" placeholder="🎉 বিশেষ অফার!">
+                        </div>
+                        <div class="form-group">
+                            <label>ছোট লেখা (বিবরণ)</label>
+                            <input type="text" id="popupText" placeholder="সীমিত সময়ের জন্য ২০% ছাড়!">
+                        </div>
+                        <div class="form-group">
+                            <label>🔗 লিংক (ক্লিক করলে যাবে)</label>
+                            <input type="text" id="popupLink" placeholder="product-details.html?id=... বা category.html?cat=...">
+                        </div>
+                        <div class="form-group full">
+                            <label>🖼️ ছবির লিংক</label>
+                            <input type="url" id="popupImage" placeholder="https://... (খালি রাখলে আইকন দেখাবে)">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> সেভ করুন</button>
+                </form>
             </div>
         </div>
 
@@ -1011,6 +1057,7 @@
             if (sectionName === 'coupons') loadCoupons();
             if (sectionName === 'reviews') loadAdminReviews();
             if (sectionName === 'banners') loadBanners();
+            if (sectionName === 'offer-popup') loadOfferPopup();
             if (sectionName === 'categories') loadCategoryManager();
             if (sectionName === 'settings') loadSettingsForm();
             if (sectionName === 'dashboard') loadSalesChart();
@@ -1766,10 +1813,15 @@ function addBanner(event) {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> যোগ হচ্ছে...';
     
+    let bannerLinkVal = document.getElementById('bannerLink').value.trim() || null;
+    // auto-fix: http:// ছাড়া লিখলে যোগ করে দিই (বাইরের লিংক কাজ করার জন্য)
+    if (bannerLinkVal && !/^https?:\/\//i.test(bannerLinkVal) && !bannerLinkVal.startsWith('index.html') && !bannerLinkVal.startsWith('category.html') && !bannerLinkVal.startsWith('product-details.html') && !bannerLinkVal.startsWith('checkout.html') && !bannerLinkVal.startsWith('wishlist.html') && !bannerLinkVal.startsWith('tracking.html') && !bannerLinkVal.startsWith('pages.html') && !bannerLinkVal.startsWith('#')) {
+        bannerLinkVal = 'https://' + bannerLinkVal;
+    }
     const banner = {
         image: document.getElementById('bannerImage').value.trim(),
         title: document.getElementById('bannerTitle').value.trim() || null,
-        link: document.getElementById('bannerLink').value.trim() || null,
+        link: bannerLinkVal,
         order: parseInt(document.getElementById('bannerOrder').value) || 1,
         active: document.getElementById('bannerActive').value === 'true',
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -2414,6 +2466,45 @@ function deleteReview(id) {
             </div>`;
             loadDashboardStats();
             loadProducts();
+        }
+
+        // ============================================================
+        // ===== 🎁 OFFER POPUP =====
+        // ============================================================
+        const OFFER_POPUP_DOC = 'offerPopup';
+
+        function loadOfferPopup() {
+            db.collection('settings').doc(OFFER_POPUP_DOC).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const v = doc.data();
+                        document.getElementById('popupEnabled').value = v.enabled !== false ? 'true' : 'false';
+                        document.getElementById('popupTitle').value = v.title || '';
+                        document.getElementById('popupText').value = v.text || '';
+                        document.getElementById('popupLink').value = v.link || '';
+                        document.getElementById('popupImage').value = v.image || '';
+                    }
+                })
+                .catch(() => {});
+        }
+
+        async function saveOfferPopup(event) {
+            event.preventDefault();
+            const data = {
+                enabled: document.getElementById('popupEnabled').value === 'true',
+                title: document.getElementById('popupTitle').value.trim(),
+                text: document.getElementById('popupText').value.trim(),
+                link: document.getElementById('popupLink').value.trim(),
+                image: document.getElementById('popupImage').value.trim(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            try {
+                await db.collection('settings').doc(OFFER_POPUP_DOC).set(data, { merge: true });
+                try { localStorage.removeItem('sk_offer_popup_seen'); } catch (e) {}
+                showToast('success', '✅ অফার পপআপ সেভ হয়েছে — সাইটে লাইভ!');
+            } catch (e) {
+                showToast('error', '❌ ' + e.message);
+            }
         }
 
         // ============================================================

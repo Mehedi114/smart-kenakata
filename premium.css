@@ -1241,3 +1241,101 @@ body { animation: skPageIn .25s ease-out; }
 }
 .whatsapp-order:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(37,211,102,.45); color: #fff; }
 .whatsapp-order:active { transform: scale(.97); }
+
+/* ============ 🎁 অফার পপআপ (প্রতি ইউজারে একবার) ============ */
+.sk-offer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2,6,23,.65);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 10005;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .35s;
+}
+.sk-offer-overlay.show { opacity: 1; pointer-events: auto; }
+.sk-offer-popup {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -46%) scale(.92);
+    width: 420px;
+    max-width: calc(100vw - 28px);
+    background: #fff;
+    border-radius: 22px;
+    z-index: 10006;
+    box-shadow: 0 40px 90px rgba(2,6,23,.55);
+    overflow: hidden;
+    transition: transform .35s var(--sk-ease), opacity .35s var(--sk-ease);
+    opacity: 0;
+    pointer-events: none;
+}
+.sk-offer-popup.show { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+.sk-offer-close {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 38px; height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(15,23,42,.55);
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    z-index: 5;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+}
+.sk-offer-close:hover { background: #ef4444; transform: rotate(90deg); }
+.sk-offer-content { display: flex; }
+.sk-offer-img {
+    flex: 1 1 45%;
+    background: #f1f5f9;
+    min-height: 240px;
+    position: relative;
+}
+.sk-offer-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.sk-offer-body {
+    flex: 1 1 55%;
+    padding: 34px 24px 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+.sk-offer-badge {
+    background: linear-gradient(135deg, #f59e0b, #ea580c);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 5px 14px;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(245,158,11,.4);
+}
+.sk-offer-body h3 { font-size: 22px; font-weight: 800; color: #0f172a; margin: 0; line-height: 1.3; }
+.sk-offer-body p { font-size: 13.5px; color: #64748b; margin: 0; line-height: 1.6; }
+.sk-offer-btn {
+    margin-top: 8px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    box-shadow: 0 6px 18px rgba(16,185,129,.4);
+    transition: all .2s var(--sk-ease);
+}
+.sk-offer-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(16,185,129,.5); }
+.sk-offer-btn:active { transform: scale(.96); }
+@media (max-width: 640px) {
+    .sk-offer-content { flex-direction: column; }
+    .sk-offer-img { min-height: 170px; }
+    .sk-offer-body { padding: 22px 18px 20px; }
+    .sk-offer-body h3 { font-size: 19px; }
+}
+:root body.dark-mode .sk-offer-popup { background: #1e293b; }
+:root body.dark-mode .sk-offer-body h3 { color: #f1f5f9; }
+:root body.dark-mode .sk-offer-body p { color: #94a3b8; }

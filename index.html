@@ -514,6 +514,23 @@
         <div class="sk-qv-body" id="qvBody"></div>
     </div>
 
+    <!-- 🎁 অফার পপআপ (প্রতি ইউজারে একবার) -->
+    <div class="sk-offer-overlay" id="offerOverlay"></div>
+    <div class="sk-offer-popup" id="offerPopup" role="dialog" aria-modal="true" style="display:none;">
+        <button class="sk-offer-close" onclick="closeOfferPopup()" aria-label="বন্ধ করুন">✕</button>
+        <div class="sk-offer-content">
+            <div class="sk-offer-img" id="offerImgWrap" style="display:none;">
+                <img id="offerImg" src="" alt="">
+            </div>
+            <div class="sk-offer-body">
+                <span class="sk-offer-badge">🎁 অফার</span>
+                <h3 id="offerTitle">বিশেষ অফার!</h3>
+                <p id="offerText"></p>
+                <button class="sk-offer-btn" id="offerBtn" onclick="goOfferLink()">অফার দেখুন <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage">সফল হয়েছে!</span>
@@ -846,6 +863,58 @@
             if (!end) return false;
             return end > Date.now() - 24 * 60 * 60 * 1000;
         }
+        // ===== 🎁 অফার পপআপ (প্রতি ইউজারে একবার) =====
+        let offerLink = '';
+        let offerSeen = false;
+        try { offerSeen = localStorage.getItem('sk_offer_popup_seen') === 'true'; } catch (e) {}
+
+        function goOfferLink() {
+            if (offerLink) { try { window.open(offerLink, '_blank'); } catch (e) { window.location.href = offerLink; } }
+            closeOfferPopup();
+        }
+
+        function closeOfferPopup() {
+            const pop = document.getElementById('offerPopup');
+            const ov = document.getElementById('offerOverlay');
+            if (pop) pop.classList.remove('show');
+            if (ov) ov.classList.remove('show');
+            setTimeout(() => { if (pop) pop.style.display = 'none'; }, 350);
+            try { localStorage.setItem('sk_offer_popup_seen', 'true'); } catch (e) {}
+        }
+
+        function loadOfferPopup() {
+            if (offerSeen) return;
+            try {
+                if (typeof firebase === 'undefined' || !firebase.firestore) return;
+                firebase.firestore().collection('settings').doc('offerPopup').get()
+                    .then(doc => {
+                        if (!doc.exists || doc.data().enabled === false) return;
+                        const v = doc.data();
+                        const pop = document.getElementById('offerPopup');
+                        const ov = document.getElementById('offerOverlay');
+                        if (!pop || !ov) return;
+                        document.getElementById('offerTitle').textContent = v.title || '🎉 বিশেষ অফার!';
+                        document.getElementById('offerText').textContent = v.text || 'সীমিত সময়ের জন্য বিশেষ ছাড়!';
+                        offerLink = v.link || '';
+                        const imgWrap = document.getElementById('offerImgWrap');
+                        const img = document.getElementById('offerImg');
+                        if (v.image) {
+                            img.src = v.image;
+                            imgWrap.style.display = 'block';
+                        } else {
+                            imgWrap.style.display = 'none';
+                        }
+                        // ১.৫ সেকেন্ড পরে ভেসে ওঠে
+                        setTimeout(() => {
+                            pop.style.display = 'block';
+                            setTimeout(() => { pop.classList.add('show'); ov.classList.add('show'); }, 30);
+                        }, 1500);
+                    })
+                    .catch(() => {});
+            } catch (e) {}
+        }
+        loadOfferPopup();
+
         // ===== 🕘 রিসেন্টলি ভিউড — প্রোডাক্ট পেজে দেখার সময় সেভ হয় =====
         function loadRecentProducts() {
             const section = document.getElementById('recentSection');
