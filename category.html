@@ -776,6 +776,13 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <!-- ⚡ কুইক ভিউ মোডাল -->
+    <div class="sk-qv-overlay" id="qvOverlay" onclick="closeQuickView()"></div>
+    <div class="sk-qv-modal" id="qvModal" role="dialog" aria-modal="true">
+        <button class="sk-qv-close" onclick="closeQuickView()" aria-label="বন্ধ করুন">✕</button>
+        <div class="sk-qv-body" id="qvBody"></div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
@@ -1337,6 +1344,7 @@
             if (discount > 0) html += '<span class="discount-badge">-' + discount + '%</span>';
             if (skHasFlash(product)) html += '<span class="badge-flash">⚡ ফ্ল্যাশ সেল</span>';
             else html += skStockBadge(product);
+            html += '<button class="sk-qv-btn" onclick="event.stopPropagation(); openQuickView(\'' + product.id + '\')" title="কুইক ভিউ"><i class="fas fa-eye"></i></button>';
             html += '<img src="' + (product.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
             html += '</div>';
             html += '<div class="product-info">';
@@ -1511,6 +1519,60 @@
             allLoadedProducts = list;
             renderGrid(list);
         }
+
+        // ===== ⚡ কুইক ভিউ =====
+        function openQuickView(pid) {
+            const p = loadedProducts.find(x => x.id === pid) || allLoadedProducts.find(x => x.id === pid);
+            if (!p) return;
+            const modal = document.getElementById('qvModal');
+            const body = document.getElementById('qvBody');
+            const overlay = document.getElementById('qvOverlay');
+            if (!modal || !body) return;
+            const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+            const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeImage = (p.image || 'https://via.placeholder.com/300').replace(/'/g, "\\'");
+            const stockOut = (p.stock !== undefined && p.stock !== null && p.stock <= 0);
+            let html = '<div class="sk-qv-img"><img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" onerror="this.src=\'https://via.placeholder.com/300\'">';
+            if (discount > 0) html += '<span class="sk-qv-off">-' + discount + '%</span>';
+            html += '</div>';
+            html += '<div class="sk-qv-info">';
+            html += '<div class="sk-qv-cat">' + escapeHtml(p.category || 'সাধারণ') + '</div>';
+            html += '<h3>' + escapeHtml(p.name) + '</h3>';
+            html += '<div class="sk-qv-price"><span class="current-price">৳' + p.price + '</span>';
+            if (p.oldPrice) html += '<span class="old-price">৳' + p.oldPrice + '</span></div>';
+            html += '<div class="sk-qv-actions">';
+            if (stockOut) {
+                html += '<button class="add-cart-btn" disabled><i class="fas fa-ban"></i> স্টক শেষ</button>';
+            } else if (skHasVariants(p)) {
+                html += '<button class="add-cart-btn variant-btn" onclick="closeQuickView(); viewProduct(\'' + p.id + '\')"><i class="fas fa-list-ul"></i> অপশন দেখুন</button>';
+            } else {
+                html += '<button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(\'' + p.id + '\', \'' + safeName + '\', ' + p.price + ', \'' + safeImage + '\'); closeQuickView();">';
+                html += '<i class="fas fa-cart-plus"></i> কার্টে যোগ করুন</button>';
+            }
+            html += '</div>';
+            html += '<button class="sk-qv-detail" onclick="closeQuickView(); viewProduct(\'' + p.id + '\')">বিস্তারিত দেখুন <i class="fas fa-arrow-right"></i></button>';
+            html += '</div>';
+            body.innerHTML = html;
+            modal.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            try {
+                skLoadRatings([p.id], map => {
+                    const starsHtml = skRatingStarsHtml(p, map);
+                    if (starsHtml && body.querySelector('.sk-qv-cat')) {
+                        body.querySelector('.sk-qv-cat').insertAdjacentHTML('afterend', starsHtml);
+                    }
+                });
+            } catch (e) {}
+        }
+        function closeQuickView() {
+            const modal = document.getElementById('qvModal');
+            const overlay = document.getElementById('qvOverlay');
+            if (modal) modal.classList.remove('open');
+            if (overlay) overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeQuickView(); });
 
         // ===== SET VIEW =====
         function setView(view, btn) {

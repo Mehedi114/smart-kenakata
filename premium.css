@@ -1128,3 +1128,262 @@ body { animation: skPageIn .25s ease-out; }
 :root body.dark-mode .sk-delivery-title { color: #a7f3d0; }
 :root body.dark-mode .sk-delivery-row { color: #d1fae5; }
 :root body.dark-mode .sk-delivery-free { background: #065f46; color: #a7f3d0; }
+
+/* ============ 🛡️ TRUST BADGE STRIP ============ */
+.sk-trust-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    max-width: 1400px;
+    margin: -28px auto 0;
+    padding: 0 20px;
+    position: relative;
+    z-index: 15;
+}
+.sk-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: #fff;
+    border-radius: var(--sk-radius);
+    padding: 14px 16px;
+    box-shadow: var(--sk-shadow-hover);
+    border: 1px solid rgba(15,23,42,.06);
+    transition: transform .25s var(--sk-ease), box-shadow .25s var(--sk-ease);
+}
+.sk-trust-item:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(15,23,42,.14); }
+.sk-trust-item i {
+    width: 40px; height: 40px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(245,158,11,.14));
+    color: #059669;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+}
+.sk-trust-item b { display: block; font-size: 13.5px; color: #0f172a; }
+.sk-trust-item span { font-size: 11.5px; color: #64748b; }
+@media (max-width: 1024px) { .sk-trust-strip { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) {
+    .sk-trust-strip { grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: -18px; padding: 0 12px; }
+    .sk-trust-item { padding: 10px 12px; }
+    .sk-trust-item i { width: 34px; height: 34px; font-size: 14px; }
+}
+:root body.dark-mode .sk-trust-item { background: #1e293b; border-color: #334155; }
+:root body.dark-mode .sk-trust-item b { color: #f1f5f9; }
+:root body.dark-mode .sk-trust-item span { color: #94a3b8; }
+
+/* ============ 💬 টেস্টিমোনিয়াল ============ */
+.sk-testi-section { padding: 50px 20px; background: transparent; }
+.sk-testi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.sk-testi-card {
+    background: #fff;
+    border-radius: var(--sk-radius);
+    padding: 20px;
+    border: 1px solid rgba(15,23,42,.06);
+    box-shadow: var(--sk-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform .25s var(--sk-ease), box-shadow .25s var(--sk-ease);
+}
+.sk-testi-card:hover { transform: translateY(-4px); box-shadow: var(--sk-shadow-hover); }
+.sk-testi-stars { color: #f59e0b; font-size: 14px; letter-spacing: 2px; }
+.sk-testi-comment {
+    font-size: 13.5px;
+    color: #334155;
+    line-height: 1.65;
+    flex: 1;
+    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.sk-testi-user { display: flex; align-items: center; gap: 10px; }
+.sk-testi-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.sk-testi-user b { display: block; font-size: 13px; color: #0f172a; }
+.sk-testi-user span { font-size: 11px; color: #94a3b8; }
+@media (max-width: 1024px) { .sk-testi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .sk-testi-grid { grid-template-columns: 1fr; gap: 12px; } }
+:root body.dark-mode .sk-testi-card { background: #1e293b; border-color: #334155; }
+:root body.dark-mode .sk-testi-comment { color: #cbd5e1; }
+:root body.dark-mode .sk-testi-user b { color: #f1f5f9; }
+
+/* ============ 🔍 সার্চ হিস্টোরি + ট্রেন্ডিং ============ */
+.sk-suggest-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #64748b;
+    padding: 10px 12px 4px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    letter-spacing: .3px;
+}
+.sk-suggest-clear {
+    padding: 8px 12px;
+    font-size: 12.5px;
+    color: #ef4444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-top: 1px solid #f1f5f9;
+}
+.sk-suggest-clear:hover { background: #fef2f2; }
+.sk-trending-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 12px 14px; }
+.sk-trend-chip {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1.5px solid #e2e8f0;
+    background: #fff;
+    color: #334155;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+}
+.sk-trend-chip:hover { border-color: #f59e0b; color: #b45309; background: #fffbeb; }
+
+/* ============ ⚡ কুইক ভিউ মোডাল ============ */
+.sk-qv-btn {
+    position: absolute;
+    top: 56px; right: 10px;
+    width: 36px; height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,.92);
+    color: #334155;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+    z-index: 2;
+    opacity: 0;
+    transform: translateX(8px);
+    transition: all .25s var(--sk-ease);
+    backdrop-filter: blur(4px);
+}
+.product-card:hover .sk-qv-btn, .sk-flash-card:hover .sk-qv-btn { opacity: 1; transform: translateX(0); }
+@media (hover: none) { .sk-qv-btn { opacity: 1; transform: none; top: 52px; right: 8px; width: 34px; height: 34px; } }
+.sk-qv-overlay {
+    position: fixed; inset: 0;
+    background: rgba(2,6,23,.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10003;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+}
+.sk-qv-overlay.show { opacity: 1; pointer-events: auto; }
+.sk-qv-modal {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -46%) scale(.96);
+    width: 720px;
+    max-width: calc(100vw - 28px);
+    max-height: 86vh;
+    background: #fff;
+    border-radius: 20px;
+    z-index: 10004;
+    opacity: 0; pointer-events: none;
+    transition: all .3s var(--sk-ease);
+    box-shadow: 0 40px 80px rgba(2,6,23,.4);
+    overflow: hidden;
+}
+.sk-qv-modal.open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+.sk-qv-close {
+    position: absolute; top: 12px; right: 12px;
+    width: 40px; height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(15,23,42,.6);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 5;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+}
+.sk-qv-close:hover { background: #ef4444; transform: rotate(90deg); }
+.sk-qv-body { display: flex; max-height: 86vh; overflow-y: auto; }
+.sk-qv-img {
+    flex: 1 1 45%;
+    position: relative;
+    background: #f1f5f9;
+    min-height: 300px;
+}
+.sk-qv-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.sk-qv-off {
+    position: absolute; top: 14px; left: 14px; z-index: 2;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff; font-size: 12px; font-weight: 800;
+    padding: 5px 12px; border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(239,68,68,.4);
+}
+.sk-qv-info { flex: 1 1 55%; padding: 26px 24px; display: flex; flex-direction: column; }
+.sk-qv-cat { font-size: 11.5px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 700; margin-bottom: 6px; }
+.sk-qv-info h3 { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.35; margin-bottom: 10px; }
+.sk-qv-price { display: flex; align-items: baseline; gap: 10px; margin: 10px 0 16px; }
+.sk-qv-price .current-price { font-size: 26px; font-weight: 800; color: #059669; }
+.sk-qv-price .old-price { font-size: 15px; color: #94a3b8; text-decoration: line-through; }
+.sk-qv-actions { margin-top: auto; }
+.sk-qv-detail {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border: 2px solid #10b981;
+    border-radius: var(--sk-radius-sm);
+    background: #fff;
+    color: #059669;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all .2s;
+}
+.sk-qv-detail:hover { background: #f0fdf4; }
+@media (max-width: 640px) {
+    .sk-qv-body { flex-direction: column; }
+    .sk-qv-img { min-height: 200px; }
+    .sk-qv-info { padding: 18px 16px; }
+}
+:root body.dark-mode .sk-qv-modal { background: #1e293b; }
+:root body.dark-mode .sk-qv-info h3 { color: #f1f5f9; }
+:root body.dark-mode .sk-qv-detail { background: transparent; }
+:root body.dark-mode .sk-qv-detail:hover { background: #0f172a; }
+
+/* WhatsApp order — premium */
+.whatsapp-order {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 18px;
+    padding: 13px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14.5px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(37,211,102,.35);
+    transition: all .22s var(--sk-ease);
+}
+.whatsapp-order:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(37,211,102,.45); color: #fff; }
+.whatsapp-order:active { transform: scale(.97); }

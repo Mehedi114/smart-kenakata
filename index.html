@@ -334,6 +334,15 @@
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
     
+    <!-- 🛡️ Trust Badge Strip -->
+    <section class="sk-trust-strip">
+        <div class="sk-trust-item"><i class="fas fa-shield-halved"></i><div><b>১০০% অরিজিনাল</b><span>যাচাইকৃত পণ্য</span></div></div>
+        <div class="sk-trust-item"><i class="fas fa-lock"></i><div><b>সিকিউর পেমেন্ট</b><span>বিকাশ/নগদ/রকেট</span></div></div>
+        <div class="sk-trust-item"><i class="fas fa-rotate-left"></i><div><b>সহজ রিটার্ন</b><span>৭ দিনের পলিসি</span></div></div>
+        <div class="sk-trust-item"><i class="fas fa-money-bill-wave"></i><div><b>ক্যাশ অন ডেলিভারি</b><span>হাতে পেয়ে পেমেন্ট</span></div></div>
+        <div class="sk-trust-item"><i class="fas fa-truck-fast"></i><div><b>দ্রুত ডেলিভারি</b><span>ঢাকায় ২৪ ঘণ্টা</span></div></div>
+    </section>
+
     <!-- ⚡ FLASH SALE SECTION -->
     <section class="sk-flash-section" id="flashSection" style="display:none;">
         <div class="sk-section-head">
@@ -401,6 +410,17 @@
             </div>
         </div>
         <div class="sk-flash-scroll" id="recentGrid"></div>
+    </section>
+
+    <!-- 💬 গ্রাহকদের মতামত -->
+    <section class="sk-testi-section" id="testiSection" style="display:none;">
+        <div class="sk-section-head">
+            <div class="sk-head-text">
+                <h2 class="section-title">💬 গ্রাহকদের মতামত</h2>
+                <p class="section-subtitle">যারা কিনেছেন, তাদের কথায়</p>
+            </div>
+        </div>
+        <div class="sk-testi-grid" id="testiGrid"></div>
     </section>
 
     <section class="features">
@@ -505,6 +525,13 @@
                 <i class="fas fa-arrow-right"></i> চেকআউট করুন
             </button>
         </div>
+    </div>
+
+    <!-- ⚡ কুইক ভিউ মোডাল -->
+    <div class="sk-qv-overlay" id="qvOverlay" onclick="closeQuickView()"></div>
+    <div class="sk-qv-modal" id="qvModal" role="dialog" aria-modal="true">
+        <button class="sk-qv-close" onclick="closeQuickView()" aria-label="বন্ধ করুন">✕</button>
+        <div class="sk-qv-body" id="qvBody"></div>
     </div>
 
     <div class="toast" id="toast">
@@ -848,6 +875,36 @@
             if (!end) return false;
             return end > Date.now() - 24 * 60 * 60 * 1000;
         }
+        // ===== 💬 গ্রাহকদের মতামত (রিভিউ থেকে) =====
+        function loadTestimonials() {
+            const section = document.getElementById('testiSection');
+            const grid = document.getElementById('testiGrid');
+            if (!section || !grid) return;
+            db.collection('reviews').orderBy('createdAt', 'desc').limit(8).get()
+                .then(snap => {
+                    const reviews = [];
+                    snap.forEach(doc => {
+                        const d = doc.data();
+                        if (d.comment && d.name && Number(d.rating)) reviews.push({ id: doc.id, ...d });
+                    });
+                    if (!reviews.length) { section.style.display = 'none'; return; }
+                    grid.innerHTML = reviews.map(r => {
+                        const stars = '★'.repeat(Math.min(5, Math.max(1, Math.round(Number(r.rating))))) + '☆'.repeat(5 - Math.min(5, Math.max(1, Math.round(Number(r.rating)))));
+                        const initial = (r.name || 'U')[0].toUpperCase();
+                        const date = r.createdAt ? new Date(r.createdAt.seconds * 1000).toLocaleDateString('bn-BD') : '';
+                        let html = '<div class="sk-testi-card">';
+                        html += '<div class="sk-testi-stars">' + stars + '</div>';
+                        html += '<p class="sk-testi-comment">"' + skEscape(String(r.comment).length > 130 ? String(r.comment).slice(0, 128) + '…' : r.comment) + '"</p>';
+                        html += '<div class="sk-testi-user"><div class="sk-testi-avatar">' + skEscape(initial) + '</div>';
+                        html += '<div><b>' + skEscape(r.name) + '</b><span>' + (r.productName ? skEscape(String(r.productName).slice(0, 30)) : '') + (date ? ' • ' + date : '') + '</span></div></div>';
+                        html += '</div>';
+                        return html;
+                    }).join('');
+                    section.style.display = 'block';
+                })
+                .catch(() => { section.style.display = 'none'; });
+        }
+
         // ===== 🔥 লাইভ কেনাকাটার নোটিফিকেশন (সোশ্যাল প্রুফ) =====
         const BUY_NAMES = ['রহিম', 'করিম', 'ফাতেমা', 'আয়েশা', 'সুমন', 'নাজমা', 'তানভীর', 'সাদিয়া', 'ইমন', 'রুমানা', 'আরিফ', 'শারমিন', 'জামাল', 'লিমা', 'হাসান', 'মিম', 'রাকিব', 'নুসরাত', 'সাকিব', 'তania'];
         const BUY_CITIES = ['ঢাকা', 'চট্টগ্রাম', 'সিলেট', 'রাজশাহী', 'খুলনা', 'বরিশাল', 'কুমিল্লা', 'নারায়ণগঞ্জ', 'গাজীপুর', 'ময়মনসিংহ', 'রংপুর', 'ফরিদপুর'];
@@ -895,6 +952,63 @@
         }
         startBuyPopups();
 
+        // ===== ⚡ কুইক ভিউ =====
+        function openQuickView(pid) {
+            const p = allProducts.find(x => x.id === pid)
+                || flashProductsCache.find(x => x.id === pid)
+                || (window._recentProducts || []).find(x => x.id === pid);
+            if (!p) return;
+            const modal = document.getElementById('qvModal');
+            const body = document.getElementById('qvBody');
+            const overlay = document.getElementById('qvOverlay');
+            if (!modal || !body) return;
+            const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+            const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeImage = (p.image || 'https://via.placeholder.com/300').replace(/'/g, "\\'");
+            const stockOut = (p.stock !== undefined && p.stock !== null && p.stock <= 0);
+            let html = '<div class="sk-qv-img"><img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" onerror="this.src=\'https://via.placeholder.com/300\'">';
+            if (discount > 0) html += '<span class="sk-qv-off">-' + discount + '%</span>';
+            html += '</div>';
+            html += '<div class="sk-qv-info">';
+            html += '<div class="sk-qv-cat">' + escapeHtml(p.category || 'সাধারণ') + '</div>';
+            html += '<h3>' + escapeHtml(p.name) + '</h3>';
+            html += '<div class="sk-qv-price"><span class="current-price">৳' + p.price + '</span>';
+            if (p.oldPrice) html += '<span class="old-price">৳' + p.oldPrice + '</span></div>';
+            html += '<div class="sk-qv-actions">';
+            if (stockOut) {
+                html += '<button class="add-cart-btn" disabled><i class="fas fa-ban"></i> স্টক শেষ</button>';
+            } else if (skHasVariants(p)) {
+                html += '<button class="add-cart-btn variant-btn" onclick="closeQuickView(); viewProduct(\'' + p.id + '\')"><i class="fas fa-list-ul"></i> অপশন দেখুন</button>';
+            } else {
+                html += '<button class="add-cart-btn" onclick="event.stopPropagation(); addToCart(\'' + p.id + '\', \'' + safeName + '\', ' + p.price + ', \'' + safeImage + '\'); closeQuickView();">';
+                html += '<i class="fas fa-cart-plus"></i> কার্টে যোগ করুন</button>';
+            }
+            html += '</div>';
+            html += '<button class="sk-qv-detail" onclick="closeQuickView(); viewProduct(\'' + p.id + '\')">বিস্তারিত দেখুন <i class="fas fa-arrow-right"></i></button>';
+            html += '</div>';
+            body.innerHTML = html;
+            modal.classList.add('open');
+            overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            // রেটিং
+            try {
+                skLoadRatings([p.id], map => {
+                    const starsHtml = skRatingStarsHtml(p, map);
+                    if (starsHtml && body.querySelector('.sk-qv-cat')) {
+                        body.querySelector('.sk-qv-cat').insertAdjacentHTML('afterend', starsHtml);
+                    }
+                });
+            } catch (e) {}
+        }
+        function closeQuickView() {
+            const modal = document.getElementById('qvModal');
+            const overlay = document.getElementById('qvOverlay');
+            if (modal) modal.classList.remove('open');
+            if (overlay) overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeQuickView(); });
+
         // ===== 🕘 রিসেন্টলি ভিউড — প্রোডাক্ট পেজে দেখার সময় সেভ হয় =====
         function loadRecentProducts() {
             const section = document.getElementById('recentSection');
@@ -916,6 +1030,7 @@
                     results.forEach(snap => snap.forEach(doc => { map[doc.id] = { id: doc.id, ...doc.data() }; }));
                     const list = ids.map(id => map[id]).filter(Boolean);
                     if (!list.length) { section.style.display = 'none'; return; }
+                    window._recentProducts = list;
                     grid.innerHTML = list.map(p => {
                         const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                         let h = '<div class="sk-flash-card" data-pid="' + p.id + '" onclick="viewProduct(\'' + p.id + '\')">';
@@ -990,6 +1105,7 @@
                 if (skHasFlash(product)) html += '<span class="badge-flash">⚡ ফ্ল্যাশ সেল</span>';
                 else html += skStockBadge(product);
                 html += '<button class="wishlist-heart" onclick="event.stopPropagation(); toggleWishlist(\'' + product.id + '\', this)" style="position:absolute; top:12px; right:12px; width:38px; height:38px; background:white; border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.1); z-index:2; transition:all 0.3s;"><i class="' + (wishlist.includes(product.id) ? 'fas' : 'far') + ' fa-heart" style="color:' + (wishlist.includes(product.id) ? '#ec4899' : '#94a3b8') + '; font-size:16px;"></i></button>';
+                html += '<button class="sk-qv-btn" onclick="event.stopPropagation(); openQuickView(\'' + product.id + '\')" title="কুইক ভিউ"><i class="fas fa-eye"></i></button>';
                 html += '<img src="' + (product.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
                 html += '</div>';
                 html += '<div class="product-info">';
@@ -1048,9 +1164,48 @@
         const suggestBox = document.getElementById('searchSuggest');
         let searchTimer = null;
 
+        function saveSearchHistory(q) {
+            if (!q) return;
+            try {
+                let h = JSON.parse(localStorage.getItem('sk_search_history') || '[]');
+                h = h.filter(x => x.toLowerCase() !== q.toLowerCase());
+                h.unshift(q);
+                h = h.slice(0, 6);
+                localStorage.setItem('sk_search_history', JSON.stringify(h));
+            } catch (e) {}
+        }
         function goToSearch(q) {
             if (!q) return;
+            saveSearchHistory(q);
             window.location.href = 'category.html?cat=all&q=' + encodeURIComponent(q);
+        }
+        function showSearchHome() {
+            if (!suggestBox) return;
+            // খালি সার্চ বক্সে ফোকাস করলে — হিস্টোরি + ট্রেন্ডিং
+            let h = [];
+            try { h = JSON.parse(localStorage.getItem('sk_search_history') || '[]'); } catch (e) {}
+            const TRENDING = ['টি-শার্ট', 'শার্ট', 'পাঞ্জাবি', 'শাড়ি', 'থ্রি পিস', 'ব্যাকপ্যাক'];
+            let html = '<div class="sk-suggest-title"><i class="fas fa-clock-rotate-left"></i> সাম্প্রতিক সার্চ</div>';
+            if (h.length) {
+                h.forEach(q => {
+                    html += '<div class="sk-suggest-item" onclick="goToSearch(\'' + q.replace(/'/g, "\\'") + '\')"><i class="fas fa-history" style="color:#94a3b8; width:20px;"></i><span>' + skEscape(q) + '</span></div>';
+                });
+                html += '<div class="sk-suggest-clear" onclick="clearSearchHistory()"><i class="fas fa-trash"></i> ইতিহাস মুছুন</div>';
+            } else {
+                html += '<div class="sk-suggest-empty">আপনার সার্চ ইতিহাস এখানে দেখা যাবে</div>';
+            }
+            html += '<div class="sk-suggest-title" style="margin-top:8px;"><i class="fas fa-fire" style="color:#f59e0b;"></i> ট্রেন্ডিং সার্চ</div>';
+            html += '<div class="sk-trending-chips">';
+            TRENDING.forEach(t => {
+                html += '<button class="sk-trend-chip" onclick="goToSearch(\'' + t + '\')">' + skEscape(t) + '</button>';
+            });
+            html += '</div>';
+            suggestBox.innerHTML = html;
+            suggestBox.classList.add('show');
+        }
+        function clearSearchHistory() {
+            try { localStorage.removeItem('sk_search_history'); } catch (e) {}
+            showSearchHome();
         }
         function hideSuggest() { if (suggestBox) suggestBox.classList.remove('show'); }
 
@@ -1074,10 +1229,13 @@
             suggestBox.classList.add('show');
         }
 
+        searchInput.addEventListener('focus', function () {
+            if (!searchInput.value.trim()) { clearTimeout(searchTimer); showSearchHome(); }
+        });
         searchInput.addEventListener('input', function () {
             const q = searchInput.value.trim();
             clearTimeout(searchTimer);
-            if (!q) { hideSuggest(); return; }
+            if (!q) { showSearchHome(); return; }
             searchTimer = setTimeout(() => {
                 // ১) Firestore keywords index দিয়ে দ্রুত ম্যাচ (top 6)
                 const token = q.toLowerCase().split(/\s+/).sort((a, b) => b.length - a.length)[0];
@@ -1384,6 +1542,7 @@ loadBanners();
         loadNavMenu();
         loadFlashProducts();
         loadRecentProducts();
+        loadTestimonials();
         updateCartCount();
         updateWishlistCount();
     </script>
