@@ -221,7 +221,7 @@ img { user-select: none; }
     border-radius: 11px;
     font-size: 19px;
     box-shadow: 0 5px 14px rgba(245,158,11,.45);
-    animation: skPulse 2.2s ease-in-out infinite;
+    animation: skPulse 4s ease-in-out infinite;
 }
 .sk-flash-countdown { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .sk-cd-label { font-size: 12.5px; font-weight: 700; color: var(--sk-amber); letter-spacing: .4px; }
@@ -244,7 +244,7 @@ img { user-select: none; }
     font-variant-numeric: tabular-nums;
 }
 .sk-cd-cell small { display: block; font-size: 9.5px; color: #64748b; font-weight: 700; }
-.sk-cd-sep { color: var(--sk-amber); font-weight: 800; font-size: 18px; animation: skBlink 1.8s ease-in-out infinite; }
+.sk-cd-sep { color: var(--sk-amber); font-weight: 800; font-size: 18px; animation: skBlink 3.5s ease-in-out infinite; }
 @keyframes skBlink { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
 
 .sk-flash-scroll {
@@ -298,7 +298,7 @@ img { user-select: none; }
     aspect-ratio: 21 / 9;
     background: linear-gradient(90deg, #eef2f7 25%, #dfe7ee 50%, #eef2f7 75%);
     background-size: 200% 100%;
-    animation: skShimmer 2.2s infinite;
+    animation: skShimmer 4s infinite;
 }
 @media (max-width: 768px) {
     .sk-banner-skeleton { aspect-ratio: 16 / 10; }
@@ -531,7 +531,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     border-radius: 7px;
     background: linear-gradient(90deg, #eef2f7 25%, #dfe7ee 50%, #eef2f7 75%);
     background-size: 200% 100%;
-    animation: skShimmer 2.2s infinite;
+    animation: skShimmer 4s infinite;
 }
 
 /* drawer-এর ডার্ক মোড */
@@ -660,7 +660,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff;
     font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px;
     box-shadow: 0 2px 8px rgba(245,158,11,.45);
-    animation: skPulse 2.2s ease-in-out infinite;
+    animation: skPulse 4s ease-in-out infinite;
 }
 .badge-low {
     position: absolute; bottom: 10px; left: 10px; z-index: 2;
@@ -699,7 +699,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
 .sk-img, .sk-line {
     background: linear-gradient(90deg, #eef2f7 25%, #dfe7ee 50%, #eef2f7 75%);
     background-size: 200% 100%;
-    animation: skShimmer 2.2s infinite;
+    animation: skShimmer 4s infinite;
 }
 @keyframes skShimmer { to { background-position: -200% 0; } }
 
@@ -1127,7 +1127,7 @@ body { animation: skPageIn .3s ease-out; }
     background: linear-gradient(90deg, #f59e0b, #ef4444);
     box-shadow: 0 0 10px rgba(239,68,68,.4);
     transition: width .6s var(--sk-ease);
-    animation: skPulse 2.5s ease-in-out infinite;
+    animation: skPulse 4s ease-in-out infinite;
 }
 :root body.dark-mode .sk-stock-bar-track { background: #450a0a; }
 
