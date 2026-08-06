@@ -1438,3 +1438,19 @@ body { animation: skPageIn .3s ease-out; }
     .stats-grid { gap: 10px !important; }
     .modal-dialog, .modal { padding: 14px !important; }
 }
+
+
+/* ============ v7 — ZERO-CLS + INSTANT BANNER ============ */
+.sk-banner-card { aspect-ratio: 1983/793; }
+#bannerSlider { height: 100%; }
+#bannerSlider .banner-slide, #bannerSlider .banner-slide > img, #bannerSlider > img { width: 100%; height: 100%; }
+#bannerSlider .banner-slide > img, #bannerSlider > img { object-fit: cover; display: block; }
+.sk-banner-skeleton { aspect-ratio: 1983/793; }
+@media (max-width: 768px) { .sk-banner-skeleton { aspect-ratio: 1983/793; } }
+.sk-banner-arrow { display: none; }
+#flashGrid .sk-skeleton-card, .sk-flash-card { height: 264px; }
+#flashGrid .sk-skeleton-card { flex: 0 0 172px !important; box-sizing: border-box; }
+@media (max-width: 768px) {
+    #flashGrid .sk-skeleton-card, .sk-flash-card { height: 242px; }
+    #flashGrid .sk-skeleton-card { flex: 0 0 150px !important; }
+}
