@@ -1,0 +1,26 @@
+name: 🖼️ Compress Product Images (Cloudinary)
+on:
+  workflow_dispatch:
+    inputs:
+      admin_email:
+        description: 'Admin email (Firebase Auth)'
+        required: true
+      admin_password:
+        description: 'Admin password'
+        required: true
+        type: password
+
+jobs:
+  compress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run image compression
+        env:
+          ADMIN_EMAIL: ${{ inputs.admin_email }}
+          ADMIN_PASSWORD: ${{ inputs.admin_password }}
+          CONFIRM: 'yes'
+        run: node scripts/compress-images.js
