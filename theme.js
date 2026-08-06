@@ -303,7 +303,7 @@
         if (!document.querySelector('link[rel="apple-touch-icon"]')) {
             const link = document.createElement('link');
             link.rel = 'apple-touch-icon';
-            link.href = 'https://cdn-icons-png.flaticon.com/512/891/891462.png';
+            link.href = 'https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png';
             document.head.appendChild(link);
         }
     }

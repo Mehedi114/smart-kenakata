@@ -20,7 +20,10 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://res.cloudinary.com">
+    <link rel="preconnect" href="https://i.ibb.co.com">
+    <link rel="preconnect" href="https://i.ibb.co">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -485,36 +488,6 @@
             margin-bottom: 10px;
             font-weight: 600;
         }
-        /* PRICE QUICK CHIPS */
-        .sk-price-quick {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .sk-price-quick-label { font-size: 13px; font-weight: 700; color: var(--gray-700); }
-        .sk-price-chip {
-            padding: 8px 14px;
-            min-height: 38px;
-            border-radius: 999px;
-            border: 1.5px solid var(--gray-200);
-            background: #fff;
-            color: var(--gray-700);
-            font-family: inherit;
-            font-size: 12.5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all .2s;
-            touch-action: manipulation;
-        }
-        .sk-price-chip:hover { border-color: var(--primary); color: var(--primary); }
-        .sk-price-chip.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 4px 12px rgba(16,185,129,.3);
-        }
-
         /* SUB-CATEGORY CHIPS */
         .subcat-strip {
             display: flex;
@@ -642,8 +615,8 @@
             .category-title { flex-direction: column; text-align: center; }
         }
     </style>
-       <link rel="stylesheet" href="mobile-fix.css?v=6">
-    <link rel="stylesheet" href="premium.css?v=5">
+       <link rel="stylesheet" href="mobile-fix.css?v=7">
+    <link rel="stylesheet" href="premium.css?v=8">
 </head>
 <body>
 
@@ -735,25 +708,11 @@
             <span>মোট <strong id="resultsCount">0</strong> টি পণ্য পাওয়া গেছে</span>
         </div>
 
-        <!-- Premium Filter Bar — দাম রেঞ্জ + স্টক -->
+        <!-- Premium Filter Bar — স্টক (প্রাইস রেঞ্জ বাদ দেওয়া হয়েছে) -->
         <div class="sk-filter-bar" id="advancedFilters">
             <label class="sk-chip-toggle" title="শুধু স্টকে থাকা পণ্য">
                 <input type="checkbox" id="inStockOnly" onchange="resetAndReload()"> ✅ শুধু স্টকে আছে
             </label>
-            <div class="sk-price-quick">
-                <span class="sk-price-quick-label">দাম:</span>
-                <button class="sk-price-chip" data-min="0" data-max="500" onclick="setPriceQuick(0,500)">৳৫০০ পর্যন্ত</button>
-                <button class="sk-price-chip" data-min="500" data-max="1000" onclick="setPriceQuick(500,1000)">৳৫০০–১০০০</button>
-                <button class="sk-price-chip" data-min="1000" data-max="2000" onclick="setPriceQuick(1000,2000)">৳১০০০–২০০০</button>
-                <button class="sk-price-chip" data-min="2000" data-max="5000" onclick="setPriceQuick(2000,5000)">৳২০০০+</button>
-                <button class="sk-price-chip active" data-min="0" data-max="99999" onclick="setPriceQuick(0,99999)">সব দাম</button>
-            </div>
-            <div class="sk-range-wrap">
-                <div class="sk-track"><div class="sk-fill" id="rangeFill"></div></div>
-                <input type="range" id="priceMin" min="0" max="20000" value="0" step="50" oninput="onPriceInput()">
-                <input type="range" id="priceMax" min="0" max="20000" value="20000" step="50" oninput="onPriceInput()">
-                <div class="sk-range-vals">৳<span id="priceMinVal">0</span> — ৳<span id="priceMaxVal">20000+</span></div>
-            </div>
         </div>
 
         <!-- Products Grid -->
@@ -791,7 +750,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="site-core.js?v=1"></script>
+    <script src="site-core.js?v=3"></script>
 
     <script>
         const firebaseConfig = {
@@ -939,7 +898,7 @@
         function readCatsCache() {
             try {
                 const c = JSON.parse(localStorage.getItem('sk_categories') || 'null');
-                if (c && c.v === 2 && c.t && (Date.now() - c.t < 10 * 60 * 1000) && c.list && c.list.length) {
+                if (c && c.v === 2 && c.t && (Date.now() - c.t < 30 * 60 * 1000) && c.list && c.list.length) {
                     return cleanCats(c.list);
                 }
             } catch (e) {}
@@ -973,21 +932,23 @@
 
         // ===== ক্যাশ — ক্যাটাগরি পেজ দ্রুত খুলতে (৫ মিনিট) =====
         const CAT_CACHE_PREFIX = 'sk_cat_cache';
-        const CAT_CACHE_TTL = 5 * 60 * 1000;
+        const CAT_CACHE_TTL = 15 * 60 * 1000;   // ১৫ মিনিট — Firestore read বাঁচায়
         let cachedCategoryData = null;
         function catCacheKey() {
-            // 'all' → sk_cat_cache_all; গ্রুপ/সার্চ → আলাদা key
-            return CAT_CACHE_PREFIX + '_' + (searchQuery ? 'q_' + searchQuery : (category || 'all'));
+            // গ্রুপ ক্যাটাগরি (বাচ্চাদের ফ্যাশন ইত্যাদি) + 'all' → একই শেয়ার্ড ক্যাশ (সব পণ্য)
+            if (searchQuery) return CAT_CACHE_PREFIX + '_q_' + searchQuery;
+            const key = (GROUP_CATS[category] || category === 'all') ? 'all' : category;
+            return CAT_CACHE_PREFIX + '_' + key;
         }
         function readCatCache() {
             try {
                 const c = JSON.parse(localStorage.getItem(catCacheKey()) || 'null');
-                if (c && c.v === 2 && c.t && (Date.now() - c.t < CAT_CACHE_TTL) && c.list && c.list.length) return c.list;
+                if (c && c.v === 3 && c.t && (Date.now() - c.t < CAT_CACHE_TTL) && c.list && c.list.length) return c.list;
             } catch (e) {}
             return null;
         }
         function writeCatCache(list) {
-            try { localStorage.setItem(catCacheKey(), JSON.stringify({ v: 2, t: Date.now(), list: list })); } catch (e) {}
+            try { localStorage.setItem(catCacheKey(), JSON.stringify({ v: 3, t: Date.now(), list: list })); } catch (e) {}
         }
 
         // ===== Pagination state =====
@@ -999,7 +960,7 @@
         let allLoadedProducts = [];   // গ্রুপ ক্যাটাগরির জন্য সব লোড হওয়া পণ্য (client-side পেজিং)
 
         // ===== Filter state =====
-        let priceMin = 0, priceMax = 5000, inStockOnly = false;
+        let inStockOnly = false;
 
         // ===== INIT =====
         function init() {
@@ -1008,20 +969,7 @@
             highlightActiveCategory();
             loadQuickCategories();
             setupFilters();
-            // ১) ক্যাশ থাকলে সাথে সাথে দেখাই (instant) — সাথে background refresh
-            const cacheList = readCatCache();
-            if (cacheList) {
-                loadedProducts = cacheList;
-                fallbackDone = true; // ক্যাশ ইতিমধ্যে সব পণ্য
-                lastDoc = null; hasMore = false;
-                applyClientFilters();
-                // background refresh — ১.৫ সেকেন্ড পরে fresh ডেটা আনে (পুরনো cache আটকে থাকে না)
-                setTimeout(() => {
-                    fallbackDone = false;
-                    resetAndReload();
-                }, 1500);
-                return;
-            }
+            // loadNextPage নিজেই ক্যাশ দেখায় + ব্যাকগ্রাউন্ডে লাইভ refresh করে
             resetAndReload();
             updateCartCount();
             if (searchQuery) {
@@ -1203,51 +1151,8 @@
 
 
         // ===== FILTER SETUP =====
-        const PRICE_MAX_RANGE = 20000;
         function setupFilters() {
-            priceMin = 0; priceMax = PRICE_MAX_RANGE; inStockOnly = false;
-            updateRangeUI();
-            markPriceChip();
-        }
-        function setPriceQuick(min, max) {
-            priceMin = min; priceMax = max;
-            const mnEl = document.getElementById('priceMin');
-            const mxEl = document.getElementById('priceMax');
-            if (mnEl) mnEl.value = Math.min(min, PRICE_MAX_RANGE);
-            if (mxEl) mxEl.value = Math.min(max, PRICE_MAX_RANGE);
-            updateRangeUI();
-            markPriceChip();
-            clearTimeout(window._priceTimer);
-            window._priceTimer = setTimeout(() => { currentPage = 1; applyClientFilters(); }, 50);
-        }
-        function markPriceChip() {
-            document.querySelectorAll('.sk-price-chip').forEach(ch => {
-                const mn = Number(ch.getAttribute('data-min'));
-                const mx = Number(ch.getAttribute('data-max'));
-                ch.classList.toggle('active', priceMin === mn && priceMax === mx);
-            });
-        }
-        function onPriceInput() {
-            let mn = Number(document.getElementById('priceMin').value);
-            let mx = Number(document.getElementById('priceMax').value);
-            if (mn > mx - 50) {
-                if (document.activeElement && document.activeElement.id === 'priceMin') mn = mx - 50;
-                else mx = mn + 50;
-                document.getElementById('priceMin').value = mn;
-                document.getElementById('priceMax').value = mx;
-            }
-            priceMin = mn; priceMax = mx;
-            updateRangeUI();
-            markPriceChip();
-            clearTimeout(window._priceTimer);
-            window._priceTimer = setTimeout(() => { currentPage = 1; applyClientFilters(); }, 250);
-        }
-        function updateRangeUI() {
-            document.getElementById('priceMinVal').textContent = priceMin;
-            document.getElementById('priceMaxVal').textContent = priceMax >= PRICE_MAX_RANGE ? '20000+' : priceMax;
-            const fill = document.getElementById('rangeFill');
-            fill.style.left = (priceMin / PRICE_MAX_RANGE * 100) + '%';
-            fill.style.right = (100 - priceMax / PRICE_MAX_RANGE * 100) + '%';
+            inStockOnly = false;
         }
 
         function resetAndReload() {
@@ -1261,100 +1166,111 @@
             loadNextPage();
         }
 
-        // ===== SERVER-SIDE QUERY (cursor pagination) =====
+        // ===== QUERY (index-free) =====
+        // কোনো composite index লাগে না — সব sort/filter client-side হয়
         function buildQuery() {
             let q = db.collection('products');
-            const sortBy = document.getElementById('sortSelect').value;
             if (searchQuery) {
-                // সার্চ: keywords index দিয়ে
+                // সার্চ: keywords array-contains (single-field — index লাগে না)
                 const token = searchQuery.toLowerCase().split(/\s+/).sort((a, b) => b.length - a.length)[0];
                 q = q.where('keywords', 'array-contains', token);
             } else if (category !== 'all' && !GROUP_CATS[category]) {
                 q = q.where('category', '==', category);
             }
-            // sort
-            if (sortBy === 'priceLow') q = q.orderBy('price', 'asc');
-            else if (sortBy === 'priceHigh') q = q.orderBy('price', 'desc');
-            else if (sortBy !== 'nameAZ') q = q.orderBy('createdAt', 'desc');
             return q;
+        }
+
+        // সমান্তরাল (parallel) ব্যাচ fetch — ২০০ করে ৩টা একসাথে, সর্বোচ্চ ৬০০।
+        // আগে ছিল: ১২০ করে ৪টা সিকোয়েনশিয়াল (ধীর)। এখন ১টা নেটওয়ার্ক ঢেউতেই সব।
+        // একটাই হালকা query — ৪০০ পর্যন্ত (আপনার ~৬০টা প্রোডাক্ট: ১ ঢেউতেই সব)
+        function fetchAllProducts() {
+            return db.collection('products').limit(400).get().then(snap => {
+                const list = [];
+                snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+                return list;
+            });
         }
 
         function loadNextPage() {
             if (pageLoading) return;
             pageLoading = true;
-            // গ্রুপ ক্যাটাগরি (মহিলা/পুরুষ/কাপল/বাচ্চা/গ্যাজেট/অন্যান্য) — সরাসরি সব fetch + ক্লায়েন্ট-সাইড সাজানো
-            if (GROUP_CATS[category]) {
-                pageLoading = false;
-                fallbackLoad();
-                return;
-            }
-            const grid = document.getElementById('productsGrid');
+            const cacheList = readCatCache();
 
-            let query = buildQuery().limit(PAGE_SIZE);
-            if (lastDoc) query = query.startAfter(lastDoc);
-
-            query.get().then(snap => {
-                if (!snap.empty) lastDoc = snap.docs[snap.docs.length - 1];
-                const fresh = [];
-                snap.forEach(doc => fresh.push({ id: doc.id, ...doc.data() }));
-                hasMore = fresh.length === PAGE_SIZE;
-                loadedProducts = loadedProducts.concat(fresh);
-                if (loadedProducts.length === 0 && !hasMore) {
-                    // পুরনো প্রোডাক্টে keywords ফিল্ড নেই — সার্চে কিছু না পেলে wide fallback
-                    if (searchQuery && !fallbackDone) {
-                        fallbackLoad();
-                        return;
-                    }
-                    renderGrid([]);
-                    return;
-                }
+            // ১) ক্যাশ থাকলে সাথে সাথে render — রিপিট ভিজিট instant (ঝাপাঝাপি নেই)
+            if (cacheList && cacheList.length) {
+                loadedProducts = cacheList;
+                lastDoc = null; hasMore = false;
+                fallbackDone = true;
                 applyClientFilters();
-            }).catch(error => {
-                console.warn('indexed query failed, fallback:', error.code);
-                // Index না থাকলে/অন্য error হলে: সিম্পল কুয়েরি + client-side সবকিছু
-                fallbackLoad();
-            }).finally(() => { pageLoading = false; });
-        }
+            }
 
-        let fallbackDone = false;
-        let fallbackTimer = null;
-        function fallbackLoad() {
-            if (fallbackDone) return;
-            fallbackDone = true;
-            // ৮ সেকেন্ডের মধ্যে না এলে — error state (চিরকাল skeleton ঘোরে না)
+            // ২) ধীর সংযোগ গার্ড — ১২ সেকেন্ডে না এলে ক্যাশ/error UI (skeleton চিরকাল ঘোরে না)
             clearTimeout(fallbackTimer);
             fallbackTimer = setTimeout(() => {
                 const grid = document.getElementById('productsGrid');
                 if (grid && grid.querySelector('.sk-skeleton-card')) {
-                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-wifi"></i><h2>ধীর সংযোগ</h2><p>আবার চেষ্টা করুন</p>' +
-                        '<button onclick="fallbackDone=false;resetAndReload()" style="margin-top:10px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
+                    pageLoading = false;
+                    showCacheOrError('ধীর সংযোগ');
                 }
-            }, 8000);
-            let q = db.collection('products');
-            // NB: সার্চের fallback-এ keywords ছাড়াই সব টেনে client-side ফিল্টার করি
-            // (পুরনো প্রোডাক্টে keywords ফিল্ড নেই)
-            if (!searchQuery && category !== 'all' && !GROUP_CATS[category]) q = q.where('category', '==', category);
-            q.limit(400).get().then(snap => {
-                loadedProducts = [];
-                snap.forEach(doc => loadedProducts.push({ id: doc.id, ...doc.data() }));
-                // ৪০০-এর বেশি পণ্য থাকলে — আরেকটা ব্যাচ (মোট ৮০০)
-                if (snap.size === 400) {
-                    return q.limit(400).startAfter(snap.docs[snap.docs.length - 1]).get().then(snap2 => {
-                        snap2.forEach(doc => loadedProducts.push({ id: doc.id, ...doc.data() }));
-                    }).catch(() => {});
-                }
-            }).then(() => {
+            }, 12000);
+
+            // ৩) লাইভ fetch — এক query
+            // সার্চে keywords-এ কিছু না পেলে → সব টেনে client-side ফিল্টার (পুরনো প্রোডাক্টে keywords নেই)
+            buildQuery().limit(400).get()
+                .then(snap => {
+                    if (searchQuery && snap.empty) return fetchAllProducts();
+                    const list = [];
+                    snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+                    return list;
+                })
+                .then(list => {
+                    clearTimeout(fallbackTimer);
+                    pageLoading = false;
+                    loadedProducts = list;
+                    lastDoc = null; hasMore = false;
+                    fallbackDone = true;
+                    if (!searchQuery) writeCatCache(list);
+                    applyClientFilters();
+                })
+                .catch(err => {
+                    clearTimeout(fallbackTimer);
+                    pageLoading = false;
+                    console.error('category load error:', err);
+                    if (!(cacheList && cacheList.length)) {
+                        showCacheOrError((err && (err.code || err.message)) || 'লোড করতে সমস্যা');
+                    }
+                });
+        }
+
+        // অফলাইন → অনলাইন হলে ক্যাটাগরি পেজ অটো-রিলোড
+        window.addEventListener('online', function () { location.reload(); });
+
+        // Firestore থেকে কিছু না এলে — আগের ভিজিটের ক্যাশ থেকে পণ্য দেখাই
+        // (ক্যাশও না থাকলে তবেই error UI)
+        function showCacheOrError(msg) {
+            const grid = document.getElementById('productsGrid');
+            const cached = readCatCache();
+            if (cached && cached.length) {
+                loadedProducts = cached;
                 lastDoc = null; hasMore = false;
-                // ক্যাশ সেভ — পরেরবার instant (সব ক্যাটাগরি/সার্চ আলাদা)
-                if (!searchQuery || category === 'all') writeCatCache(loadedProducts);
-                clearTimeout(fallbackTimer);
+                fallbackDone = true;
                 applyClientFilters();
-            }).catch(e => {
-                clearTimeout(fallbackTimer);
-                document.getElementById('productsGrid').innerHTML =
-                    '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h2>লোড করতে সমস্যা</h2><p>' + skEscape(e.message || '') + '</p>' +
-                    '<button onclick="fallbackDone=false;resetAndReload()" style="margin-top:10px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
-            });
+                const note = document.createElement('div');
+                note.style.cssText = 'text-align:center;color:#b45309;background:#fffbeb;padding:8px 14px;border-radius:10px;font-size:12px;margin:10px 0;';
+                note.textContent = '📶 নেটওয়ার্ক সমস্যা — সংরক্ষিত পণ্য দেখানো হচ্ছে। ইন্টারনেট ফিরলে অটো-রিলোড হবে।';
+                grid.parentNode.insertBefore(note, grid);
+                return true;
+            }
+            grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h2>পণ্য লোড করতে সমস্যা</h2><p>' + skEscape(msg || 'নেটওয়ার্ক/ডেটাবেস সমস্যা') + '</p>' +
+                '<button onclick="fallbackDone=false;resetAndReload()" style="margin-top:10px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
+            return false;
+        }
+
+        let fallbackDone = false;
+        let fallbackTimer = null;
+        // পুরনো fallbackLoad-এর কাজ এখন loadNextPage-তেই — নামটা রাখলাম (পুরনো কল ভাঙবে না)
+        function fallbackLoad() {
+            loadNextPage();
         }
 
         // ===== CLIENT FILTERS (দাম/স্টক/সার্চ-রিফাইন) =====
@@ -1370,7 +1286,6 @@
                 });
             }
             if (inStockOnly) list = list.filter(p => (p.stock === undefined || p.stock === null) || p.stock > 0);
-            list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= PRICE_MAX_RANGE || Number(p.price) <= priceMax));
             // নতুন গ্রুপ ক্যাটাগরি — নাম দেখে অটো সাজানো
             if (GROUP_CATS[category]) {
                 list = list.filter(p => classifyProduct(p) === category);
@@ -1384,12 +1299,11 @@
             }
 
             const sortBy = document.getElementById('sortSelect').value;
+            // সবসময় client-side sort (index-free লোডার — সার্ভার sort নেই)
             if (sortBy === 'nameAZ') list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-            else if (fallbackDone) {
-                if (sortBy === 'priceLow') list.sort((a, b) => (a.price || 0) - (b.price || 0));
-                else if (sortBy === 'priceHigh') list.sort((a, b) => (b.price || 0) - (a.price || 0));
-                else list.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-            }
+            else if (sortBy === 'priceLow') list.sort((a, b) => (a.price || 0) - (b.price || 0));
+            else if (sortBy === 'priceHigh') list.sort((a, b) => (b.price || 0) - (a.price || 0));
+            else list.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
             allLoadedProducts = list;
             renderGrid(list);
         }
@@ -1410,7 +1324,7 @@
             else if (product.featured) html += '<span class="badge-popular">⭐ জনপ্রিয়</span>';
             else html += skStockBadge(product);
             html += '<button class="sk-qv-btn" onclick="event.stopPropagation(); openQuickView(\'' + product.id + '\')" title="কুইক ভিউ"><i class="fas fa-eye"></i></button>';
-            html += '<img src="' + (product.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
+            html += '<img src="' + skImg(product.image, 600) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
             html += '</div>';
             html += '<div class="product-info">';
             html += '<div class="product-category">' + escapeHtml(product.category || 'সাধারণ') + '</div>';
@@ -1580,7 +1494,6 @@
                 );
             }
             if (inStockOnly) list = list.filter(p => (p.stock === undefined || p.stock === null) || p.stock > 0);
-            list = list.filter(p => Number(p.price) >= priceMin && (priceMax >= PRICE_MAX_RANGE || Number(p.price) <= priceMax));
             if (GROUP_CATS[category]) {
                 list = list.filter(p => classifyProduct(p) === category);
                 if (activeSub && activeSub !== 'সব') {
@@ -1610,7 +1523,7 @@
             const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const safeImage = (p.image || 'https://via.placeholder.com/300').replace(/'/g, "\\'");
             const stockOut = (p.stock !== undefined && p.stock !== null && p.stock <= 0);
-            let html = '<div class="sk-qv-img"><img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" onerror="this.src=\'https://via.placeholder.com/300\'">';
+            let html = '<div class="sk-qv-img"><img src="' + skImg(p.image, 600) + '" alt="' + safeName + '" onerror="this.src=\'https://via.placeholder.com/300\'">';
             if (discount > 0) html += '<span class="sk-qv-off">-' + discount + '%</span>';
             html += '</div>';
             html += '<div class="sk-qv-info">';
@@ -1699,8 +1612,8 @@
 
         init();
     </script>
-    <script src="chatbot.js"></script>
-    <script src="theme.js"></script>
+    <script src="chatbot.js?v=2"></script>
+    <script src="theme.js?v=2"></script>
     <script src="nav-drawer.js?v=1"></script>
    
 </body>

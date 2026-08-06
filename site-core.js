@@ -22,11 +22,11 @@
         stockAlert: 5              // এত বা কম স্টক থাকলে "আর মাত্র Xটি!" ব্যাজ
     };
 
-    // ক্যাশ (১০ মিনিট — প্রতি ভিজিটে Firestore read বাঁচায়)
+    // ক্যাশ (৩০ মিনিট — প্রতি ভিজিটে Firestore read বাঁচায়)
     function loadCachedSettings() {
         try {
             const c = JSON.parse(localStorage.getItem('sk_settings') || 'null');
-            if (c && c.t && (Date.now() - c.t < 10 * 60 * 1000)) return c.v;
+            if (c && c.t && (Date.now() - c.t < 30 * 60 * 1000)) return c.v;
         } catch (e) {}
         return null;
     }
@@ -64,6 +64,60 @@
         fetchSettings();
     }
     // settings পরিবর্তন হয়ে এলে এই ইভেন্ট ফায়ার হয়: document.addEventListener('sk-settings', ...)
+
+    // ===== Offline persistence — সব পেজে cache-first offline সমর্থন =====
+    try {
+        if (typeof firebase !== 'undefined' && firebase.firestore) {
+            firebase.firestore().enablePersistence({ synchronizeTabs: true })
+                .catch(function (err) {
+                    if (err && err.code !== 'failed-precondition' && err.code !== 'unimplemented') {
+                        console.warn('sk: persistence unavailable', err);
+                    }
+                });
+        }
+    } catch (e) {}
+
+    // ===== ১.৫) skImg() — Cloudinary ছবির সাইজ/ফরম্যাট অপটিমাইজার =====
+    // res.cloudinary.com-এর URL-এ /upload/f_auto,q_auto,w_XXX/ বসায়।
+    // ইতিমধ্যে transform থাকলে অছোঁয়া। imgbb (i.ibb.co) ছবি Cloudinary fetch
+    // ডেলিভারির মাধ্যমে কম্প্রেস হয়ে আসে (f_auto → WebP/AVIF, q_auto → মান-ভিত্তিক)।
+    // Cloudinary fetch কাজ না করলে (add-on বন্ধ) অরিজিনাল ছবিই ব্যবহৃত হয় — কখনো ভাঙে না।
+    window.skImgFetchOK = null; // null = এখনো জানা যায়নি, true/false = প্রোব রেজাল্ট
+    try {
+        const probe = new Image();
+        probe.onload = function () { window.skImgFetchOK = true; };
+        probe.onerror = function () { window.skImgFetchOK = false; };
+        probe.src = 'https://res.cloudinary.com/smartkenakata/image/fetch/f_auto,q_auto,w_20/https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png';
+    } catch (e) {}
+    window.skImg = function (url, w) {
+        if (!url) return url || '';
+        const s = String(url);
+        if (!/^https?:\/\//i.test(s)) return s;
+        try {
+            const u = new URL(s);
+            // imgbb — Cloudinary fetch-delivery দিয়ে কম্প্রেস (প্রোব ব্যর্থ হলে অরিজিনাল)
+            if (u.hostname === 'i.ibb.co' || u.hostname === 'i.ibb.co.com') {
+                if (window.skImgFetchOK === false) return s;
+                const wPart = w ? 'w_' + Math.round(w) + ',' : '';
+                const src = encodeURIComponent(s);
+                return 'https://res.cloudinary.com/smartkenakata/image/fetch/f_auto,q_auto,' + wPart + src;
+            }
+            if (u.hostname !== 'res.cloudinary.com') return s;
+            const parts = u.pathname.split('/');
+            const upIdx = parts.indexOf('upload');
+            if (upIdx === -1) return s;                       // upload সেগমেন্ট নেই
+            const next = parts[upIdx + 1] || '';
+            // ইতিমধ্যে transform আছে? (f_auto / w_600 / q_auto ইত্যাদি — letter+underscore দিয়ে শুরু)
+            // NOTE: 'v123' ভার্সন সেগমেন্ট transform নয় — সেটার আগেই বসানো বৈধ
+            if (next && /^[a-z]{1,2}_/.test(next)) return s;
+            const wPart = w ? ',w_' + Math.round(w) : '';
+            parts.splice(upIdx + 1, 0, 'f_auto,q_auto' + wPart);
+            u.pathname = parts.join('/');
+            return u.toString();
+        } catch (e) {
+            return s;
+        }
+    };
 
     // ===== ২) TRACKING — Facebook Pixel + GA4 =====
     // ⚙️ শুধু নিচের দুই লাইনে ID বসালেই পুরো সাইটে ট্র্যাকিং চালু হয়ে যাবে

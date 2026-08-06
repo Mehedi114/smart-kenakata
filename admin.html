@@ -7,7 +7,10 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://res.cloudinary.com">
+    <link rel="preconnect" href="https://i.ibb.co.com">
+    <link rel="preconnect" href="https://i.ibb.co">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -254,7 +257,7 @@
             .chart-grid { grid-template-columns: 1fr !important; }
         }
     </style>
-        <link rel="stylesheet" href="mobile-fix.css?v=2">
+        <link rel="stylesheet" href="mobile-fix.css?v=4">
 </head>
 <body>
 
@@ -950,7 +953,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="site-core.js?v=1"></script>
+    <script src="site-core.js?v=3"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -967,7 +970,14 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-                db.enablePersistence().catch(err => console.log(err));
+        // note: enablePersistence এখন site-core.js-এ synchronizeTabs:true সহ আছে
+
+        // প্রোডাক্ট বদলালে হোমপেজ ক্যাশ invalidate করতে catalogVersion বাম্প
+        function bumpCatalogVersion() {
+            try { localStorage.removeItem('sk_home_products_v2'); } catch (e) {}
+            db.collection('settings').doc('siteConfig').set({ catalogVersion: Date.now() }, { merge: true })
+                .catch(() => {});
+        }
 
         const ADMIN_EMAILS = ['mdmahedulislammehedi@gmail.com'];
 
@@ -1318,6 +1328,7 @@ flashEnd: (function(){ const v = document.getElementById('prodFlashEnd').value; 
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-plus"></i> পণ্য যোগ করুন';
                     btn.removeAttribute('data-edit-id');
+                    bumpCatalogVersion();
                 })
                 .catch(error => {
                     showToast('error', '❌ ' + error.message);
@@ -1351,7 +1362,7 @@ flashEnd: (function(){ const v = document.getElementById('prodFlashEnd').value; 
                 const profit = (p.buyPrice && p.price) ? (p.price - p.buyPrice) : null;
                 const profitColor = profit > 0 ? '#10b981' : '#ef4444';
                 html += '<div class="product-item" onclick="showProductDetails(\'' + id + '\')" style="cursor:pointer;">';
-                html += '<div class="product-item-image"><img src="' + (p[p.thumbnail] || p.image) + '" onerror="this.src=\'https://via.placeholder.com/280x180\'"></div>';
+                html += '<div class="product-item-image"><img src="' + skImg(p[p.thumbnail] || p.image, 200) + '" loading="lazy" decoding="async" onerror="this.src=\'https://via.placeholder.com/280x180\'"></div>';
                 html += '<div class="product-item-info"><div class="cat">' + (p.category || '') + '</div><h4>' + p.name + (p.featured ? ' <span style="background:#f59e0b;color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;margin-left:4px;">⭐ জনপ্রিয়</span>' : '') + '</h4><div class="price">বিক্রয়: ৳' + p.price + '</div>';
                 if (p.supplier || p.buyPrice) {
                     html += '<div style="background:#fef3c7; padding:10px; border-radius:8px; margin:10px 0; font-size:12px;"><strong>🔒 ' + (p.supplier || '') + '</strong> | 💰 কেনা: ৳' + (p.buyPrice || 0) + ' | লাভ: <span style="color:' + profitColor + '">৳' + (profit || 0) + '</span></div>';
@@ -1551,6 +1562,7 @@ if (thumbField) {
                 .then(() => {
                     showToast('success', to ? '⭐ জনপ্রিয় হিসেবে মার্ক করা হয়েছে!' : '⭐ সরানো হয়েছে');
                     loadProducts();
+                    bumpCatalogVersion();
                 })
                 .catch(e => showToast('error', '❌ ' + e.message));
         }
@@ -1562,6 +1574,7 @@ if (thumbField) {
                     showToast('success', '✅ ডিলিট হয়েছে!');
                     loadProducts();
                     loadDashboardStats();
+                    bumpCatalogVersion();
                 });
         }
 
@@ -2069,8 +2082,8 @@ function deleteReview(id) {
             if (Notification.permission === "granted") {
                 new Notification(title, {
                     body: message,
-                    icon: 'https://cdn-icons-png.flaticon.com/512/891/891462.png',
-                    badge: 'https://cdn-icons-png.flaticon.com/512/891/891462.png',
+                    icon: 'https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png',
+                    badge: 'https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png',
                     tag: 'smart-kenakata'
                 });
             } else if (Notification.permission !== "denied") {
@@ -2511,6 +2524,7 @@ function deleteReview(id) {
             </div>`;
             loadDashboardStats();
             loadProducts();
+            bumpCatalogVersion();
         }
 
         // ============================================================

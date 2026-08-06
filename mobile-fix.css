@@ -282,3 +282,46 @@ html, body {
 * {
     -webkit-tap-highlight-color: rgba(16,185,129,0.15);
 }
+
+/* ===== v3 — ADMIN PANEL MOBILE IMPROVEMENTS ===== */
+@media (max-width: 768px) {
+    .product-item-image { height: 120px !important; }
+    .product-item-image img { object-fit: cover; }
+    .product-actions {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+    }
+    .product-actions .btn {
+        flex: 1 1 calc(50% - 4px) !important;
+        justify-content: center !important;
+        padding: 10px 6px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+    }
+    .order-card { padding: 14px !important; }
+    .chart-grid > div { height: 180px !important; }
+    .stats-card { padding: 14px !important; }
+    .stats-grid { gap: 10px !important; }
+    .modal-dialog, .modal { padding: 14px !important; }
+    .menu-item { font-size: 14px !important; padding: 11px 13px !important; }
+    .sidebar { width: 240px !important; }
+}
+
+/* ===== v3 — ছোট টেক্সট একটু বড় (পড়া সহজ) ===== */
+@media (max-width: 768px) {
+    .product-title { font-size: 13px !important; }
+    .category-name { font-size: 13px !important; }
+    .sk-flash-name { font-size: 13px !important; }
+    .add-cart-btn { font-size: 12px !important; }
+}
+
+/* ===== v4 — লোডিং skeleton-এর নড়াচড়া (shimmer) বন্ধ — মোবাইলে ঝাপাঝাপি/ল্যাগ কমে ===== */
+@media (hover: none), (pointer: coarse) {
+    .sk-img, .sk-line, .sk-banner-skeleton {
+        animation: none !important;
+        background: #e2e8f0 !important;
+        background-image: none !important;
+    }
+}
