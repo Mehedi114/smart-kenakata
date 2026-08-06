@@ -795,25 +795,6 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     border: 1px solid rgba(15,23,42,.05); padding: 16px; margin-bottom: 20px;
     display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
 }
-.sk-range-wrap { position: relative; height: 34px; flex: 1; min-width: 180px; max-width: 320px; }
-.sk-range-wrap input[type="range"] {
-    position: absolute; left: 0; top: 8px; width: 100%; pointer-events: none;
-    -webkit-appearance: none; appearance: none; background: transparent; height: 20px; margin: 0;
-}
-.sk-range-wrap input[type="range"]::-webkit-slider-runnable-track { height: 4px; background: transparent; }
-.sk-range-wrap input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; pointer-events: auto;
-    width: 20px; height: 20px; border-radius: 50%; background: #fff;
-    border: 3px solid #10b981; cursor: grab; box-shadow: 0 1px 5px rgba(0,0,0,.2); margin-top: 0;
-}
-.sk-range-wrap .sk-track {
-    position: absolute; top: 16px; left: 0; right: 0; height: 4px; border-radius: 4px; background: #e2e8f0;
-}
-.sk-range-wrap .sk-track .sk-fill {
-    position: absolute; top: 0; bottom: 0; border-radius: 4px; background: var(--sk-grad);
-}
-.sk-range-vals { font-size: 12.5px; color: #334155; font-weight: 600; margin-top: 4px; text-align: center; }
-
 .sk-chip-toggle {
     display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
     font-size: 13.5px; font-weight: 600; color: #334155; user-select: none; min-height: 44px;
@@ -952,48 +933,32 @@ body { animation: skPageIn .3s ease-out; }
 
 /* ============ 3D PREMIUM BANNER (উপরে উঠে দাঁড়ানো) ============ */
 .sk-banner-section {
-    padding: 26px 20px 52px;
-    background:
-        radial-gradient(1100px 320px at 50% -40px, rgba(16,185,129,.15), transparent 65%),
-        linear-gradient(180deg, #0b1220 0%, #f8fafc 74%);
+    padding: 22px 20px 48px;
+    background: #f8fafc;
     position: relative;
-    overflow: hidden;
 }
+:root body.dark-mode .sk-banner-section { background: #0f172a; }
 .sk-banner-stage {
     max-width: 1400px;
     margin: 0 auto;
-    perspective: 1600px;
 }
 .sk-banner-card {
     position: relative;
-    border-radius: 24px;
+    border-radius: 18px;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,.25);
-    background: #0f172a;
-    box-shadow:
-        0 42px 72px -18px rgba(2,6,23,.5),
-        0 22px 46px -20px rgba(16,185,129,.38),
-        inset 0 1px 0 rgba(255,255,255,.35);
-    transform: perspective(1600px) rotateX(3deg);
-    transform-origin: top center;
-    transition: transform .4s var(--sk-ease), box-shadow .4s var(--sk-ease);
+    background: #f1f5f9;
+    box-shadow: 0 4px 18px rgba(2,6,23,.12);
 }
-.sk-banner-card:hover {
-    transform: perspective(1600px) rotateX(0deg) translateY(-6px);
-    box-shadow:
-        0 54px 92px -20px rgba(2,6,23,.55),
-        0 28px 60px -18px rgba(16,185,129,.45),
-        inset 0 1px 0 rgba(255,255,255,.4);
-}
+.sk-banner-card:hover { box-shadow: 0 8px 26px rgba(2,6,23,.16); }
 .sk-banner-card::after {
     content: '';
     position: absolute;
-    left: 0; right: 0; bottom: 0; height: 42%;
-    background: linear-gradient(180deg, transparent, rgba(2,6,23,.32));
+    left: 0; right: 0; bottom: 0; height: 30%;
+    background: linear-gradient(180deg, transparent, rgba(2,6,23,.22));
     pointer-events: none;
     z-index: 5;
 }
-/* dots — glass pill */
+/* dots */
 .sk-banner-dots {
     position: absolute !important;
     bottom: 16px !important;
@@ -1007,92 +972,55 @@ body { animation: skPageIn .3s ease-out; }
     width: 8px;
     height: 8px;
     border-radius: 999px;
-    background: rgba(255,255,255,.55);
+    background: rgba(255,255,255,.6);
     border: 1.5px solid rgba(255,255,255,.9);
     cursor: pointer;
     padding: 0;
-    transition: all .35s var(--sk-ease);
+    transition: all .3s ease;
 }
 .sk-banner-dots .banner-dot.active {
-    width: 30px;
-    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    width: 26px;
+    background: #10b981;
     border-color: #fff;
 }
-/* arrows — glass круглые বাটন */
+/* arrows */
 .sk-banner-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: rgba(255,255,255,.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,.7);
+    background: rgba(255,255,255,.92);
+    border: 1px solid rgba(15,23,42,.08);
     color: #0f172a;
-    font-size: 17px;
+    font-size: 16px;
     cursor: pointer;
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 12;
-    box-shadow: 0 10px 24px rgba(2,6,23,.28);
-    transition: all 00.3s var(--sk-ease);
+    box-shadow: 0 6px 16px rgba(2,6,23,.18);
+    transition: all .25s ease;
     touch-action: manipulation;
 }
 .sk-banner-arrow:hover {
-    transform: translateY(-50%) scale(1.1);
+    transform: translateY(-50%) scale(1.06);
     background: #fff;
     color: #059669;
-    box-shadow: 0 14px 30px rgba(2,6,23,.35);
 }
-.sk-banner-arrow:active { transform: translateY(-50%) scale(.94); }
-.sk-banner-prev { left: 18px; }
-.sk-banner-next { right: 18px; }
-
-:root body.dark-mode .sk-banner-section {
-    background:
-        radial-gradient(1100px 320px at 50% -40px, rgba(16,185,129,.16), transparent 65%),
-        linear-gradient(180deg, #020617 0%, #0f172a 74%);
-}
-:root body.dark-mode .sk-banner-card { border-color: rgba(148,163,184,.22); }
-:root body.dark-mode .sk-banner-arrow {
-    background: rgba(30,41,59,.9);
-    color: #e2e8f0;
-    border-color: rgba(148,163,184,.3);
-}
-:root body.dark-mode .sk-banner-arrow:hover { background: #334155; color: #34d399; }
+.sk-banner-arrow:active { transform: translateY(-50%) scale(.95); }
+.sk-banner-prev { left: 16px; }
+.sk-banner-next { right: 16px; }
 
 @media (max-width: 768px) {
-    .sk-banner-section { padding: 16px 12px 38px; }
-    .sk-banner-card { border-radius: 18px; transform: none; }
-    .sk-banner-arrow { width: 38px; height: 38px; font-size: 14px; }
-    .sk-banner-prev { left: 10px; }
-    .sk-banner-next { right: 10px; }
-    .sk-banner-dots { bottom: 12px !important; }
+    .sk-banner-section { padding: 14px 10px 36px; }
+    .sk-banner-card { border-radius: 14px; }
+    .sk-banner-arrow { width: 34px; height: 34px; font-size: 13px; }
+    .sk-banner-prev { left: 8px; }
+    .sk-banner-next { right: 8px; }
+    .sk-banner-dots { bottom: 10px !important; }
 }
-
-/* Flash countdown — শেষ হলে */
-.sk-cd-ended {
-    color: #fbbf24 !important;
-    font-size: 15px !important;
-    background: rgba(245,158,11,.12);
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: 1px dashed rgba(245,158,11,.45);
-}
-/* Price chips dark mode */
-:root body.dark-mode .sk-price-chip { background: #1e293b; color: #e2e8f0; border-color: #334155; }
-:root body.dark-mode .sk-price-chip:hover { border-color: #10b981; color: #34d399; }
-:root body.dark-mode .sk-price-chip.active { background: var(--sk-grad); color: #fff; }
-:root body.dark-mode .sk-page-btn,
-:root body.dark-mode .sk-page-num { background: #1e293b; color: #e2e8f0; border-color: #334155; }
-:root body.dark-mode .sk-page-btn:hover:not(:disabled),
-:root body.dark-mode .sk-page-num:hover { border-color: #10b981; color: #34d399; }
-:root body.dark-mode .sk-page-num.active { background: var(--sk-grad); color: #fff; border-color: transparent; }
-:root body.dark-mode .sk-page-info { color: #94a3b8; }
-:root body.dark-mode .sk-price-quick-label { color: #cbd5e1; }
 
 /* ============ ⭐ স্টার রেটিং (কার্ডে) ============ */
 .sk-rating-row {
@@ -1455,3 +1383,58 @@ body { animation: skPageIn .3s ease-out; }
 :root body.dark-mode .sk-offer-popup { background: #1e293b; }
 :root body.dark-mode .sk-offer-body h3 { color: #f1f5f9; }
 :root body.dark-mode .sk-offer-body p { color: #94a3b8; }
+
+/* ============================================================
+   PERFORMANCE + MOBILE FIXES (v6)
+   ============================================================ */
+
+/* ============ BANNER CLS FIX — আসল অনুপাত জানা গেলে (JS #bannerSlider-এ aspect-ratio বসায়) ============ */
+.sk-banner-card.sk-ratio-set #bannerSlider { position: relative !important; }
+.sk-banner-card.sk-ratio-set .banner-slide { height: 100%; }
+.sk-banner-card.sk-ratio-set .banner-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ============ LOW-END MOBILE: backdrop-filter বন্ধ (ভারী GPU কাজ) ============ */
+@media (hover: none), (pointer: coarse) {
+    .navbar,
+    .bottom-nav,
+    .cart-overlay,
+    .sk-banner-arrow,
+    .quick-view-modal .sk-qv-content,
+    .image-zoom-modal,
+    .sk-offer-popup,
+    .search-box,
+    #install-banner,
+    .toast,
+    .modal-content,
+    .sidebar {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    .product-card:hover .product-image img { transform: none !important; }
+}
+
+    .product-item-image img { object-fit: cover; }
+    .product-actions {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+    }
+    .product-actions .btn {
+        flex: 1 1 calc(50% - 4px) !important;
+        justify-content: center !important;
+        padding: 10px 6px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+    }
+    .order-card { padding: 14px !important; }
+    .chart-grid > div { height: 180px !important; }
+    .stats-card { padding: 14px !important; }
+    .stats-grid { gap: 10px !important; }
+    .modal-dialog, .modal { padding: 14px !important; }
+}

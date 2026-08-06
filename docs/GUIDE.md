@@ -154,4 +154,35 @@ service cloud.firestore {
 
 1. ছবি আপলোডের আগে [squoosh.app](https://squoosh.app) দিয়ে **১০০KB-এর নিচে** compress করুন — এটাই সবচেয়ে বড় speed booster!
 2. পণ্যের **স্টক সংখ্যা ঠিকমতো দিন** — ০ দিলে "স্টক শেষ" দেখাবে
-3. প্রথম প্রোডাক্টগুলো আপলোডের পর হোমপেজ ৫ মিনিটের মধ্যে auto refresh হয় (ক্যাশ TTL)
+3. অ্যাডমিনে পণ্য যোগ/এডিট/ডিলিট/⭐-তে দিলে **সাথে সাথেই** হোমপেজ ক্যাশ invalidate হয় (catalogVersion auto-bump); সেটিংস/ক্যাটাগরি ক্যাশ ৩০ মিনিট, হোম প্রোডাক্ট ক্যাশ ১৫ মিনিট
+
+---
+
+## ৯) 🖼️ পুরনো ছবি Cloudinary-তে সরান (এক ক্লিক — ৫ মিনিট)
+
+**কেন:** পুরনো প্রোডাক্টের ছবি imgbb-তে থাকলে সেগুলো compressed আসে না। Cloudinary-তে নিয়ে গেলে `f_auto,q_auto` দিয়ে **WebP + মান-ভিত্তিক কম্প্রেশন** — সাইট অনেক দ্রুত লোড হয়।
+
+**নিয়ম:** সাইটের ছবিগুলো এখনও ঠিক দেখাবে (skImg অটো-কম্প্রেস করছে), কিন্তু স্থায়ী সমাধানের জন্য:
+
+1. GitHub-এ রিপো → **Actions** ট্যাব → বামে **"🖼️ Compress Product Images (Cloudinary)"** → **Run workflow**
+2. **Admin email + Admin password** লিখুন (Firebase Auth-এর admin — admin-login-এ যেটা দেন) → **Run**
+3. কাজ শেষে লগে দেখাবে: `আপডেট: X, ব্যর্থ: Y`
+
+> 🔒 পাসওয়ার্ড GitHub-এ সেভ হয় না — শুধু সেই একটা run-এ ব্যবহৃত হয়।
+
+**চেক:** Cloudinary ড্যাশবোর্ডে (cloudinary.com → Media Library) নতুন ছবি দেখতে পাবেন। imgbb থেকে ছবি মুছবেন না — ব্যাকআপ হিসেবে থাকবে।
+
+---
+
+## ১০) ⚠️ প্রোডাক্ট লোড না হলে — ৩টা জিনিস চেক করুন
+
+1. **Firebase Console → Firestore Database → Rules** — নিচের নিয়ম থাকতে হবে (টেস্ট মোড ৩০ দিনে মেয়াদ ফুরায়!):
+   ```js
+   match /products/{id} { allow read: if true; allow write: if request.auth != null; }
+   ```
+2. **Google Cloud Console → APIs & Credentials → API Keys** — ফায়ারবেস API key-তে কোনো **HTTP referrer restriction** থাকলে প্রিভিউ/নতুন ডোমেইনে সাইট কাজ করবে না। "None" বা আপনার ডোমেইনগুলো allowlist করুন।
+3. **Firestore Database** তৈরি আছে কিনা দেখুন (Cloud Firestore → Create database)।
+
+---
+
+## ✅ টিপস (দ্রুত সাইটের জন্য)

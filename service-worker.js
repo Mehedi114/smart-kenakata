@@ -1,7 +1,7 @@
 // Smart Kenakata Service Worker — স্মার্ট ক্যাশিং
 // HTML: network-first (সবসময় তাজা কন্টেন্ট), অফলাইনে ক্যাশ ফলব্যাক
 // Static assets (CSS/JS/ছবি/font): cache-first (দ্রুত লোড)
-const VERSION = 'v2';
+const VERSION = 'v3';
 const STATIC_CACHE = 'sk-static-' + VERSION;
 const PAGE_CACHE = 'sk-pages-' + VERSION;
 
@@ -9,6 +9,8 @@ const isStaticAsset = (url) =>
     /\.(css|js|png|jpe?g|webp|svg|woff2?|ttf|ico)(\?.*)?$/.test(url.pathname) ||
     url.hostname.includes('gstatic.com') ||
     url.hostname.includes('cdnjs.cloudflare.com') ||
+    url.hostname.includes('cdn.jsdelivr.net') ||
+    url.hostname.includes('res.cloudinary.com') ||
     url.hostname.includes('i.ibb.co');
 
 const isFirestore = (url) =>

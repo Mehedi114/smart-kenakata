@@ -25,7 +25,10 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://res.cloudinary.com">
+    <link rel="preconnect" href="https://i.ibb.co.com">
+    <link rel="preconnect" href="https://i.ibb.co">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <!-- JSON-LD SEO -->
     <script type="application/ld+json">
@@ -205,38 +208,10 @@
             .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
         }
     </style>
-        <link rel="stylesheet" href="mobile-fix.css?v=304">
-    <link rel="stylesheet" href="premium.css?v=5">
+        <link rel="stylesheet" href="mobile-fix.css?v=5">
+    <link rel="stylesheet" href="premium.css?v=8">
 </head>
 <body>
-    <!-- Splash Screen -->
-<div id="splashScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); z-index:999999; display:flex; align-items:center; justify-content:center; flex-direction:column;">
-    
-    <div style="text-align:center; animation:zoomIn 1s ease-out;">
-        <div style="width:120px; height:120px; background:white; border-radius:30px; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:bounce 2.5s infinite;">
-            <img src="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; padding:10px;">
-        </div>
-        
-        <h1 style="color:white; font-size:32px; font-weight:800; margin-bottom:10px; font-family:'Hind Siliguri', sans-serif; animation:slideUp 0.8s ease-out;">
-            স্মার্ট কেনাকাটা
-        </h1>
-        
-        <p style="color:rgba(255,255,255,0.9); font-size:14px; letter-spacing:3px; margin-bottom:30px; animation:slideUp 1s ease-out;">
-            TRUSTED ONLINE SHOP
-        </p>
-        
-        <div style="display:flex; gap:8px; justify-content:center;">
-            <div style="width:12px; height:12px; background:white; border-radius:50%; animation:loadingDot 2.5s infinite ease-in-out;"></div>
-            <div style="width:12px; height:12px; background:white; border-radius:50%; animation:loadingDot 2.5s infinite ease-in-out 0.4s;"></div>
-            <div style="width:12px; height:12px; background:white; border-radius:50%; animation:loadingDot 2.5s infinite ease-in-out 0.8s;"></div>
-        </div>
-    </div>
-    
-    <div style="position:absolute; bottom:30px; color:rgba(255,255,255,0.7); font-size:12px; font-family:'Hind Siliguri', sans-serif;">
-        ⚡ Loading...
-    </div>
-</div>
-
 <style>
 @keyframes fadeOut {
     to { opacity: 0; visibility: hidden; }
@@ -539,7 +514,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="site-core.js?v=1"></script>
+    <script src="site-core.js?v=3"></script>
 
     <script>
         const firebaseConfig = {
@@ -560,8 +535,23 @@
         let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
 
         const HOME_CACHE_KEY = 'sk_home_products_v2';
-        const HOME_CACHE_TTL = 5 * 60 * 1000; // ৫ মিনিট — Firestore read বাঁচায়
+        const HOME_CACHE_TTL = 15 * 60 * 1000; // ১৫ মিনিট — Firestore read বাঁচায়
         const HOME_LIMIT = 12;
+        // catalogVersion — অ্যাডমিনে প্রোডাক্ট বদলালে এই মান বদলায়; ক্যাশ তখনই invalidate হয়
+        let skCatalogVersion = 0;
+        try {
+            const skc = JSON.parse(localStorage.getItem('sk_settings') || 'null');
+            if (skc && skc.v && skc.v.catalogVersion) skCatalogVersion = Number(skc.v.catalogVersion);
+        } catch (e) {}
+        document.addEventListener('sk-settings', function (e) {
+            const cv = (e.detail || {}).catalogVersion;
+            if (!cv) return;
+            if (skCatalogVersion && Number(cv) !== Number(skCatalogVersion)) {
+                try { localStorage.removeItem(HOME_CACHE_KEY); } catch (err) {}
+                loadProducts(true);
+            }
+            skCatalogVersion = Number(cv);
+        });
 
         // ===== ক্যাটাগরি ক্লাসিফায়ার (হোমপেজের balanced list-এর জন্য) =====
         const HOME_MALE_KW = ['shirt', 'tshirt', 't-shirt', 't shirt', 'polo', 'pant', 'trouser', 'panjabi', 'পাঞ্জাবি', 'পাঞ্জাবী', ' men', 'men ', 'for men', 'man', 'boy', 'boys', 'gents', 'tank top', 'smoking', 'tie'];
@@ -623,7 +613,7 @@
             if (!forceRefresh) {
                 try {
                     const cached = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
-                    if (cached && cached.v === 2 && cached.t && (Date.now() - cached.t < HOME_CACHE_TTL) && cached.list.length) {
+                    if (cached && cached.v === 3 && cached.t && (Date.now() - cached.t < HOME_CACHE_TTL) && cached.list.length) {
                         renderHome(cached.list);
                         return;
                     }
@@ -636,7 +626,7 @@
                 if (!grid.querySelector('.sk-skeleton-card')) return;
                 try {
                     const stale = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
-                    if (stale && stale.v === 2 && stale.list && stale.list.length) renderHome(stale.list);
+                    if (stale && stale.v === 3 && stale.list && stale.list.length) renderHome(stale.list);
                 } catch (e) {}
             }, 3500);
 
@@ -651,6 +641,11 @@
                 .then((snapshot) => {
                     clearTimeout(slowTimer);
                     if (!snapshot) throw new Error('empty');
+                    // offline হলে Firestore cache থেকেও ফলাফল আসে — খালি ফলাফল + offline = মিথ্যা "পণ্য নেই" দেখাবো না
+                    if (snapshot.empty && (snapshot.metadata.fromCache || !navigator.onLine)) {
+                        grid.innerHTML = '<div class="empty-state"><i class="fas fa-wifi"></i><h3>নেটওয়ার্ক সমস্যা</h3><p>ইন্টারনেট সংযোগ নেই — আবার চেষ্টা করুন</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
+                        return;
+                    }
                     const list = [];
                     snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
                     list.sort((a, b) => {
@@ -662,15 +657,21 @@
                         grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
                         return;
                     }
-                    try { localStorage.setItem(HOME_CACHE_KEY, JSON.stringify({ v: 2, t: Date.now(), list: list })); } catch (e) {}
+                    try { localStorage.setItem(HOME_CACHE_KEY, JSON.stringify({ v: 3, t: Date.now(), list: list })); } catch (e) {}
                     renderHome(list);
                 })
                 .catch((error) => {
                     clearTimeout(slowTimer);
                     console.error('Error loading products:', error);
-                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>নেটওয়ার্ক/ডেটাবেস সমস্যা</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
+                    // কারণ বোঝার জন্য আলাদা মেসেজ — rules/API key ব্লক vs নেটওয়ার্ক
+                    const code = (error && (error.code || error.message)) || '';
+                    const isBlocked = /permission|denied|unauthorized|forbidden/i.test(code);
+                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>পণ্য লোড করতে সমস্যা</h3><p>' + (isBlocked ? 'ডেটাবেস থেকে প্রবেশ ব্লক করা আছে (Firebase Rules/API Key)' : 'নেটওয়ার্ক/ডেটাবেস সমস্যা') + '</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#10b981;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
                 });
         }
+
+        // অফলাইন → অনলাইন হলে হোমপেজ অটো-রিলোড (ক্যাশ করা "পণ্য নেই" আটকে থাকবে না)
+        window.addEventListener('online', function () { loadProducts(true); });
 
                 // ===== শেয়ার্ড লাইভ ক্যাটাগরি লোডার (১টা Firestore read — হোম, নেভ-মেনু, ড্রয়ার সবাই এটা ব্যবহার করে) =====
         const CATEGORY_ALIAS = {
@@ -704,7 +705,7 @@
             try {
                 const c = JSON.parse(localStorage.getItem('sk_categories') || 'null');
                 // v2 চিহ্নিত ক্যাশই শুধু মান্য — পুরনো (Gadget/ফ্যাশন মেশানো) ক্যাশ বাদ
-                if (c && c.v === 2 && c.t && (Date.now() - c.t < 10 * 60 * 1000) && c.list && c.list.length) {
+                if (c && c.v === 2 && c.t && (Date.now() - c.t < 30 * 60 * 1000) && c.list && c.list.length) {
                     return cleanCats(c.list);
                 }
             } catch (e) {}
@@ -752,7 +753,7 @@
                 let html = '';
                 cats.forEach(c => {
                     const iconHtml = c.image
-                        ? '<img src="' + c.image + '" alt="' + skEscape(c.name) + '" loading="lazy">'
+                        ? '<img src="' + skImg(c.image, 200) + '" alt="' + skEscape(c.name) + '" loading="lazy">'
                         : '<span>' + (c.icon || '📦') + '</span>';
                     html += '<a class="sk-cat-item" href="category.html?cat=' + encodeURIComponent(c.name) + '" onclick="filterCategory(\'' + String(c.name).replace(/'/g, "\\'") + '\', event)">'
                         + '<span class="sk-cat-icon">' + iconHtml + '</span>'
@@ -821,7 +822,7 @@
             let html = '<div class="sk-flash-card" data-pid="' + p.id + '" onclick="viewProduct(\'' + p.id + '\')">';
             html += '<div class="sk-flash-img">';
             if (discount > 0) html += '<span class="sk-flash-off">-' + discount + '%</span>';
-            html += '<img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
+            html += '<img src="' + skImg(p.image, 400) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
             html += '</div>';
             html += '<div class="sk-flash-info">';
             html += '<div class="sk-flash-name">' + escapeHtml(p.name) + '</div>';
@@ -854,10 +855,9 @@
             const tick = () => {
                 const remain = Number(endTime) - Date.now();
                 if (remain <= 0) {
-                    // সময় শেষ — কাউন্টডাউন UI-তে 'শেষ' দেখাই (বারবার render না করে)
-                    const cd = document.getElementById('flashCountdown');
-                    if (cd) cd.innerHTML = '<span class="sk-cd-label sk-cd-ended">⏰ এই অফার শেষ! নতুন অফার শীঘ্রই আসছে 🔥</span>';
+                    // সময় শেষ — মেয়াদোত্তীর্ণ কার্ড সেকশন থেকে সরিয়ে ফেলি (strict isFlashVisible)
                     clearInterval(flashTimerId);
+                    renderFlashSection();
                     return;
                 }
                 const h = Math.floor(remain / 3600000);
@@ -888,13 +888,16 @@
             }
             section.style.display = 'block';
             flashProductsCache.sort((a, b) => Number(a.flashEnd) - Number(b.flashEnd));
-            const nearest = Math.min.apply(null, flashProductsCache.map(p => Number(p.flashEnd)));
-            const remaining = nearest - Date.now();
-            if (remaining <= 0) {
-                // শেষ হয়ে গেছে — countdown-এর বদলে "শেষ হয়েছে" + নতুন অফার শীঘ্রই
-                if (cd) cd.innerHTML = '<span class="sk-cd-label sk-cd-ended">⏰ এই অফার শেষ! নতুন অফার শীঘ্রই আসছে 🔥</span>';
-            } else {
-                if (cd) cd.innerHTML = '<span class="sk-cd-label">শেষ হতে বাকি</span>'
+            // শুধু ভবিষ্যতের flashEnd-দের থেকে nearest বাছাই (মেয়াদোত্তীর্ণদের বাদ দিয়ে)
+            const futureEnds = flashProductsCache.map(p => Number(p.flashEnd)).filter(e => e > Date.now());
+            if (!futureEnds.length) {
+                // সব ফ্ল্যাশ শেষ — সেকশন লুকাই (মেয়াদোত্তীর্ণ কার্ড দেখাই না)
+                section.style.display = 'none';
+                clearInterval(flashTimerId);
+                return;
+            }
+            const nearest = Math.min.apply(null, futureEnds);
+            if (cd) cd.innerHTML = '<span class="sk-cd-label">শেষ হতে বাকি</span>'
                     + '<div class="sk-cd-cells">'
                     + '<span class="sk-cd-cell"><span id="flashH">00</span><small>ঘণ্টা</small></span>'
                     + '<span class="sk-cd-sep">:</span>'
@@ -902,17 +905,16 @@
                     + '<span class="sk-cd-sep">:</span>'
                     + '<span class="sk-cd-cell"><span id="flashS">00</span><small>সেকেন্ড</small></span>'
                     + '</div>';
-                startFlashCountdown(nearest);
-            }
+            startFlashCountdown(nearest);
             grid.innerHTML = flashProductsCache.map(flashCardHtml).join('');
             injectFlashRatings();
         }
 
-        // ফ্ল্যাশ পণ্য হিসেবে ধরা হবে: flashEnd ভবিষ্যতে অথবা গত ২৪ ঘণ্টার মধ্যে শেষ হয়েছে (দেখানোর জন্য)
+        // ফ্ল্যাশ পণ্য হিসেবে ধরা হবে: শুধুমাত্র ভবিষ্যতে শেষ হবে এমন (strict)
         function isFlashVisible(p) {
             const end = Number(p.flashEnd);
             if (!end) return false;
-            return end > Date.now() - 24 * 60 * 60 * 1000;
+            return end > Date.now();
         }
         // ===== 🎁 অফার পপআপ (প্রতি ইউজারে একবার) =====
         let offerLink = '';
@@ -980,7 +982,7 @@
             const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
             const safeImage = (p.image || 'https://via.placeholder.com/300').replace(/'/g, "\\'");
             const stockOut = (p.stock !== undefined && p.stock !== null && p.stock <= 0);
-            let html = '<div class="sk-qv-img"><img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" onerror="this.src=\'https://via.placeholder.com/300\'">';
+            let html = '<div class="sk-qv-img"><img src="' + skImg(p.image, 600) + '" alt="' + safeName + '" onerror="this.src=\'https://via.placeholder.com/300\'">';
             if (discount > 0) html += '<span class="sk-qv-off">-' + discount + '%</span>';
             html += '</div>';
             html += '<div class="sk-qv-info">';
@@ -1047,7 +1049,7 @@
                     grid.innerHTML = list.map(p => {
                         const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                         let h = '<div class="sk-flash-card" data-pid="' + p.id + '" onclick="viewProduct(\'' + p.id + '\')">';
-                        h += '<div class="sk-flash-img"><img src="' + (p.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'"></div>';
+                        h += '<div class="sk-flash-img"><img src="' + skImg(p.image, 400) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'"></div>';
                         h += '<div class="sk-flash-info"><div class="sk-flash-name">' + escapeHtml(p.name) + '</div>';
                         h += '<div class="sk-flash-price"><b>৳' + p.price + '</b>';
                         if (p.oldPrice) h += '<s>৳' + p.oldPrice + '</s>';
@@ -1120,7 +1122,7 @@
                 else html += skStockBadge(product);
                 html += '<button class="wishlist-heart" onclick="event.stopPropagation(); toggleWishlist(\'' + product.id + '\', this)" style="position:absolute; top:12px; right:12px; width:38px; height:38px; background:white; border:none; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.1); z-index:2; transition:all 0.3s;"><i class="' + (wishlist.includes(product.id) ? 'fas' : 'far') + ' fa-heart" style="color:' + (wishlist.includes(product.id) ? '#ec4899' : '#94a3b8') + '; font-size:16px;"></i></button>';
                 html += '<button class="sk-qv-btn" onclick="event.stopPropagation(); openQuickView(\'' + product.id + '\')" title="কুইক ভিউ"><i class="fas fa-eye"></i></button>';
-                html += '<img src="' + (product.image || 'https://via.placeholder.com/300') + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
+                html += '<img src="' + skImg(product.image, 600) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'">';
                 html += '</div>';
                 html += '<div class="product-info">';
                 html += '<div class="product-category">' + escapeHtml(product.category || 'সাধারণ') + '</div>';
@@ -1248,7 +1250,7 @@
                 const safeId = (p.id || '').replace(/'/g, "\\'");
                 const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
                 html += '<div class="sk-suggest-item" onclick="viewProduct(\'' + safeId + '\')">'
-                    + '<img src="' + safeImage + '" alt="" loading="lazy" onerror="this.src=\'https://via.placeholder.com/38\'">'
+                    + '<img src="' + skImg(safeImage, 100) + '" alt="" loading="lazy" onerror="this.src=\'https://via.placeholder.com/38\'">'
                     + '<div class="sk-suggest-info">'
                     + '<div class="s-name">' + highlightMatch(p.name, q) + '</div>'
                     + '<div class="s-meta"><span class="sk-suggest-cat">' + skEscape(p.category || 'সাধারণ') + '</span>'
@@ -1499,7 +1501,7 @@ function toggleWishlist(productId, btn) {
             let html = '';
             cart.forEach(item => {
                 html += '<div class="cart-item">';
-                html += '<img src="' + (item.image || 'https://via.placeholder.com/80') + '" alt="' + item.name + '">';
+                html += '<img src="' + skImg(item.image, 200) + '" alt="' + item.name + '">';
                 html += '<div class="cart-item-info">';
                 html += '<h4>' + item.name + '</h4>';
                 html += '<p class="price">৳' + item.price + '</p>';
@@ -1571,7 +1573,7 @@ function loadBanners() {
     const showDefaultBanner = () => {
         // Query fail বা ব্যানার না থাকলে — ডিফল্ট স্ট্যাটিক ব্যানার (spinner কখনো আটকে থাকবে না)
         bannerList = [];
-        slider.innerHTML = '<img src="https://i.ibb.co.com/1tqfvKxj/Chat-GPT-Image-Jul-15-2026-11-33-06-PM.png" style="width:100%; display:block;" alt="স্মার্ট কেনাকাটা">';
+        slider.innerHTML = '<img src="' + skImg('https://i.ibb.co.com/1tqfvKxj/Chat-GPT-Image-Jul-15-2026-11-33-06-PM.png', 1200) + '" fetchpriority="high" decoding="async" style="width:100%; display:block;" alt="স্মার্ট কেনাকাটা">';
         if (dots) dots.innerHTML = '';
         updateBannerArrows();
     };
@@ -1579,6 +1581,18 @@ function loadBanners() {
     setTimeout(() => {
         if (slider.querySelector('.sk-banner-skeleton')) showDefaultBanner();
     }, 3000);
+
+    // আগের ভিজিট থেকে ব্যানারের আসল অনুপাত মনে থাকলে — ছবি লোডের আগেই ratio বসিয়ে CLS ঠেকাই
+    (function () {
+        try {
+            const r = JSON.parse(localStorage.getItem('sk_banner_ratio') || 'null');
+            const card = document.getElementById('bannerCard');
+            if (r && r.ar > 0 && r.t && (Date.now() - r.t < 7 * 24 * 60 * 60 * 1000) && card) {
+                slider.style.aspectRatio = String(r.ar);
+                card.classList.add('sk-ratio-set');
+            }
+        } catch (e) {}
+    })();
 
     db.collection('banners').where('active', '==', true).get()
         .then(snapshot => {
@@ -1596,7 +1610,9 @@ function loadBanners() {
             let dotsHtml = '';
             banners.forEach((b, i) => {
                 const onclick = b.link ? 'window.location.href=\'' + b.link + '\'' : '';
-                sliderHtml += '<div class="banner-slide ' + (i === 0 ? 'active' : '') + '"><img src="' + b.image + '" onclick="' + onclick + '" alt="' + (b.title || '') + '"></div>';
+                // প্রথম স্লাইড: LCP-র জন্য fetchpriority="high"
+                const fp = i === 0 ? ' fetchpriority="high" decoding="async"' : ' loading="lazy" decoding="async"';
+                sliderHtml += '<div class="banner-slide ' + (i === 0 ? 'active' : '') + '"><img src="' + skImg(b.image, 1200) + '"' + fp + ' onclick="' + onclick + '" alt="' + (b.title || '') + '"></div>';
                 dotsHtml += '<div class="banner-dot ' + (i === 0 ? 'active' : '') + '" onclick="showBannerSlide(' + i + ')"></div>';
             });
             
@@ -1604,6 +1620,7 @@ function loadBanners() {
             dots.innerHTML = dotsHtml;
             updateBannerArrows();
             restartBannerTimer();
+            measureBannerRatio(banners);
         })
         .catch((error) => {
             console.error('ব্যানার লোড করতে সমস্যা:', error);
@@ -1615,6 +1632,28 @@ function showBannerSlide(index) {
     document.querySelectorAll('.banner-slide').forEach((s, i) => s.classList.toggle('active', i === index));
     document.querySelectorAll('.banner-dot').forEach((d, i) => d.classList.toggle('active', i === index));
     bannerSlideIndex = index;
+}
+
+// ব্যানারের আসল ছবির অনুপাত মেপে #bannerSlider-এ aspect-ratio বসাই + localStorage-এ মনে রাখি
+// → skeleton থেকে আসল ছবিতে বদলানোর সময় layout shift (CLS) হবে না
+function measureBannerRatio(banners) {
+    try {
+        const first = (banners && banners[0]) || null;
+        if (!first || !first.image) return;
+        const card = document.getElementById('bannerCard');
+        const sliderEl = document.getElementById('bannerSlider');
+        if (!card || !sliderEl) return;
+        const probe = new Image();
+        probe.onload = function () {
+            const w = probe.naturalWidth, h = probe.naturalHeight;
+            if (!w || !h) return;
+            const ar = (w / h).toFixed(4);
+            sliderEl.style.aspectRatio = ar;
+            card.classList.add('sk-ratio-set');
+            try { localStorage.setItem('sk_banner_ratio', JSON.stringify({ ar: Number(ar), t: Date.now() })); } catch (e) {}
+        };
+        probe.src = skImg(first.image, 1200);
+    } catch (e) {}
 }
 
 // ===== Touch swipe — audience নিজে হাতে টেনে slide করতে পারবে =====
@@ -1641,23 +1680,7 @@ function showBannerSlide(index) {
 
 loadBanners();
 
-                // Splash - show once per day only
-        (function(){
-            const splash = document.getElementById('splashScreen');
-            const lastSeen = localStorage.getItem('splashSeen');
-            const now = Date.now();
-            const oneDay = 24*60*60*1000;
-            if (lastSeen && (now - parseInt(lastSeen)) < oneDay) {
-                splash.style.display = 'none';
-            } else {
-                setTimeout(() => {
-                    splash.style.animation = 'fadeOut 0.5s ease-in-out forwards';
-                    setTimeout(() => splash.style.display = 'none', 500);
-                    localStorage.setItem('splashSeen', now.toString());
-                }, 900);
-            }
-        })();
-        loadProducts();
+                loadProducts();
         loadHomeCategories();
         loadNavMenu();
         loadFlashProducts();
@@ -1665,8 +1688,8 @@ loadBanners();
         updateCartCount();
         updateWishlistCount();
     </script>
-    <script src="chatbot.js"></script>
-    <script src="theme.js"></script>
+    <script src="chatbot.js?v=2"></script>
+    <script src="theme.js?v=2"></script>
     <script src="nav-drawer.js?v=1"></script>
     <!-- পুরনো দুই pagination স্ক্রিপ্ট সরানো হয়েছে (ডুপ্লিকেট কনফ্লিক্ট বাগ ফিক্স) -->
   
