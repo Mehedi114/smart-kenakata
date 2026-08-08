@@ -121,8 +121,8 @@
 
     // ===== ২) TRACKING — Facebook Pixel + GA4 =====
     // ⚙️ শুধু নিচের দুই লাইনে ID বসালেই পুরো সাইটে ট্র্যাকিং চালু হয়ে যাবে
-    const FB_PIXEL_ID = 'YOUR_PIXEL_ID';   // ← Facebook Pixel ID (যেমন: 1234567890123456)
-    const GA4_ID      = 'YOUR_GA4_ID';     // ← GA4 Measurement ID (যেমন: G-ABCDEF1234)
+    const FB_PIXEL_ID = '1398752431294213';   // ← Facebook Pixel ID (যেমন: 1234567890123456)
+    const GA4_ID      = 'G-EXYM20NTFQ';     // ← GA4 Measurement ID (যেমন: G-ABCDEF1234)
 
     // ⚠️ ID বসানো না থাকলে কনসোলে সতর্কবার্তা (কাজ শুরু করার আগে মনে করিয়ে দেয়)
     if (FB_PIXEL_ID === 'YOUR_PIXEL_ID' || GA4_ID === 'YOUR_GA4_ID') {
