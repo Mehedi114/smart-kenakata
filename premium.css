@@ -1419,6 +1419,8 @@ body { animation: skPageIn .3s ease-out; }
     .product-card:hover .product-image img { transform: none !important; }
 }
 
+/* ============ MOBILE OVERRIDES (admin/tracking কার্ড — শুধু ছোট স্ক্রিনে) ============ */
+@media (max-width: 768px) {
     .product-item-image img { object-fit: cover; }
     .product-actions {
         display: flex !important;
