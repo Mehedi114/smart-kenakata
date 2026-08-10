@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="seo.js?v=1"></script>
     <title>অ্যাডমিন ড্যাশবোর্ড - স্মার্ট কেনাকাটা</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://res.cloudinary.com">
     <link rel="preconnect" href="https://i.ibb.co.com">
+    <link rel="preconnect" href="https://i.postimg.cc">
     <link rel="preconnect" href="https://i.ibb.co">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -20,7 +25,7 @@
             top: 20px;
             right: 20px;
             background: white;
-            border-left: 5px solid #10b981;
+            border-left: 5px solid #2563eb;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.15);
@@ -80,7 +85,7 @@
             display: inline-block;
             margin-top: 10px;
             padding: 8px 15px;
-            background: #10b981;
+            background: #2563eb;
             color: white;
             border-radius: 8px;
             text-decoration: none;
@@ -91,8 +96,8 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            background: #d1fae5;
-            color: #065f46;
+            background: #dbeafe;
+            color: #1e3a8a;
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
@@ -102,7 +107,7 @@
         .live-dot {
             width: 8px;
             height: 8px;
-            background: #10b981;
+            background: #2563eb;
             border-radius: 50%;
             animation: livePulse 1.5s infinite;
         }
@@ -112,7 +117,7 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #10b981; --primary-dark: #059669;
+            --primary: #2563eb; --primary-dark: #1d4ed8;
             --dark: #0f172a; --dark-2: #1e293b;
             --white: #ffffff; --gray-50: #f8fafc;
             --gray-100: #f1f5f9; --gray-200: #e2e8f0;
@@ -121,6 +126,21 @@
             --red: #ef4444; --yellow: #f59e0b; --blue: #3b82f6;
         }
         body { font-family: 'Hind Siliguri', sans-serif; background: var(--gray-50); color: var(--dark); min-height: 100vh; }
+
+        /* 🌊 Admin sky dheu — storefront-এর থিমের সাথে মিলিয়ে */
+        body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background:
+            radial-gradient(560px 380px at 6% -4%, rgba(147,197,253,.30), transparent 62%),
+            radial-gradient(720px 430px at 106% 8%, rgba(125,211,252,.26), transparent 60%),
+            radial-gradient(380px 720px at 109% 24%, rgba(191,219,254,.34), transparent 63%),
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 300' preserveAspectRatio='none'%3E%3Cpath fill='%23dbeafe' fill-opacity='.5' d='M0,0H1440V150C1220,220 1030,105 770,128C510,151 270,235 0,178Z'/%3E%3Cpath fill='%23bfdbfe' fill-opacity='.34' d='M0,0H1440V95C1190,158 990,62 730,88C470,114 230,175 0,122Z'/%3E%3C/svg%3E") no-repeat top center / 100% auto,
+            linear-gradient(180deg, #f4f9ff 0%, #f8fafc 36%, #f8fafc 100%); }
+        body::after { content:""; position:fixed; top:0; left:0; width:240px; height:185px; z-index:-1; pointer-events:none;
+            background-image: radial-gradient(rgba(37,99,235,.18) 1.7px, transparent 1.9px); background-size: 24px 24px;
+            -webkit-mask-image: linear-gradient(135deg, black 22%, transparent 76%); mask-image: linear-gradient(135deg, black 22%, transparent 76%); }
+        @media (max-width: 768px) { body::after { width:130px; height:100px; background-size:20px 20px; } }
+        ::-webkit-scrollbar { width:10px; height:10px; }
+        ::-webkit-scrollbar-track { background:#eef2ff; }
+        ::-webkit-scrollbar-thumb { background:linear-gradient(180deg, #3b82f6, #1d4ed8); border-radius:8px; border:2px solid #eef2ff; }
 
         .sidebar { position: fixed; top: 0; left: 0; width: 260px; height: 100vh; background: linear-gradient(180deg, var(--dark) 0%, var(--dark-2) 100%); padding: 25px 0; z-index: 100; overflow-y: auto; }
         .sidebar-header { padding: 0 25px 25px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px; }
@@ -131,7 +151,7 @@
         .sidebar-menu { padding: 0 15px; }
         .menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 15px; color: rgba(255,255,255,0.7); text-decoration: none; border-radius: 10px; margin-bottom: 5px; cursor: pointer; transition: all 0.3s; font-size: 15px; font-weight: 500; border: none; width: 100%; background: none; font-family: inherit; text-align: left; position: relative; }
         .menu-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .menu-item.active { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
+        .menu-item.active { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; box-shadow: 0 5px 15px rgba(37,99,235, 0.3); }
         .menu-item i { width: 20px; text-align: center; }
         .menu-badge { position: absolute; right: 10px; background: var(--red); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
         .menu-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 15px 15px; }
@@ -151,7 +171,7 @@
         .stat-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; transition: transform 0.3s; }
         .stat-card:hover { transform: translateY(-3px); }
         .stat-icon { width: 55px; height: 55px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; }
-        .stat-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .stat-icon.green { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
         .stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
         .stat-icon.yellow { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .stat-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
@@ -176,7 +196,7 @@
 
         .btn { padding: 12px 25px; border: none; border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; text-decoration: none; }
         .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37,99,235, 0.3); }
         .btn-danger { background: var(--red); color: white; }
         .btn-secondary { background: var(--gray-200); color: var(--dark); }
         .btn-info { background: var(--blue); color: white; }
@@ -203,10 +223,10 @@
         .order-status { padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; }
         .status-pending { background: #fef3c7; color: #92400e; }
         .status-confirmed { background: #dbeafe; color: #1e40af; }
-        .status-delivered { background: #d1fae5; color: #065f46; }
+        .status-delivered { background: #dbeafe; color: #1e3a8a; }
         .status-cancelled { background: #fee2e2; color: #991b1b; }
         .status-unread { background: #fee2e2; color: #991b1b; }
-        .status-read { background: #d1fae5; color: #065f46; }
+        .status-read { background: #dbeafe; color: #1e3a8a; }
         .order-body { background: var(--gray-50); padding: 15px; border-radius: 10px; margin: 15px 0; }
         .order-item { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; }
         .order-total { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--gray-200); font-weight: 700; color: var(--primary); font-size: 16px; }
@@ -223,7 +243,7 @@
         .message-avatar { width: 45px; height: 45px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
         .message-sender-info h4 { font-size: 16px; margin-bottom: 3px; }
         .message-sender-info p { font-size: 13px; color: var(--gray-500); }
-        .message-subject { background: rgba(16, 185, 129, 0.1); color: var(--primary-dark); padding: 5px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; margin-bottom: 10px; }
+        .message-subject { background: rgba(37,99,235, 0.1); color: var(--primary-dark); padding: 5px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; display: inline-block; margin-bottom: 10px; }
         .message-body { background: var(--gray-50); padding: 15px; border-radius: 10px; margin: 10px 0; color: var(--gray-700); line-height: 1.7; }
         .message-time { font-size: 12px; color: var(--gray-500); margin-top: 10px; }
         .message-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
@@ -257,7 +277,7 @@
             .chart-grid { grid-template-columns: 1fr !important; }
         }
     </style>
-        <link rel="stylesheet" href="mobile-fix.css?v=4">
+        <link rel="stylesheet" href="mobile-fix.css?v=5">
 </head>
 <body>
 
@@ -314,6 +334,10 @@
 </button>
             <button class="menu-item" onclick="showSection('offer-popup', this)">
                 🎁 অফার পপআপ
+            </button>
+            <button class="menu-item" onclick="showSection('offerpages', this)">
+                <i class="fas fa-bullseye"></i>
+                <span>🎯 অফার পেজ মেকার</span>
             </button>
             <button class="menu-item" onclick="showSection('categories', this)">
     <i class="fas fa-layer-group"></i>
@@ -397,7 +421,7 @@
                         <h3 style="margin:0 0 12px; font-size:16px;">📈 শেষ ৭ দিনের বিক্রি (৳)</h3>
                         <div style="position:relative; height:260px;"><canvas id="salesChart"></canvas></div>
                         <div style="display:flex; gap:18px; margin-top:12px; flex-wrap:wrap; font-size:13px; color:#64748b;">
-                            <span>🟢 আজকের বিক্রি: <b id="todaySales" style="color:#059669;">৳0</b></span>
+                            <span>🟢 আজকের বিক্রি: <b id="todaySales" style="color:#1d4ed8;">৳0</b></span>
                             <span>🔵 এই সপ্তাহে: <b id="weekSales" style="color:#2563eb;">৳0</b></span>
                             <span>📦 ডেলিভারড মোট: <b id="deliveredRevenue" style="color:#7c3aed;">৳0</b></span>
                         </div>
@@ -444,6 +468,7 @@
                     <div class="form-group full">
                         <label>পণ্যের নাম *</label>
                         <input type="text" id="prodName" placeholder="উদাহরণ: স্মার্ট ওয়াচ আল্ট্রা প্রো" required>
+                        <small id="catSuggestHint" style="display:block; margin-top:6px; color:#1d4ed8; font-weight:500;"></small>
                     </div>
                   <div class="form-group">
                         <label>ক্যাটাগরি *</label>
@@ -452,14 +477,16 @@
                             <option value="মহিলা ফ্যাশন">👗 মহিলা ফ্যাশন</option>
                             <option value="পুরুষ ফ্যাশন">👔 পুরুষ ফ্যাশন</option>
                             <option value="কাপল">💑 কাপল</option>
+                            <option value="বিউটি ও স্কিন কেয়ার">💄 বিউটি ও স্কিন কেয়ার</option>
                             <option value="গ্যাজেট">📱 গ্যাজেট</option>
+                            <option value="হোম ও কিচেন">🍳 হোম ও কিচেন</option>
                             <option value="বাচ্চাদের ফ্যাশন">🧒 বাচ্চাদের ফ্যাশন</option>
                             <option value="অন্যান্য">📦 অন্যান্য</option>
                             <option value="__custom__">➕ নতুন ক্যাটাগরি যোগ করুন</option>
                         </select>
                         <div id="customCategoryDiv" style="display:none; margin-top:10px;">
-                            <input type="text" id="customCategoryInput" placeholder="নতুন ক্যাটাগরির নাম লিখুন (যেমন: গহনা)" style="width:100%; padding:10px; border:2px dashed #10b981; border-radius:8px;">
-                            <small style="color:#059669;">এটা লিখলে নতুন ক্যাটাগরি হিসেবে সেভ হবে আর ওয়েবসাইটে দেখা যাবে</small>
+                            <input type="text" id="customCategoryInput" placeholder="নতুন ক্যাটাগরির নাম লিখুন (যেমন: গহনা)" style="width:100%; padding:10px; border:2px dashed #2563eb; border-radius:8px;">
+                            <small style="color:#1d4ed8;">এটা লিখলে নতুন ক্যাটাগরি হিসেবে সেভ হবে আর ওয়েবসাইটে দেখা যাবে</small>
                         </div>
                     </div>
                     <div class="form-group">
@@ -483,17 +510,17 @@
                     </div>
                                       <div class="form-group full">
                         <label>📸 পণ্যের ছবি আপলোড (৫টি পর্যন্ত)</label>
-                        <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:20px; text-align:center; margin-bottom:15px;">
+                        <div style="background:linear-gradient(135deg, #f5f9ff, #dbeafe); border:2px dashed #2563eb; border-radius:12px; padding:20px; text-align:center; margin-bottom:15px;">
                             <input type="file" id="imageUploader" accept="image/*" multiple style="display:none;" onchange="uploadImages(event)">
-                            <label for="imageUploader" style="cursor:pointer; display:inline-block; padding:12px 25px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:10px; font-weight:600;">
+                            <label for="imageUploader" style="cursor:pointer; display:inline-block; padding:12px 25px; background:linear-gradient(135deg, #2563eb, #1d4ed8); color:white; border-radius:10px; font-weight:600;">
                                 <i class="fas fa-cloud-upload-alt"></i> ছবি আপলোড করুন
                             </label>
-                            <p style="font-size:12px; color:#059669; margin-top:10px;">💡 Ctrl চেপে একাধিক ছবি select করুন</p>
+                            <p style="font-size:12px; color:#1d4ed8; margin-top:10px;">💡 Ctrl চেপে একাধিক ছবি select করুন</p>
                             <div id="uploadProgress" style="margin-top:15px; display:none;">
                                 <div style="background:white; border-radius:10px; overflow:hidden; height:20px;">
-                                    <div id="progressBar" style="background:linear-gradient(90deg, #10b981, #059669); height:100%; width:0%; transition:width 0.3s; display:flex; align-items:center; justify-content:center; color:white; font-size:11px; font-weight:700;">0%</div>
+                                    <div id="progressBar" style="background:linear-gradient(90deg, #2563eb, #1d4ed8); height:100%; width:0%; transition:width 0.3s; display:flex; align-items:center; justify-content:center; color:white; font-size:11px; font-weight:700;">0%</div>
                                 </div>
-                                <p id="uploadStatus" style="font-size:12px; margin-top:8px; color:#059669;"></p>
+                                <p id="uploadStatus" style="font-size:12px; margin-top:8px; color:#1d4ed8;"></p>
                             </div>
                             <div id="imagePreview" style="display:none; grid-template-columns:repeat(auto-fill, minmax(80px, 1fr)); gap:8px; margin-top:15px;"></div>
                         </div>
@@ -536,11 +563,18 @@
                             <p style="font-size:12px; color:#dc2626; margin-top:10px;">সর্বোচ্চ 32MB</p>
                             <p id="videoUploadStatus" style="font-size:12px; margin-top:8px; display:none;"></p>
                         </div>
-                        <input type="url" id="prodVideo" placeholder="Auto fill অথবা YouTube URL">
+                        <input type="url" id="prodVideo" placeholder="YouTube / Facebook ভিডিও লিংক অথবা আপলোডের URL">
+                        <small style="color:#2563eb; display:block; margin-top:5px;">▶️ YouTube, Facebook (fb.watch সহ), Vimeo অথবা সরাসরি mp4 লিংক দিন — পণ্যের পেজে প্লেয়ার দেখাবে</small>
                     </div>
                     <div class="form-group full">
                         <label>পণ্যের বিবরণ</label>
                         <textarea id="prodDescription" placeholder="পণ্যের বিস্তারিত বিবরণ..."></textarea>
+                    </div>
+                    <div class="form-group full" style="background:#eff6ff; border:1.5px dashed #3b82f6; border-radius:12px; padding:14px 16px;">
+                        <label style="color:#1e3a8a;">🔍 SEO (Google সার্চ) — অটো জেনারেটেড</label>
+                        <small style="color:#2563eb; display:block; margin-bottom:10px;">নাম লিখলেই নিজে নিজে তৈরি হয় — চাইলে নিজের মতো বদলে দিন। খালি রাখলে সাইট automatic তৈরি করে ব্যবহার করবে।</small>
+                        <input type="text" id="prodSeoKeywords" placeholder="SEO keywords (কমা দিয়ে) — অটো তৈরি হবে" style="margin-bottom:10px;">
+                        <input type="text" id="prodSeoDesc" placeholder="SEO description (max ~১৬০ অক্ষর) — অটো তৈরি হবে">
                     </div>
                     <div class="form-group full" style="background:#fffbeb; border:1.5px solid #fbbf24; border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:8px;">
                         <input type="checkbox" id="prodFeatured" style="width:22px; height:22px; accent-color:#f59e0b; cursor:pointer; flex-shrink:0;">
@@ -549,8 +583,8 @@
                             <small style="color:#b45309; display:block; margin-top:2px;">টিক দিলে পণ্যটি ওয়েবসাইটের শুরুতে <b>জনপ্রিয় পণ্য</b> সেকশনে দেখা যাবে (সব ক্যাটাগরির সাথে মিশে)</small>
                         </div>
                     </div>
-<div class="form-group full" style="border-top:2px dashed #10b981; padding-top:20px; margin-top:20px;">
-    <h3 style="color:#10b981; margin-bottom:15px;"><i class="fas fa-tags"></i> ভেরিয়েন্ট ও ফ্ল্যাশ সেল (ঐচ্ছিক)</h3>
+<div class="form-group full" style="border-top:2px dashed #2563eb; padding-top:20px; margin-top:20px;">
+    <h3 style="color:#2563eb; margin-bottom:15px;"><i class="fas fa-tags"></i> ভেরিয়েন্ট ও ফ্ল্যাশ সেল (ঐচ্ছিক)</h3>
 </div>
 <div class="form-group">
     <label>📏 সাইজ (কমা দিয়ে)</label>
@@ -611,7 +645,7 @@
                         <div style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:20px; display:flex; gap:10px; align-items:center;">
                 <i class="fas fa-search" style="color:#64748b;"></i>
                 <input type="text" id="adminProductSearch" placeholder="🔍 নাম, ক্যাটাগরি বা সাপ্লায়ার দিয়ে খুঁজুন..." oninput="filterAdminProducts()" style="flex:1; border:none; background:transparent; outline:none; font-family:inherit; font-size:14px;">
-                <span id="adminProductCount" style="background:#10b981; color:white; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">0 টি</span>
+                <span id="adminProductCount" style="background:#2563eb; color:white; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">0 টি</span>
             </div>
             <div id="productsList">
                 <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
@@ -716,16 +750,16 @@
                     <div class="form-grid">
                        <div class="form-group full">
                             <label>📸 ব্যানার ছবি আপলোড করুন</label>
-                            <div style="background:linear-gradient(135deg, #f0fdf4, #d1fae5); border:2px dashed #10b981; border-radius:12px; padding:24px; text-align:center; margin-bottom:12px;">
+                            <div style="background:linear-gradient(135deg, #f5f9ff, #dbeafe); border:2px dashed #2563eb; border-radius:12px; padding:24px; text-align:center; margin-bottom:12px;">
                                 <input type="file" id="bannerUploader" accept="image/*" style="display:none;" onchange="uploadBannerImage(event)">
-                                <label for="bannerUploader" style="cursor:pointer; display:inline-flex; align-items:center; gap:10px; padding:13px 28px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:12px; font-weight:700; box-shadow:0 6px 18px rgba(16,185,129,.35); transition:all .2s;">
+                                <label for="bannerUploader" style="cursor:pointer; display:inline-flex; align-items:center; gap:10px; padding:13px 28px; background:linear-gradient(135deg, #2563eb, #1d4ed8); color:white; border-radius:12px; font-weight:700; box-shadow:0 6px 18px rgba(37,99,235,.35); transition:all .2s;">
                                     <i class="fas fa-cloud-upload-alt"></i> Computer থেকে ছবি তুলুন
                                 </label>
-                                <p style="font-size:12.5px; color:#059669; margin-top:10px;"><i class="fas fa-check-circle"></i> Cloudinary-এ আপলোড হবে — লিংক নিজে বসে যাবে</p>
+                                <p style="font-size:12.5px; color:#1d4ed8; margin-top:10px;"><i class="fas fa-check-circle"></i> Cloudinary-এ আপলোড হবে — লিংক নিজে বসে যাবে</p>
                                 <div id="bannerPreviewWrap" style="display:none; margin-top:14px;">
-                                    <img id="bannerPreview" src="" alt="ব্যানার প্রিভিউ" style="max-width:100%; max-height:180px; border-radius:12px; border:3px solid #10b981; box-shadow:0 8px 24px rgba(16,185,129,.25);">
+                                    <img id="bannerPreview" src="" alt="ব্যানার প্রিভিউ" style="max-width:100%; max-height:180px; border-radius:12px; border:3px solid #2563eb; box-shadow:0 8px 24px rgba(37,99,235,.25);">
                                 </div>
-                                <p id="bannerUploadStatus" style="font-size:13px; font-weight:700; margin-top:10px; color:#059669; display:none;"></p>
+                                <p id="bannerUploadStatus" style="font-size:13px; font-weight:700; margin-top:10px; color:#1d4ed8; display:none;"></p>
                             </div>
                             <label>ব্যানার ছবির লিংক <span style="color:#94a3b8; font-weight:400;">(আপলোড করলে নিজে বসে — প্রয়োজনে বদলাতে পারেন)</span></label>
                             <input type="url" id="bannerImage" placeholder="আপলোড করলেই অটো বসবে">
@@ -736,8 +770,8 @@
                         </div>
                         <div class="form-group">
                             <label>🔗 লিংক (ঐচ্ছিক — ক্লিক করলে এখানে যাবে)</label>
-                            <input type="text" id="bannerLink" placeholder="যেমন: category.html?cat=গ্যাজেট বা https://facebook.com/...">
-                            <small>যেকোনো লিংক দিন — <b>category.html?cat=...</b>, <b>product-details.html?id=...</b>, বা বাইরের ওয়েবসাইট। খালি রাখলে ক্লিকে কিছু হবে না।</small>
+                            <input type="text" id="bannerLink" placeholder="যেমন: offer.html?id=... বা category.html?cat=গ্যাজেট বা https://facebook.com/...">
+                            <small>যেকোনো লিংক দিন — 🎯 <b>offer.html?id=...</b> (অফার পেজ), <b>category.html?cat=...</b>, <b>product-details.html?id=...</b>, বা বাইরের ওয়েবসাইট। খালি রাখলে ক্লিকে কিছু হবে না।</small>
                         </div>
                         <div class="form-group">
                             <label>ক্রম</label>
@@ -793,7 +827,7 @@
                         </div>
                         <div class="form-group">
                             <label>🔗 লিংক (ক্লিক করলে যাবে)</label>
-                            <input type="text" id="popupLink" placeholder="product-details.html?id=... বা category.html?cat=...">
+                            <input type="text" id="popupLink" placeholder="offer.html?id=... বা product-details.html?id=... বা category.html?cat=...">
                         </div>
                         <div class="form-group full">
                             <label>🖼️ ছবির লিংক</label>
@@ -802,6 +836,97 @@
                     </div>
                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> সেভ করুন</button>
                 </form>
+            </div>
+            <div style="background:#eff6ff; padding:20px; border-radius:12px; border:1.5px solid #bfdbfe;">
+                <h3 style="margin-bottom:6px; color:#1e3a8a;">📢 অফার নোটিফিকেশন পাঠান (সব ইউজারে)</h3>
+                <p style="color:#2563eb; font-size:13px; margin-bottom:14px;">সাইট/অ্যাপ ওপেন থাকলে সাথে সাথে, বন্ধ থাকলে পরে খুললেই নোটিফিকেশন পাবে — ইন-অ্যাপ পপআপ + ফোনের সিস্টেম নোটিফিকেশন (পারমিশন থাকলে)।</p>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>শিরোনাম *</label>
+                        <input type="text" id="bcTitle" placeholder="🎉 ফ্ল্যাশ সেল! ৩০% ছাড়">
+                    </div>
+                    <div class="form-group">
+                        <label>বার্তা *</label>
+                        <input type="text" id="bcBody" placeholder="মাত্র আজকের জন্য সব গ্যাজেটে...">
+                    </div>
+                    <div class="form-group full">
+                        <label>🔗 লিংক (ঐচ্ছিক)</label>
+                        <input type="text" id="bcLink" placeholder="offer.html?id=... বা category.html?cat=গ্যাজেট বা product-details.html?id=...">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="sendBroadcast()"><i class="fas fa-paper-plane"></i> এখনই পাঠান</button>
+                <small id="bcStatus" style="display:block; margin-top:10px; font-weight:600; color:#2563eb;"></small>
+            </div>
+        </div>
+
+        <!-- 🎯 OFFER PAGE MAKER SECTION -->
+        <div class="section" id="offerpages-section">
+            <div class="section-title">
+                <h2>🎯 অফার পেজ মেকার</h2>
+                <button class="btn btn-primary btn-sm" onclick="loadOfferPages()">
+                    <i class="fas fa-sync"></i> রিফ্রেশ
+                </button>
+            </div>
+
+            <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:12px; padding:14px 18px; margin-bottom:20px; font-size:13.5px; color:#92400e;">
+                💡 <b>কীভাবে কাজ করে:</b> এখানে অফার পেজ বানান → তারপর নিচের তালিকা থেকে লিংক কপি করুন — <b>ব্যানার / পপআপ / নোটিফিকেশনে</b> বসাতে চাইলে <b>🏠 সাইট লিংক</b> বাটন, আর <b>ফেসবুক বিজ্ঞাপনে</b> দিতে চাইলে <b>📢 অ্যাড লিংক</b> বাটন চাপুন। কাস্টমার ক্লিক করলেই শুধু ওই পণ্যগুলোর একটি সুন্দর পেজ খুলবে! 🎉
+            </div>
+
+            <div style="background:#f8fafc; padding:20px; border-radius:12px; margin-bottom:25px;">
+                <h3 style="margin-bottom:15px;" id="offerFormTitle">➕ নতুন অফার পেজ বানান</h3>
+                <form onsubmit="saveOfferPage(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>অফারের নাম *</label>
+                            <input type="text" id="ofTitle" placeholder="যেমন: ঈদ মেগা সেল 🎉" required>
+                        </div>
+                        <div class="form-group">
+                            <label>ব্যাজ টেক্সট (ঐচ্ছিক)</label>
+                            <input type="text" id="ofBadge" placeholder="🔥 অফার চলছে">
+                        </div>
+                        <div class="form-group full">
+                            <label>ছোট বর্ণনা (ঐচ্ছিক)</label>
+                            <input type="text" id="ofSubtitle" placeholder="মাত্র কয়েকদিনের জন্য — নির্বাচিত পণ্যে দারুণ ছাড়!">
+                        </div>
+                        <div class="form-group full">
+                            <label>🖼️ উপরে দেখানো ব্যানার ছবির লিংক (ঐচ্ছিক)</label>
+                            <input type="url" id="ofImage" placeholder="https://... (দিলে পেজের উপরে বড় করে দেখাবে)">
+                        </div>
+                    </div>
+
+                    <div style="margin-top:18px;">
+                        <label style="font-weight:700; display:block; margin-bottom:8px;">📦 পণ্য বাছাই করুন * <span style="color:#94a3b8; font-weight:400;">(নিচের তালিকা থেকে ➕ চাপ দিন — যে ক্রমে যোগ করবেন সেই ক্রমেই দেখাবে)</span></label>
+                        <input type="text" id="offerProdSearch" placeholder="🔍 পণ্যের নাম লিখে খুঁজুন..." oninput="renderOfferPicker()" style="width:100%; padding:12px 16px; border:2px solid #e2e8f0; border-radius:10px; margin-bottom:12px; font-family:inherit; font-size:14px;">
+                        <div id="offerPickerList" style="max-height:280px; overflow-y:auto; display:grid; gap:8px; background:white; border:1.5px solid #e2e8f0; border-radius:10px; padding:10px;">
+                            <p style="color:#64748b; font-size:13px; text-align:center; padding:10px;">পণ্য লোড হচ্ছে...</p>
+                        </div>
+                        <div style="margin-top:12px;">
+                            <b style="font-size:13.5px;">✅ বাছাই করা পণ্য (<span id="offerSelCount">0</span>টি):</b>
+                            <div id="offerSelectedList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+                                <span style="color:#94a3b8; font-size:13px;">এখনো কিছু বাছাই হয়নি</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid" style="margin-top:16px;">
+                        <div class="form-group">
+                            <label>সক্রিয়?</label>
+                            <select id="ofActive">
+                                <option value="true">হ্যাঁ — লাইভে দেখাবে</option>
+                                <option value="false">না — ড্রাফট হিসেবে থাকবে</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+                        <button type="submit" class="btn btn-primary" id="saveOfferBtn"><i class="fas fa-save"></i> অফার পেজ সেভ করুন</button>
+                        <button type="button" class="btn btn-danger" id="cancelOfferEditBtn" style="display:none;" onclick="resetOfferForm()">❌ এডিট বাতিল</button>
+                    </div>
+                </form>
+            </div>
+
+            <h3 style="margin-bottom:15px;">📋 বানানো অফার পেজগুলো</h3>
+            <div id="offerPagesList">
+                <div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>
             </div>
         </div>
 
@@ -865,16 +990,16 @@
                     <li>✍️ কলাম মেনে পণ্যের তথ্য ভরুন (<b>name, price</b> বাধ্যতামূলক)</li>
                     <li>📤 নিচে ফাইল সিলেক্ট করুন → সব পণ্য একসাথে আপলোড হয়ে যাবে!</li>
                 </ol>
-                <div style="border:2px dashed #10b981; border-radius:14px; padding:30px; text-align:center; background:#f0fdf4; margin-top:10px;">
+                <div style="border:2px dashed #2563eb; border-radius:14px; padding:30px; text-align:center; background:#f5f9ff; margin-top:10px;">
                     <input type="file" id="bulkFileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleBulkFile(this)">
-                    <label for="bulkFileInput" style="cursor:pointer; display:inline-block; padding:14px 30px; background:linear-gradient(135deg, #10b981, #059669); color:white; border-radius:12px; font-weight:700; font-size:16px;">
+                    <label for="bulkFileInput" style="cursor:pointer; display:inline-block; padding:14px 30px; background:linear-gradient(135deg, #2563eb, #1d4ed8); color:white; border-radius:12px; font-weight:700; font-size:16px;">
                         <i class="fas fa-cloud-upload-alt"></i> Excel / CSV ফাইল বেছে নিন
                     </label>
                     <p style="margin-top:10px; color:#64748b; font-size:13px;">একবারে সর্বোচ্চ ৪০০টি পণ্য</p>
                 </div>
                 <div id="bulkProgress" style="display:none; margin-top:20px;">
                     <div style="background:#e2e8f0; border-radius:999px; height:14px; overflow:hidden;">
-                        <div id="bulkProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,#10b981,#059669); transition:width .3s;"></div>
+                        <div id="bulkProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,#2563eb,#1d4ed8); transition:width .3s;"></div>
                     </div>
                     <p id="bulkProgressText" style="text-align:center; margin-top:8px; font-weight:600; color:#334155;"></p>
                 </div>
@@ -953,7 +1078,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="site-core.js?v=3"></script>
+    <script src="site-core.js?v=4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -1017,12 +1142,14 @@
         }
         // ===== সাব-ক্যাটাগরি লিস্ট (সাইটের মতোই) =====
         const ADMIN_SUB_CATS = {
-            'মহিলা ফ্যাশন': ['শাড়ি', 'থ্রি-পিস ও ফোর-পিস', 'হিজাব ও খিমার', 'স্কার্ট ও টপস', 'বটম (প্লাজো/ট্রাউজার)', 'লেডিস টি-শার্ট', 'স্কিন কেয়ার ও বিউটি', 'কাপল'],
+            'মহিলা ফ্যাশন': ['শাড়ি', 'থ্রি-পিস ও ফোর-পিস', 'হিজাব ও খিমার', 'স্কার্ট ও টপস', 'বটম (প্লাজো/ট্রাউজার)', 'লেডিস টি-শার্ট', 'কাপল'],
             'পুরুষ ফ্যাশন': ['টি-শার্ট', 'পোলো', 'শার্ট', 'পাঞ্জাবি', 'প্যান্ট ও ট্রাউজার', 'গাউন', 'কম্বো সেট', 'কাপল'],
             'কাপল': ['কাপল'],
-            'গ্যাজেট': ['ঘড়ি', 'হেলথ কেয়ার', 'অডিও', 'মোবাইল এক্সেসরিজ', 'হোম অ্যাপ্লায়েন্স'],
+            'বিউটি ও স্কিন কেয়ার': ['স্কিন কেয়ার', 'মেকআপ', 'হেয়ার কেয়ার', 'পারফিউম ও বডি স্প্রে', 'সাবান ও বডি কেয়ার', 'বিউটি টুলস'],
+            'গ্যাজেট': ['ঘড়ি ও স্মার্ট ওয়াচ', 'পাওয়ার ব্যাংক', 'চার্জার ও ক্যাবল', 'অডিও', 'মোবাইল এক্সেসরিজ', 'হেলথ কেয়ার', 'গ্রুমিং'],
+            'হোম ও কিচেন': ['ব্লেন্ডার ও মিক্সার', 'কিচেন অ্যাপ্লায়েন্স', 'হোম অ্যাপ্লায়েন্স', 'কুকওয়্যার ও কিচেন টুলস', 'হোম ডেকর'],
             'বাচ্চাদের ফ্যাশন': ['ব্যাগ ও ব্যাকপ্যাক', 'বেবি ও প্রিস্কুল', 'স্কুল ও স্টেশনারি', 'খেলনা', 'ছোটদের ফ্যাশন'],
-            'অন্যান্য': ['ব্যাগ ও ব্যাকপ্যাক', 'স্কিন কেয়ার', 'বই ও স্টেশনারি', 'খেলনা']
+            'অন্যান্য': ['ব্যাগ ও ব্যাকপ্যাক', 'বই ও স্টেশনারি', 'খেলনা']
         };
 
         function populateSubCats(cat) {
@@ -1038,6 +1165,47 @@
             });
         }
 
+        // ===== 🔍 AUTO CATEGORY SUGGEST + AUTO SEO (seo.js) =====
+        let _seoTimer = null;
+        function skAutoSeoDebounce() {
+            clearTimeout(_seoTimer);
+            _seoTimer = setTimeout(skAutoSeo, 350);
+        }
+        function skAutoSeo() {
+            if (!window.SKSEO) return;
+            const name = document.getElementById('prodName').value.trim();
+            const hint = document.getElementById('catSuggestHint');
+            if (name.length < 3) { if (hint) hint.textContent = ''; return; }
+            // ১) ক্যাটাগরি সাজেস্ট — ম্যানুয়ালি বাছাই না করে থাকলে অটো-সিলেক্ট
+            const catSel = document.getElementById('prodCategory');
+            const guessed = SKSEO.detectCategory(name);
+            if (catSel && !catSel.value && guessed && guessed !== 'অন্যান্য') {
+                const hasOpt = [...catSel.options].some(o => o.value === guessed);
+                if (hasOpt) {
+                    catSel.value = guessed;
+                    populateSubCats(guessed);
+                    if (hint) hint.textContent = '✨ নাম দেখে ক্যাটাগরি বাছাই: ' + guessed + ' (বদলাতে পারেন)';
+                }
+            } else if (hint && guessed !== 'অন্যান্য') {
+                hint.textContent = '✨ Auto-detect: ' + guessed;
+            }
+            // ২) SEO ফিল্ড অটো-ফিল (খালি/আগের অটো-ফিল থাকলেই — নিজের লেখা নষ্ট হয় না)
+            const p = { name: name, category: (catSel && catSel.value) || guessed };
+            const subSel = document.getElementById('prodSubCategory');
+            if (subSel && subSel.value) p.subCategory = subSel.value;
+            const kwEl = document.getElementById('prodSeoKeywords');
+            const descEl = document.getElementById('prodSeoDesc');
+            const priceEl = document.getElementById('prodPrice');
+            if (priceEl && priceEl.value) p.price = Number(priceEl.value);
+            if (kwEl && (!kwEl.value || kwEl.dataset.auto === '1')) { kwEl.value = SKSEO.buildKeywords(p); kwEl.dataset.auto = '1'; }
+            if (descEl && (!descEl.value || descEl.dataset.auto === '1')) { descEl.value = SKSEO.buildDescription(p); descEl.dataset.auto = '1'; }
+        }
+        ['prodSeoKeywords', 'prodSeoDesc'].forEach(id => {
+            document.addEventListener('input', e => { if (e.target && e.target.id === id) e.target.dataset.auto = ''; });
+        });
+        document.getElementById('prodName').addEventListener('input', skAutoSeoDebounce);
+        document.getElementById('prodCategory').addEventListener('change', skAutoSeoDebounce);
+
         function checkCustomCategory(val) {
             document.getElementById('customCategoryDiv').style.display = val === '__custom__' ? 'block' : 'none';
             populateSubCats(val === '__custom__' ? '' : val);
@@ -1050,7 +1218,8 @@
                     'gadget': 'গ্যাজেট', 'electronics': 'গ্যাজেট', 'ইলেকট্রনিক্স': 'গ্যাজেট',
                     'ফিমেল ফ্যাশন': 'মহিলা ফ্যাশন', 'female fashion': 'মহিলা ফ্যাশন', 'women fashion': 'মহিলা ফ্যাশন',
                     'male fashion': 'পুরুষ ফ্যাশন', 'men fashion': 'পুরুষ ফ্যাশন',
-                    'beauty': 'অন্যান্য', 'বিউটি': 'অন্যান্য', 'others': 'অন্যান্য',
+                    'beauty': 'বিউটি ও স্কিন কেয়ার', 'বিউটি': 'বিউটি ও স্কিন কেয়ার', 'skincare': 'বিউটি ও স্কিন কেয়ার', 'স্কিন কেয়ার': 'বিউটি ও স্কিন কেয়ার',
+                    'home': 'হোম ও কিচেন', 'হোম ও লিভিং': 'হোম ও কিচেন', 'kitchen': 'হোম ও কিচেন', 'কিচেন': 'হোম ও কিচেন', 'others': 'অন্যান্য',
                     'kids': 'বাচ্চাদের ফ্যাশন', 'kids fashion': 'বাচ্চাদের ফ্যাশন', 'শিশু': 'বাচ্চাদের ফ্যাশন', 'বাচ্চা': 'বাচ্চাদের ফ্যাশন'
                 };
                 snap.forEach(doc => {
@@ -1079,6 +1248,7 @@
             if (sectionName === 'reviews') loadAdminReviews();
             if (sectionName === 'banners') loadBanners();
             if (sectionName === 'offer-popup') loadOfferPopup();
+            if (sectionName === 'offerpages') loadOfferPages();
             if (sectionName === 'categories') loadCategoryManager();
             if (sectionName === 'settings') loadSettingsForm();
             if (sectionName === 'dashboard') loadSalesChart();
@@ -1177,7 +1347,7 @@
                         previewItem.style.cssText = 'position:relative; border-radius:10px; overflow:hidden; aspect-ratio:1; box-shadow:0 2px 8px rgba(0,0,0,0.1);';
                         previewItem.innerHTML = `
                             <img src="${url}" style="width:100%; height:100%; object-fit:cover;">
-                            <div style="position:absolute; top:5px; left:5px; background:#10b981; color:white; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700;">
+                            <div style="position:absolute; top:5px; left:5px; background:#2563eb; color:white; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700;">
                                 ${i+1}
                             </div>
                         `;
@@ -1193,7 +1363,7 @@
             progressBar.style.width = '100%';
             progressBar.textContent = '100%';
             uploadStatus.textContent = `✅ ${uploadedUrls.length}টি ছবি সফলভাবে আপলোড হয়েছে!`;
-            uploadStatus.style.color = '#10b981';
+            uploadStatus.style.color = '#2563eb';
             uploadStatus.style.fontWeight = '700';
             
             showToast('success', `✅ ${uploadedUrls.length}টি ছবি upload হয়েছে!`);
@@ -1233,7 +1403,7 @@
 
                 if (data.secure_url) {
                     document.getElementById('bannerImage').value = data.secure_url;
-                    statusEl.style.color = '#059669';
+                    statusEl.style.color = '#1d4ed8';
                     statusEl.textContent = '✅ আপলোড সফল! ছবির লিংক বসে গেছে';
                     showToast('success', '✅ ব্যানার আপলোড হয়েছে!');
                 } else {
@@ -1294,6 +1464,8 @@
 thumbnail: document.getElementById('thumbnailImage').value,
 
 description: document.getElementById('prodDescription').value.trim(),
+seoKeywords: (document.getElementById('prodSeoKeywords') ? document.getElementById('prodSeoKeywords').value.trim() : ''),
+seoDesc: (document.getElementById('prodSeoDesc') ? document.getElementById('prodSeoDesc').value.trim() : ''),
 video: document.getElementById('prodVideo').value.trim(),
 
 supplier: document.getElementById('prodSupplier').value.trim(),
@@ -1360,7 +1532,7 @@ flashEnd: (function(){ const v = document.getElementById('prodFlashEnd').value; 
                 const p = (typeof doc.data === 'function' ? doc.data() : doc);
                 const id = doc.id || p.id;
                 const profit = (p.buyPrice && p.price) ? (p.price - p.buyPrice) : null;
-                const profitColor = profit > 0 ? '#10b981' : '#ef4444';
+                const profitColor = profit > 0 ? '#2563eb' : '#ef4444';
                 html += '<div class="product-item" onclick="showProductDetails(\'' + id + '\')" style="cursor:pointer;">';
                 html += '<div class="product-item-image"><img src="' + skImg(p[p.thumbnail] || p.image, 200) + '" loading="lazy" decoding="async" onerror="this.src=\'https://via.placeholder.com/280x180\'"></div>';
                 html += '<div class="product-item-info"><div class="cat">' + (p.category || '') + '</div><h4>' + p.name + (p.featured ? ' <span style="background:#f59e0b;color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;margin-left:4px;">⭐ জনপ্রিয়</span>' : '') + '</h4><div class="price">বিক্রয়: ৳' + p.price + '</div>';
@@ -1438,11 +1610,11 @@ async function showProductDetails(productId) {
                     <button onclick="closeProductDetails()" style="position:absolute;top:15px;right:15px;background:#ef4444;color:white;border:none;width:35px;height:35px;border-radius:50%;font-size:18px;cursor:pointer;">✕</button>
                     
                     <h2 style="margin-top:0;color:#111;padding-right:40px;">${p.name || 'N/A'}</h2>
-                    <span style="background:#10b981;color:white;padding:4px 12px;border-radius:20px;font-size:13px;">${p.category || 'N/A'}</span>
+                    <span style="background:#2563eb;color:white;padding:4px 12px;border-radius:20px;font-size:13px;">${p.category || 'N/A'}</span>
                     
                     <div style="margin-top:20px;">${imagesHtml}${videoHtml}</div>
                     
-                    <div style="background:#f0fdf4;padding:15px;border-radius:10px;margin:15px 0;border-left:4px solid #10b981;">
+                    <div style="background:#f5f9ff;padding:15px;border-radius:10px;margin:15px 0;border-left:4px solid #2563eb;">
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                             <div>💰 <b>বিক্রয় দাম:</b> ৳${p.price || 0}</div>
                             <div>🏷️ <b>পুরনো দাম:</b> ৳${p.oldPrice || 0}</div>
@@ -1464,7 +1636,7 @@ async function showProductDetails(productId) {
                             ${p.supplier ? `<div>👤 <b>নাম:</b> ${p.supplier}</div>` : ''}
                             ${p.supplierPhone ? `<div>📞 <b>ফোন:</b> ${p.supplierPhone}</div>` : ''}
                             ${p.buyPrice ? `<div>💵 <b>কেনা দাম:</b> ৳${p.buyPrice}</div>` : ''}
-                            ${p.buyPrice ? `<div>📈 <b>লাভ:</b> <span style="color:${profit>=0?'#10b981':'#ef4444'};font-weight:bold;">৳${profit}</span></div>` : ''}
+                            ${p.buyPrice ? `<div>📈 <b>লাভ:</b> <span style="color:${profit>=0?'#2563eb':'#ef4444'};font-weight:bold;">৳${profit}</span></div>` : ''}
                             ${p.source ? `<div>📍 <b>কোথা থেকে:</b> ${p.source}</div>` : ''}
                             ${p.privateNote ? `<div>📝 <b>নোট:</b> ${p.privateNote}</div>` : ''}
                         </div>
@@ -1473,7 +1645,7 @@ async function showProductDetails(productId) {
                     <div style="color:#666;font-size:13px;margin:15px 0;">📅 তৈরি: ${createdDate}</div>
                     
                     <div style="display:flex;gap:10px;margin-top:20px;">
-                        <button onclick="closeProductDetails(); editProduct('${productId}')" style="flex:1;background:#10b981;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;cursor:pointer;">✏️ এডিট করুন</button>
+                        <button onclick="closeProductDetails(); editProduct('${productId}')" style="flex:1;background:#2563eb;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;cursor:pointer;">✏️ এডিট করুন</button>
                         <button onclick="closeProductDetails()" style="flex:1;background:#6b7280;color:white;border:none;padding:12px;border-radius:8px;font-size:15px;cursor:pointer;">❌ বন্ধ করুন</button>
                     </div>
                 </div>
@@ -1525,6 +1697,8 @@ if (thumbField) {
     thumbField.value = p.thumbnail || 'image';
 }
                 document.getElementById('prodDescription').value = p.description || '';
+                if (document.getElementById('prodSeoKeywords')) document.getElementById('prodSeoKeywords').value = p.seoKeywords || '';
+                if (document.getElementById('prodSeoDesc')) document.getElementById('prodSeoDesc').value = p.seoDesc || '';
                 document.getElementById('prodVideo').value = p.video || '';
                 document.getElementById('prodSupplier').value = p.supplier || '';
                 document.getElementById('prodSupplierPhone').value = p.supplierPhone || '';
@@ -1619,7 +1793,7 @@ if (o.transactionId) {
     html += ' <button onclick="navigator.clipboard.writeText(\'' + o.transactionId + '\'); showToast(\'success\', \'✅ কপি হয়েছে!\');" style="background:#0284c7; color:white; border:none; padding:3px 10px; border-radius:5px; cursor:pointer; font-size:11px; margin-left:5px;"><i class="fas fa-copy"></i> কপি</button>';
 }
 if (o.couponCode) {
-    html += '<br><strong>🎁 কুপন:</strong> <span style="background:#10b981; color:white; padding:3px 10px; border-radius:5px; font-weight:700;">' + o.couponCode + '</span> (-৳' + (o.couponDiscount || 0) + ')';
+    html += '<br><strong>🎁 কুপন:</strong> <span style="background:#2563eb; color:white; padding:3px 10px; border-radius:5px; font-weight:700;">' + o.couponCode + '</span> (-৳' + (o.couponDiscount || 0) + ')';
 }
 html += '</div>';                        html += '<div class="order-actions">';
                         if (status === 'pending') html += '<button class="btn btn-primary btn-sm" onclick="updateOrderStatus(\'' + o.id + '\', \'confirmed\')"><i class="fas fa-check"></i> কনফার্ম</button>';
@@ -1795,7 +1969,7 @@ function loadCoupons() {
                 const isExpired = c.expiry && new Date(c.expiry) < new Date();
                 const isUsedUp = c.used >= c.limit;
                 const isActive = c.active && !isExpired && !isUsedUp;
-                const statusColor = isActive ? '#10b981' : '#ef4444';
+                const statusColor = isActive ? '#2563eb' : '#ef4444';
                 const statusText = isExpired ? '⏰ মেয়াদ শেষ' : isUsedUp ? '❌ শেষ হয়ে গেছে' : (c.active ? '✅ সক্রিয়' : '⏸️ নিষ্ক্রিয়');
                 
                 html += `
@@ -1820,7 +1994,7 @@ function loadCoupons() {
                         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-top:15px; padding-top:15px; border-top:1px solid #e2e8f0;">
                             <div>
                                 <p style="font-size:11px; color:#64748b; text-transform:uppercase;">ডিসকাউন্ট</p>
-                                <p style="font-size:16px; font-weight:700; color:#10b981;">
+                                <p style="font-size:16px; font-weight:700; color:#2563eb;">
                                     ${c.type === 'percentage' ? c.amount + '%' : '৳' + c.amount}
                                 </p>
                             </div>
@@ -1870,7 +2044,7 @@ function addBanner(event) {
     
     let bannerLinkVal = document.getElementById('bannerLink').value.trim() || null;
     // auto-fix: http:// ছাড়া লিখলে যোগ করে দিই (বাইরের লিংক কাজ করার জন্য)
-    if (bannerLinkVal && !/^https?:\/\//i.test(bannerLinkVal) && !bannerLinkVal.startsWith('index.html') && !bannerLinkVal.startsWith('category.html') && !bannerLinkVal.startsWith('product-details.html') && !bannerLinkVal.startsWith('checkout.html') && !bannerLinkVal.startsWith('wishlist.html') && !bannerLinkVal.startsWith('tracking.html') && !bannerLinkVal.startsWith('pages.html') && !bannerLinkVal.startsWith('#')) {
+    if (bannerLinkVal && !/^https?:\/\//i.test(bannerLinkVal) && !bannerLinkVal.startsWith('index.html') && !bannerLinkVal.startsWith('category.html') && !bannerLinkVal.startsWith('product-details.html') && !bannerLinkVal.startsWith('checkout.html') && !bannerLinkVal.startsWith('wishlist.html') && !bannerLinkVal.startsWith('tracking.html') && !bannerLinkVal.startsWith('pages.html') && !bannerLinkVal.startsWith('offer.html') && !bannerLinkVal.startsWith('#')) {
         bannerLinkVal = 'https://' + bannerLinkVal;
     }
     const banner = {
@@ -1914,7 +2088,7 @@ function loadBanners() {
             
             let html = '<div style="display:grid; gap:15px;">';
             banners.forEach(b => {
-                const statusColor = b.active ? '#10b981' : '#ef4444';
+                const statusColor = b.active ? '#2563eb' : '#ef4444';
                 const statusText = b.active ? '✅ সক্রিয়' : '⏸️ নিষ্ক্রিয়';
                 
                 html += '<div style="background:white; border:2px solid #e2e8f0; border-radius:12px; overflow:hidden;">';
@@ -1923,7 +2097,7 @@ function loadBanners() {
                 html += '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">';
                 html += '<div><h4 style="margin:0;">' + (b.title || 'শিরোনামহীন') + '</h4>';
                 html += '<p style="font-size:12px; color:#64748b; margin:5px 0;">ক্রম: ' + (b.order || 1) + ' | <span style="color:' + statusColor + '; font-weight:700;">' + statusText + '</span></p>';
-                html += (b.link ? '<p style="font-size:12px; color:#059669; margin:3px 0;"><i class="fas fa-link"></i> <a href="' + b.link + '" target="_blank" style="color:#059669; text-decoration:none; word-break:break-all;">' + b.link + '</a></p>' : '<p style="font-size:12px; color:#94a3b8; margin:3px 0;">🔗 লিংক নেই</p>');
+                html += (b.link ? '<p style="font-size:12px; color:#1d4ed8; margin:3px 0;"><i class="fas fa-link"></i> <a href="' + b.link + '" target="_blank" style="color:#1d4ed8; text-decoration:none; word-break:break-all;">' + b.link + '</a></p>' : '<p style="font-size:12px; color:#94a3b8; margin:3px 0;">🔗 লিংক নেই</p>');
                 html += '</div>';
                 html += '<div style="display:flex; gap:8px;">';
                 html += '<button class="btn ' + (b.active ? 'btn-danger' : 'btn-primary') + ' btn-sm" onclick="toggleBanner(\'' + b.id + '\', ' + !b.active + ')">' + (b.active ? '⏸️ Off' : '▶️ On') + '</button>';
@@ -1954,6 +2128,251 @@ function deleteBanner(id) {
             loadBanners();
         });
 }       
+
+// ===== 🎯 OFFER PAGE MAKER FUNCTIONS =====
+// 📌 ডেটা settings/offerPages ডকের ভেতরে থাকে — আলাদা Firestore rules লাগে না!
+const OFFER_PAGES_DOC = 'offerPages';
+let offerAllProducts = [];   // পিকারের জন্য সব পণ্য
+let offerCacheDocs = [];     // বানানো অফার পেজগুলো
+let offerSel = [];           // বাছাই করা পণ্যের id (ক্রম বজায় থাকে)
+let editingOfferId = null;
+
+function offerPagesRef() {
+    return db.collection('settings').doc(OFFER_PAGES_DOC);
+}
+
+function loadOfferPages() {
+    loadOfferListPage();
+    // পিকারের জন্য পণ্য আনি (একবারই যথেষ্ট)
+    db.collection('products').limit(400).get().then(snap => {
+        offerAllProducts = [];
+        snap.forEach(d => offerAllProducts.push({ id: d.id, ...d.data() }));
+        renderOfferPicker();
+        renderOfferSelected();
+    }).catch(() => {});
+}
+
+function renderOfferPicker() {
+    const box = document.getElementById('offerPickerList');
+    if (!box) return;
+    const q = (document.getElementById('offerProdSearch').value || '').trim().toLowerCase();
+    let list = offerAllProducts;
+    if (q) list = list.filter(p => (p.name || '').toLowerCase().includes(q) || (p.category || '').toLowerCase().includes(q));
+    list = list.slice(0, 60);
+    if (!list.length) {
+        box.innerHTML = '<p style="color:#64748b; font-size:13px; text-align:center; padding:14px;">কোন পণ্য মেলেনি 🔍</p>';
+        return;
+    }
+    box.innerHTML = list.map(p => {
+        const inSel = offerSel.includes(p.id);
+        const nm = String(p.name || '').replace(/</g, '&lt;');
+        const ct = String(p.category || '').replace(/</g, '&lt;');
+        return '<div style="display:flex; align-items:center; gap:10px; padding:8px; border:1px solid ' + (inSel ? '#bfdbfe' : '#f1f5f9') + '; border-radius:10px; background:' + (inSel ? '#eff6ff' : 'white') + ';">'
+            + '<img src="' + String(p.image || '').replace(/"/g, '') + '" onerror="this.style.visibility=\'hidden\'" style="width:42px; height:42px; object-fit:cover; border-radius:8px; background:#f1f5f9;">'
+            + '<div style="flex:1; min-width:0;">'
+            + '<div style="font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + nm + '</div>'
+            + '<div style="font-size:12px; color:#64748b;">৳' + (p.price || 0) + ' • ' + ct + '</div>'
+            + '</div>'
+            + '<button type="button" class="btn ' + (inSel ? 'btn-danger' : 'btn-primary') + ' btn-sm" onclick="' + (inSel ? "offerRemove('" + p.id + "')" : "offerAdd('" + p.id + "')") + '">' + (inSel ? '✕ বাদ' : '➕ যোগ') + '</button>'
+            + '</div>';
+    }).join('');
+}
+
+function offerAdd(id) {
+    if (!offerSel.includes(id)) {
+        offerSel.push(id);
+        renderOfferPicker();
+        renderOfferSelected();
+    }
+}
+function offerRemove(id) {
+    offerSel = offerSel.filter(x => x !== id);
+    renderOfferPicker();
+    renderOfferSelected();
+}
+
+function renderOfferSelected() {
+    const cnt = document.getElementById('offerSelCount');
+    if (cnt) cnt.textContent = offerSel.length;
+    const box = document.getElementById('offerSelectedList');
+    if (!box) return;
+    if (!offerSel.length) {
+        box.innerHTML = '<span style="color:#94a3b8; font-size:13px;">এখনো কিছু বাছাই হয়নি</span>';
+        return;
+    }
+    box.innerHTML = offerSel.map((id, i) => {
+        const p = offerAllProducts.find(x => x.id === id);
+        const nm = String((p && p.name) || id).replace(/</g, '&lt;');
+        return '<span style="display:inline-flex; align-items:center; gap:6px; background:#eff6ff; border:1.5px solid #bfdbfe; color:#1e3a8a; font-size:12.5px; font-weight:600; padding:5px 10px; border-radius:999px;">'
+            + (i + 1) + '. ' + nm
+            + ' <button type="button" onclick="offerRemove(\'' + id + '\')" style="background:none; border:none; color:#dc2626; cursor:pointer; font-weight:800; font-size:13px; padding:0 2px;" title="বাদ দিন">✕</button>'
+            + '</span>';
+    }).join('');
+}
+
+function saveOfferPage(event) {
+    event.preventDefault();
+    const title = document.getElementById('ofTitle').value.trim();
+    if (!title) { showToast('error', '❌ অফারের নাম লিখুন'); return; }
+    if (!offerSel.length) { showToast('error', '❌ অন্তত ১টি পণ্য বাছাই করুন'); return; }
+    const btn = document.getElementById('saveOfferBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> সেভ হচ্ছে...';
+
+    const data = {
+        title: title,
+        subtitle: document.getElementById('ofSubtitle').value.trim(),
+        badge: document.getElementById('ofBadge').value.trim() || '🔥 অফার চলছে',
+        image: document.getElementById('ofImage').value.trim() || null,
+        productIds: offerSel.slice(),
+        active: document.getElementById('ofActive').value === 'true',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    const restore = () => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> অফার পেজ সেভ করুন'; };
+    const wasEditing = editingOfferId;
+    const id = wasEditing || ('ofr_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+    if (!wasEditing) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+
+    // settings ডকের ভেতরে map হিসেবে সেভ — শুধু এই key-টা লিখবে, বাকিগুলো অক্ষত থাকবে
+    const patch = {};
+    patch['pages.' + id] = data;
+    offerPagesRef().set(patch, { merge: true }).then(() => {
+        restore();
+        showToast('success', '✅ অফার পেজ সেভ হয়েছে!');
+        resetOfferForm();
+        loadOfferPages();
+        if (!wasEditing) {
+            // নতুন পেজ — সাইটের লিংকটা কপি করে দিই (ব্যানার/পপআপে বসানোর জন্য)
+            copyOfferLink(id, 'site');
+        }
+    }).catch(e => {
+        restore();
+        showToast('error', '❌ ' + e.message);
+    });
+}
+
+function resetOfferForm() {
+    editingOfferId = null;
+    offerSel = [];
+    document.getElementById('ofTitle').value = '';
+    document.getElementById('ofSubtitle').value = '';
+    document.getElementById('ofBadge').value = '';
+    document.getElementById('ofImage').value = '';
+    document.getElementById('ofActive').value = 'true';
+    document.getElementById('offerFormTitle').textContent = '➕ নতুন অফার পেজ বানান';
+    document.getElementById('cancelOfferEditBtn').style.display = 'none';
+    renderOfferPicker();
+    renderOfferSelected();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function editOfferPage(id) {
+    const o = offerCacheDocs.find(x => x.id === id);
+    if (!o) return;
+    editingOfferId = id;
+    document.getElementById('ofTitle').value = o.title || '';
+    document.getElementById('ofSubtitle').value = o.subtitle || '';
+    document.getElementById('ofBadge').value = o.badge || '';
+    document.getElementById('ofImage').value = o.image || '';
+    document.getElementById('ofActive').value = (o.active === false) ? 'false' : 'true';
+    offerSel = Array.isArray(o.productIds) ? o.productIds.slice() : [];
+    document.getElementById('offerFormTitle').textContent = '✏️ অফার পেজ এডিট করছেন';
+    document.getElementById('cancelOfferEditBtn').style.display = 'inline-block';
+    renderOfferPicker();
+    renderOfferSelected();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function loadOfferListPage() {
+    const box = document.getElementById('offerPagesList');
+    box.innerHTML = '<div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>';
+    offerPagesRef().get().then(doc => {
+        const pages = (doc.exists && doc.data() && doc.data().pages) || {};
+        const keys = Object.keys(pages);
+        if (!keys.length) {
+            offerCacheDocs = [];
+            box.innerHTML = '<div class="empty-state"><i class="fas fa-bullseye"></i><h3>এখনো কোন অফার পেজ নেই</h3><p style="margin-top:6px; color:#64748b;">উপরের ফর্ম দিয়ে প্রথম অফার পেজ বানান! 🎉</p></div>';
+            return;
+        }
+        offerCacheDocs = keys.map(k => ({ id: k, ...pages[k] }));
+        offerCacheDocs.sort((a, b) => ((b.createdAt && b.createdAt.seconds) || 0) - ((a.createdAt && a.createdAt.seconds) || 0));
+        let html = '<div style="display:grid; gap:14px;">';
+        offerCacheDocs.forEach(o => {
+            const cnt = Array.isArray(o.productIds) ? o.productIds.length : 0;
+            const on = o.active !== false;
+            const url = 'offer.html?id=' + o.id;
+            const date = (o.createdAt && o.createdAt.seconds) ? new Date(o.createdAt.seconds * 1000).toLocaleDateString('bn-BD') : '';
+            html += '<div style="background:white; border:2px solid #e2e8f0; border-radius:12px; padding:16px;">'
+                + '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">'
+                + '<div style="flex:1; min-width:200px;">'
+                + '<h4 style="margin:0 0 4px;">' + (o.badge ? o.badge + ' ' : '') + String(o.title || 'শিরোনামহীন').replace(/</g, '&lt;') + '</h4>'
+                + '<p style="font-size:12.5px; color:#64748b; margin:2px 0;">📦 ' + cnt + ' টি পণ্য' + (date ? ' • ' + date : '') + ' • <b style="color:' + (on ? '#2563eb' : '#ef4444') + ';">' + (on ? '✅ লাইভ' : '⏸️ বন্ধ') + '</b></p>'
+                + '<p style="font-size:12px; color:#1d4ed8; margin:4px 0 0; word-break:break-all;"><i class="fas fa-link"></i> ' + url + '</p>'
+                + '</div>'
+                + '<div style="display:flex; gap:8px; flex-wrap:wrap;">'
+                + '<a class="btn btn-primary btn-sm" href="' + url + '" target="_blank" title="পেজটি দেখুন"><i class="fas fa-eye"></i></a>'
+                + '<button class="btn btn-primary btn-sm" onclick="copyOfferLink(\'' + o.id + '\', \'site\')" title="ব্যানার/পপআপে বসানোর লিংক কপি করুন">🏠 সাইট লিংক</button>'
+                + '<button class="btn btn-primary btn-sm" onclick="copyOfferLink(\'' + o.id + '\', \'full\')" title="ফেসবুক অ্যাড/মেসেঞ্জারের জন্য ফুল লিংক">📢 অ্যাড লিংক</button>'
+                + '<button class="btn btn-primary btn-sm" onclick="editOfferPage(\'' + o.id + '\')" title="এডিট"><i class="fas fa-edit"></i></button>'
+                + '<button class="btn ' + (on ? 'btn-danger' : 'btn-primary') + ' btn-sm" onclick="toggleOfferPage(\'' + o.id + '\', ' + (!on) + ')" title="' + (on ? 'বন্ধ করুন' : 'চালু করুন') + '">' + (on ? '⏸️' : '▶️') + '</button>'
+                + '<button class="btn btn-danger btn-sm" onclick="deleteOfferPage(\'' + o.id + '\')" title="মুছুন"><i class="fas fa-trash"></i></button>'
+                + '</div></div></div>';
+        });
+        html += '</div>';
+        box.innerHTML = html;
+    }).catch(e => {
+        box.innerHTML = '<div class="empty-state"><h3>Error</h3><p>' + e.message + '</p></div>';
+    });
+}
+
+function copyOfferLink(id, which) {
+    // 'site' → ব্যানার/পপআপে বসানোর ছোট লিংক (প্রিভিউ + লাইভ দুই জায়গায়ই চলে)
+    // 'full' → ফেসবুক অ্যাড/মেসেঞ্জারে দেওয়ার ফুল লিংক
+    const rel = 'offer.html?id=' + id;
+    const text = (which === 'full') ? ('https://mehedi114.github.io/smart-kenakata/' + rel) : rel;
+    const label = (which === 'full')
+        ? '📢 ফুল লিংক কপি হয়েছে — ফেসবুক অ্যাডে ব্যবহার করুন!'
+        : '🏠 সাইটের লিংক কপি হয়েছে! এবার ব্যানার/পপআপের লিংক ঘরে বসান 🎯';
+    const done = () => showToast('success', label);
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done).catch(() => offerFallbackCopy(text, done));
+    } else offerFallbackCopy(text, done);
+}
+function offerFallbackCopy(text, done) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+}
+
+function toggleOfferPage(id, val) {
+    const patch = {};
+    patch['pages.' + id + '.active'] = val;
+    patch['pages.' + id + '.updatedAt'] = firebase.firestore.FieldValue.serverTimestamp();
+    offerPagesRef().set(patch, { merge: true })
+        .then(() => {
+            showToast('success', val ? '✅ অফার পেজ চালু হয়েছে!' : '⏸️ অফার পেজ বন্ধ রাখা হয়েছে');
+            loadOfferListPage();
+        })
+        .catch(e => showToast('error', '❌ ' + e.message));
+}
+
+function deleteOfferPage(id) {
+    if (!confirm('এই অফার পেজটি পুরোপুরি মুছে ফেলবেন? (প্রোডাক্ট মুছবে না, শুধু পেজটি)')) return;
+    const patch = {};
+    patch['pages.' + id] = firebase.firestore.FieldValue.delete();
+    offerPagesRef().set(patch, { merge: true })
+        .then(() => {
+            showToast('success', '🗑️ অফার পেজ মুছে ফেলা হয়েছে');
+            if (editingOfferId === id) resetOfferForm();
+            loadOfferListPage();
+        })
+        .catch(e => showToast('error', '❌ ' + e.message));
+}
 
   // ===== REVIEWS FUNCTIONS =====
 function loadAdminReviews() {
@@ -1990,7 +2409,7 @@ function loadAdminReviews() {
                                 </p>
                                 <p style="background:#f8fafc; padding:10px; border-radius:8px; margin:10px 0; color:#334155;">"${r.comment}"</p>
                                 ${(r.images && r.images.length) ? '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">' + r.images.map(u => `<a href="${u}" target="_blank"><img src="${u}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;" loading="lazy"></a>`).join('') + '</div>' : ''}
-                                <p style="font-size:12px; color:#10b981; font-weight:600;">
+                                <p style="font-size:12px; color:#2563eb; font-weight:600;">
                                     <i class="fas fa-box"></i> Product: ${r.productName || 'N/A'}
                                 </p>
                             </div>
@@ -2019,10 +2438,7 @@ function deleteReview(id) {
 }      
 
             // ===== REAL-TIME NOTIFICATIONS =====
-        let lastOrderCount = 0;
-        let lastMessageCount = 0;
         let notificationSound = null;
-        let isFirstLoad = true;
 
         // Initialize notification sound
         function initNotificationSound() {
@@ -2040,7 +2456,7 @@ function deleteReview(id) {
             } catch (e) {}
         }
 
-        function showNotificationPopup(type, title, message, link) {
+        function showNotificationPopup(type, title, message, link, notifTag) {
             const popup = document.createElement('div');
             popup.className = 'notification-popup ' + type;
             
@@ -2073,18 +2489,18 @@ function deleteReview(id) {
             playNotificationSound();
             
             // Browser notification
-            showBrowserNotification(title, message);
+            showBrowserNotification(title, message, notifTag);
         }
 
-        function showBrowserNotification(title, message) {
+        function showBrowserNotification(title, message, notifTag) {
             if (!("Notification" in window)) return;
             
             if (Notification.permission === "granted") {
                 new Notification(title, {
                     body: message,
-                    icon: 'https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png',
-                    badge: 'https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png',
-                    tag: 'smart-kenakata'
+                    icon: 'https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png',
+                    badge: 'https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png',
+                    tag: notifTag || 'smart-kenakata'
                 });
             } else if (Notification.permission !== "denied") {
                 Notification.requestPermission();
@@ -2102,69 +2518,58 @@ function deleteReview(id) {
             }
         }
 
-        // ===== REAL-TIME LISTENER =====
+        // ===== REAL-TIME LISTENER (🔧 loop-proof: docChanges + order-ID tracking) =====
+        let _rtStarted = false;
         function startRealtimeListeners() {
-            // Listen for new orders
+            if (_rtStarted) return;   // ডাবল init হলে listener স্ট্যাক হয় না — আর repeat notification নেই
+            _rtStarted = true;
+
+            // 🛒 ORDERS — docChanges(): শুধু সত্যিকারের নতুন doc 'added'; status-edit/delete/re-sync আর trigger করে না
+            const seenOrderIds = new Set();
+            let ordersReady = false;
             db.collection('orders').onSnapshot(snapshot => {
-                const currentCount = snapshot.size;
-                
-                if (!isFirstLoad && currentCount > lastOrderCount) {
-                    // New order detected!
-                    const newOrders = currentCount - lastOrderCount;
-                    
-                    // Get the latest order
-                    const latestOrder = snapshot.docs.sort((a, b) => 
-                        (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0)
-                    )[0];
-                    
-                    const order = latestOrder.data();
-                    
+                snapshot.docChanges().forEach(ch => {
+                    if (ch.type !== 'added') return;
+                    if (seenOrderIds.has(ch.doc.id)) return;  // একই অর্ডার কখনো দুইবার না
+                    seenOrderIds.add(ch.doc.id);
+                    if (!ordersReady) return;                 // প্রথম লোডে পুরনো গুলো বাদ
+                    const order = ch.doc.data();
                     showNotificationPopup(
                         'order',
                         'নতুন অর্ডার এসেছে!',
                         `${order.customerName || 'গ্রাহক'} - ৳${order.total || 0}`,
-                        `showSection('orders', document.querySelectorAll('.menu-item')[3])`
+                        `showSection('orders', document.querySelectorAll('.menu-item')[3])`,
+                        'sk-order-' + ch.doc.id
                     );
-                    
-                    // Reload orders and stats
                     loadOrders();
                     loadDashboardStats();
-                }
-                
-                lastOrderCount = currentCount;
+                });
+                ordersReady = true;
             });
 
-            // Listen for new messages
+            // 💬 MESSAGES
+            const seenMessageIds = new Set();
+            let messagesReady = false;
             db.collection('messages').onSnapshot(snapshot => {
-                const currentCount = snapshot.size;
-                
-                if (!isFirstLoad && currentCount > lastMessageCount) {
-                    // New message detected!
-                    const latestMessage = snapshot.docs.sort((a, b) =>
-                        (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0)
-                    )[0];
-                    
-                    const message = latestMessage.data();
-                    
+                snapshot.docChanges().forEach(ch => {
+                    if (ch.type !== 'added') return;
+                    if (seenMessageIds.has(ch.doc.id)) return;
+                    seenMessageIds.add(ch.doc.id);
+                    if (!messagesReady) return;
+                    const message = ch.doc.data();
                     showNotificationPopup(
                         'message',
                         'নতুন বার্তা এসেছে!',
                         `${message.name || 'কেউ'}: ${(message.subject || 'বার্তা')}`,
-                        `showSection('messages', document.querySelectorAll('.menu-item')[4])`
+                        `showSection('messages', document.querySelectorAll('.menu-item')[4])`,
+                        'sk-msg-' + ch.doc.id
                     );
-                    
                     loadMessages();
                     loadDashboardStats();
-                }
-                
-                lastMessageCount = currentCount;
-                
-                // Mark first load complete
-                if (isFirstLoad) {
-                    setTimeout(() => { isFirstLoad = false; }, 3000);
-                }
+                });
+                messagesReady = true;
             });
-        }    
+        }
         
         function showToast(type, message) {
             const toast = document.getElementById('toast');
@@ -2235,8 +2640,8 @@ function deleteReview(id) {
                         data: { labels: labels, datasets: [{
                             label: 'বিক্রি (৳)',
                             data: data,
-                            backgroundColor: 'rgba(16,185,129,.75)',
-                            borderColor: '#059669', borderWidth: 1.5,
+                            backgroundColor: 'rgba(37,99,235,.75)',
+                            borderColor: '#1d4ed8', borderWidth: 1.5,
                             borderRadius: 8, maxBarThickness: 44
                         }]},
                         options: {
@@ -2256,7 +2661,7 @@ function deleteReview(id) {
                             labels: ['পেন্ডিং', 'কনফার্মড', 'ডেলিভারড', 'বাতিল'],
                             datasets: [{
                                 data: [statusCount.pending, statusCount.confirmed, statusCount.delivered, statusCount.cancelled],
-                                backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444'],
+                                backgroundColor: ['#f59e0b', '#3b82f6', '#2563eb', '#ef4444'],
                                 borderWidth: 2, borderColor: '#fff'
                             }]
                         },
@@ -2270,9 +2675,9 @@ function deleteReview(id) {
                 if (tp) {
                     tp.innerHTML = top.length ? top.map(([name, qty], i) => `
                         <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f1f5f9;">
-                            <span style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; background:${['#fbbf24','#94a3b8','#f97316','#3b82f6','#10b981'][i]};">${i + 1}</span>
+                            <span style="width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:white; background:${['#fbbf24','#94a3b8','#f97316','#3b82f6','#2563eb'][i]};">${i + 1}</span>
                             <span style="flex:1; font-weight:600; color:#0f172a;">${skEscape(name)}</span>
-                            <span style="background:#ecfdf5; color:#059669; padding:4px 12px; border-radius:999px; font-weight:700; font-size:13px;">${qty}টি</span>
+                            <span style="background:#eff6ff; color:#1d4ed8; padding:4px 12px; border-radius:999px; font-weight:700; font-size:13px;">${qty}টি</span>
                         </div>`).join('')
                         : '<p style="color:#94a3b8; font-size:14px;">এখনো কোনো বিক্রি নেই</p>';
                 }
@@ -2287,7 +2692,9 @@ function deleteReview(id) {
             { name: 'মহিলা ফ্যাশন', icon: '👗', isDefault: true },
             { name: 'পুরুষ ফ্যাশন', icon: '👔', isDefault: true },
             { name: 'কাপল', icon: '💑', isDefault: true },
+            { name: 'বিউটি ও স্কিন কেয়ার', icon: '💄', isDefault: true },
             { name: 'গ্যাজেট', icon: '📱', isDefault: true },
+            { name: 'হোম ও কিচেন', icon: '🍳', isDefault: true },
             { name: 'বাচ্চাদের ফ্যাশন', icon: '🧒', isDefault: true },
             { name: 'অন্যান্য', icon: '📦', isDefault: true }
         ];
@@ -2311,15 +2718,15 @@ function deleteReview(id) {
                 merged.forEach(c => {
                     if (c.isDefault) {
                         const subs = (ADMIN_SUB_CATS[c.name] || []).map(s =>
-                            `<span style="background:#d1fae5; color:#065f46; font-size:11px; font-weight:600; padding:3px 10px; border-radius:999px; white-space:nowrap;">${skEscape(s)}</span>`
+                            `<span style="background:#dbeafe; color:#1e3a8a; font-size:11px; font-weight:600; padding:3px 10px; border-radius:999px; white-space:nowrap;">${skEscape(s)}</span>`
                         ).join('');
-                        html += `<div style="background:#ecfdf5; padding:12px 16px; border-radius:12px; border:1.5px solid #10b981;">
+                        html += `<div style="background:#eff6ff; padding:12px 16px; border-radius:12px; border:1.5px solid #2563eb;">
                             <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
                                 <span style="font-size:24px;">${c.icon || '📦'}</span>
-                                <span style="flex:1; font-weight:700; color:#0f172a;">${skEscape(c.name)} <span style="font-size:11px; background:#10b981; color:#fff; padding:2px 8px; border-radius:20px; margin-left:6px;">ডিফল্ট</span></span>
-                                <span style="font-size:12px; color:#059669;"><i class="fas fa-check-circle"></i> সাইটে অটো দেখায়</span>
+                                <span style="flex:1; font-weight:700; color:#0f172a;">${skEscape(c.name)} <span style="font-size:11px; background:#2563eb; color:#fff; padding:2px 8px; border-radius:20px; margin-left:6px;">ডিফল্ট</span></span>
+                                <span style="font-size:12px; color:#1d4ed8;"><i class="fas fa-check-circle"></i> সাইটে অটো দেখায়</span>
                             </div>
-                            ${subs ? `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px dashed #a7f3d0;">${subs}</div>` : ''}
+                            ${subs ? `<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px dashed #bfdbfe;">${subs}</div>` : ''}
                         </div>`;
                     } else {
                         const icon = c.image ? `<img src="${c.image}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">` : `<span style="font-size:24px;">${c.icon || '📦'}</span>`;
@@ -2518,9 +2925,9 @@ function deleteReview(id) {
             bar.style.width = '100%';
             txt.textContent = '✅ সম্পন্ন!';
             res.style.display = 'block';
-            res.innerHTML = `<div style="background:${failed || errors.length ? '#fff7ed' : '#ecfdf5'}; border:1.5px solid ${failed || errors.length ? '#fdba74' : '#6ee7b7'}; border-radius:12px; padding:16px;">
-                <h3 style="margin:0 0 8px; color:${failed || errors.length ? '#c2410c' : '#065f46'};">${done}টি পণ্য সফলভাবে যোগ হয়েছে! ${failed ? '(' + failed + 'টি ব্যর্থ)' : ''}</h3>
-                ${errors.length ? '<details><summary>⚠️ ' + errors.length + 'টি সতর্কতা দেখুন</summary><ul style="margin:8px 0 0; padding-left:20px; color:#9a3412; font-size:13px;">' + errors.slice(0, 30).map(e => '<li>' + skEscape(e) + '</li>').join('') + '</ul></details>' : '<p style="color:#065f46;">🎉 সব পণ্য লাইভ হয়ে গেছে!</p>'}
+            res.innerHTML = `<div style="background:${failed || errors.length ? '#fff7ed' : '#eff6ff'}; border:1.5px solid ${failed || errors.length ? '#fdba74' : '#93c5fd'}; border-radius:12px; padding:16px;">
+                <h3 style="margin:0 0 8px; color:${failed || errors.length ? '#c2410c' : '#1e3a8a'};">${done}টি পণ্য সফলভাবে যোগ হয়েছে! ${failed ? '(' + failed + 'টি ব্যর্থ)' : ''}</h3>
+                ${errors.length ? '<details><summary>⚠️ ' + errors.length + 'টি সতর্কতা দেখুন</summary><ul style="margin:8px 0 0; padding-left:20px; color:#9a3412; font-size:13px;">' + errors.slice(0, 30).map(e => '<li>' + skEscape(e) + '</li>').join('') + '</ul></details>' : '<p style="color:#1e3a8a;">🎉 সব পণ্য লাইভ হয়ে গেছে!</p>'}
             </div>`;
             loadDashboardStats();
             loadProducts();
@@ -2545,6 +2952,28 @@ function deleteReview(id) {
                     }
                 })
                 .catch(() => {});
+        }
+
+        // ===== 📢 Broadcast পাঠানো (ইউজারদের নোটিফিকেশন) =====
+        async function sendBroadcast() {
+            const title = document.getElementById('bcTitle').value.trim();
+            const body = document.getElementById('bcBody').value.trim();
+            const link = document.getElementById('bcLink').value.trim();
+            const st = document.getElementById('bcStatus');
+            if (!title || !body) { st.style.color = '#dc2626'; st.textContent = '⚠️ শিরোনাম ও বার্তা — দুটোই লিখুন'; return; }
+            try {
+                await db.collection('settings').doc('broadcast').set({
+                    title: title, body: body, link: link,
+                    ts: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                st.style.color = '#059669';
+                st.textContent = '✅ পাঠানো হয়েছে! ইউজাররা নোটিফিকেশন পাবে 🎉';
+                document.getElementById('bcTitle').value = '';
+                document.getElementById('bcBody').value = '';
+            } catch (e) {
+                st.style.color = '#dc2626';
+                st.textContent = '❌ সমস্যা হয়েছে: ' + (e.message || e);
+            }
         }
 
         async function saveOfferPopup(event) {

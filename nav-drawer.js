@@ -9,13 +9,14 @@
 (function () {
     'use strict';
 
-    var LOGO_URL = 'https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png';
+    var LOGO_URL = 'https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png';
     var CATS_CACHE_KEY = 'sk_categories'; // index loadHomeCategories-এর সাথে শেয়ার করা ক্যাশ
     var CATS_CACHE_TTL = 10 * 60 * 1000;
 
     var DEFAULT_CATS = [
         { name: 'মহিলা ফ্যাশন', icon: '👗' }, { name: 'পুরুষ ফ্যাশন', icon: '👔' },
-        { name: 'কাপল', icon: '💑' }, { name: 'গ্যাজেট', icon: '📱' },
+        { name: 'কাপল', icon: '💑' }, { name: 'বিউটি ও স্কিন কেয়ার', icon: '💄' },
+        { name: 'গ্যাজেট', icon: '📱' }, { name: 'হোম ও কিচেন', icon: '🍳' },
         { name: 'বাচ্চাদের ফ্যাশন', icon: '🧒' },
         { name: 'অন্যান্য', icon: '📦' }
     ];
@@ -25,9 +26,10 @@
         'gadget': 'গ্যাজেট', 'electronics': 'গ্যাজেট', 'ইলেকট্রনিক্স': 'গ্যাজেট',
         'ফিমেল ফ্যাশন': 'মহিলা ফ্যাশন', 'female fashion': 'মহিলা ফ্যাশন', 'women fashion': 'মহিলা ফ্যাশন',
         'male fashion': 'পুরুষ ফ্যাশন', 'men fashion': 'পুরুষ ফ্যাশন',
-        'beauty': 'অন্যান্য', 'বিউটি': 'অন্যান্য', 'others': 'অন্যান্য',
+        'beauty': 'বিউটি ও স্কিন কেয়ার', 'বিউটি': 'বিউটি ও স্কিন কেয়ার', 'skincare': 'বিউটি ও স্কিন কেয়ার', 'স্কিন কেয়ার': 'বিউটি ও স্কিন কেয়ার',
+        'home': 'হোম ও কিচেন', 'হোম ও লিভিং': 'হোম ও কিচেন', 'kitchen': 'হোম ও কিচেন', 'কিচেন': 'হোম ও কিচেন', 'others': 'অন্যান্য',
         'kids': 'বাচ্চাদের ফ্যাশন', 'kids fashion': 'বাচ্চাদের ফ্যাশন', 'বাচ্চা': 'বাচ্চাদের ফ্যাশন', 'শিশু': 'বাচ্চাদের ফ্যাশন',
-        'মহিলা ফ্যাশন': 'মহিলা ফ্যাশন', 'পুরুষ ফ্যাশন': 'পুরুষ ফ্যাশন', 'কাপল': 'কাপল', 'গ্যাজেট': 'গ্যাজেট', 'বাচ্চাদের ফ্যাশন': 'বাচ্চাদের ফ্যাশন', 'অন্যান্য': 'অন্যান্য'
+        'মহিলা ফ্যাশন': 'মহিলা ফ্যাশন', 'পুরুষ ফ্যাশন': 'পুরুষ ফ্যাশন', 'কাপল': 'কাপল', 'গ্যাজেট': 'গ্যাজেট', 'বিউটি ও স্কিন কেয়ার': 'বিউটি ও স্কিন কেয়ার', 'হোম ও কিচেন': 'হোম ও কিচেন', 'বাচ্চাদের ফ্যাশন': 'বাচ্চাদের ফ্যাশন', 'অন্যান্য': 'অন্যান্য'
     };
     function normalizeCatName(name) {
         var key = String(name || '').trim().toLowerCase();
@@ -45,8 +47,8 @@
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
-    var OLD_CAT_NAMES = ['ফ্যাশন', 'ইলেকট্রনিক্স', 'বিউটি', 'হোম ও লিভিং', 'খেলনা', 'বই ও শিক্ষা', 'গ্রোসারি',
-        'gadget', 'ফিমেল ফ্যাশন', 'female fashion', 'male fashion', 'beauty', 'electronics', 'others', 'home', 'toys', 'books', 'grocery'];
+    var OLD_CAT_NAMES = ['ফ্যাশন', 'ইলেকট্রনিক্স', 'খেলনা', 'বই ও শিক্ষা', 'গ্রোসারি',
+        'gadget', 'ফিমেল ফ্যাশন', 'female fashion', 'male fashion', 'beauty', 'electronics', 'others', 'toys', 'books', 'grocery'];
 
     function cleanCats(list) {
         var seen = {}, out = [];

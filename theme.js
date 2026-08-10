@@ -11,8 +11,8 @@
         <style id="theme-styles">
             /* Dark Mode Variables */
             body.dark-mode {
-                --primary: #10b981;
-                --primary-dark: #059669;
+                --primary: #2563eb;
+                --primary-dark: #1d4ed8;
                 --dark: #f1f5f9;
                 --dark-2: #e2e8f0;
                 --white: #0f172a;
@@ -113,7 +113,7 @@
                 position: fixed;
                 bottom: 25px;
                 left: 25px;
-                background: linear-gradient(135deg, #10b981, #059669);
+                background: linear-gradient(135deg, #2563eb, #1d4ed8);
                 color: white;
                 border: none;
                 padding: 12px 20px;
@@ -122,7 +122,7 @@
                 font-family: 'Hind Siliguri', sans-serif;
                 font-weight: 600;
                 font-size: 14px;
-                box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+                box-shadow: 0 5px 20px rgba(37,99,235, 0.4);
                 z-index: 9997;
                 display: none;
                 align-items: center;
@@ -141,7 +141,7 @@
 
             #install-app-btn:hover {
                 transform: translateY(-3px);
-                box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+                box-shadow: 0 10px 30px rgba(37,99,235, 0.5);
             }
 
             /* INSTALL BANNER (Top) */
@@ -150,7 +150,7 @@
                 top: 0;
                 left: 0;
                 right: 0;
-                background: linear-gradient(135deg, #10b981, #059669);
+                background: linear-gradient(135deg, #2563eb, #1d4ed8);
                 color: white;
                 padding: 12px 20px;
                 display: none;
@@ -220,7 +220,7 @@
 
             .install-btn-yes {
                 background: white;
-                color: #10b981;
+                color: #2563eb;
             }
 
             .install-btn-no {
@@ -295,7 +295,7 @@
         if (!document.querySelector('meta[name="theme-color"]')) {
             const meta = document.createElement('meta');
             meta.name = 'theme-color';
-            meta.content = '#10b981';
+            meta.content = '#2563eb';
             document.head.appendChild(meta);
         }
         
@@ -303,7 +303,7 @@
         if (!document.querySelector('link[rel="apple-touch-icon"]')) {
             const link = document.createElement('link');
             link.rel = 'apple-touch-icon';
-            link.href = 'https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png';
+            link.href = 'https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png';
             document.head.appendChild(link);
         }
     }

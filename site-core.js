@@ -87,7 +87,7 @@
         const probe = new Image();
         probe.onload = function () { window.skImgFetchOK = true; };
         probe.onerror = function () { window.skImgFetchOK = false; };
-        probe.src = 'https://res.cloudinary.com/smartkenakata/image/fetch/f_auto,q_auto,w_20/https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png';
+        probe.src = 'https://res.cloudinary.com/smartkenakata/image/fetch/f_auto,q_auto,w_20/https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png';
     } catch (e) {}
     window.skImg = function (url, w) {
         if (!url) return url || '';

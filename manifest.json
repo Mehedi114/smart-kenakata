@@ -5,20 +5,20 @@
   "start_url": "/smart-kenakata/",
   "scope": "/smart-kenakata/",
   "display": "standalone",
-  "background_color": "#10b981",
-  "theme_color": "#10b981",
+  "background_color": "#2563eb",
+  "theme_color": "#2563eb",
   "orientation": "portrait",
   "lang": "bn",
   "dir": "ltr",
   "icons": [
     {
-      "src": "https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png",
+      "src": "https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png",
+      "src": "https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -29,12 +29,12 @@
     {
       "name": "শপিং",
       "url": "/smart-kenakata/",
-      "icons": [{"src": "https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png", "sizes": "96x96"}]
+      "icons": [{"src": "https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png", "sizes": "96x96"}]
     },
     {
       "name": "কার্ট",
       "url": "/smart-kenakata/checkout.html",
-      "icons": [{"src": "https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png", "sizes": "96x96"}]
+      "icons": [{"src": "https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png", "sizes": "96x96"}]
     }
   ]
 }
