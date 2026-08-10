@@ -40,7 +40,8 @@ function generateSitemap(products) {
   products.forEach(p => {
     const lastmod = p.updated ? new Date(p.updated).toISOString().split('T')[0] : today;
     const loc = `${BASE_URL}/product-details.html?id=${encodeURIComponent(p.id)}`;
-    const imgTag = p.image ? `\n        <image:image><image:loc>${p.image.replace(/&/g, '&amp;')}</image:loc></image:image>` : '';
+    const escXml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const imgTag = p.image ? `\n        <image:image><image:loc>${escXml(p.image)}</image:loc><image:title>${escXml(p.name + ' - স্মার্ট কেনাকাটা')}</image:title></image:image>` : '';
     xml += `    <url><loc>${loc}</loc><lastmod>${lastmod}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority>${imgTag}</url>\n`;
   });
   xml += `</urlset>`;

@@ -3,21 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png">
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png">
     <title>উইশলিস্ট - স্মার্ট কেনাকাটা</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://res.cloudinary.com">
     <link rel="preconnect" href="https://i.ibb.co.com">
+    <link rel="preconnect" href="https://i.postimg.cc">
     <link rel="preconnect" href="https://i.ibb.co">
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --primary: #10b981; --primary-dark: #059669;
+            --primary: #2563eb; --primary-dark: #1d4ed8;
             --dark: #0f172a; --dark-2: #1e293b;
             --white: #ffffff; --gray-50: #f8fafc;
             --gray-100: #f1f5f9; --gray-200: #e2e8f0;
@@ -263,12 +267,12 @@
             border-radius: 12px;
             font-weight: 700;
             font-size: 16px;
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 10px 20px rgba(37,99,235, 0.3);
             transition: all 0.3s;
         }
         .btn-shop:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 15px 30px rgba(37,99,235, 0.4);
         }
 
         .stats-bar {
@@ -350,15 +354,15 @@
             .header-content { flex-direction: column; text-align: center; }
         }
     </style>
-        <link rel="stylesheet" href="mobile-fix.css?v=7">
-    <link rel="stylesheet" href="premium.css?v=8">
+        <link rel="stylesheet" href="mobile-fix.css?v=8">
+    <link rel="stylesheet" href="premium.css?v=16">
 </head>
 <body>
 
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <div class="logo-icon" style="background:transparent; padding:0;"><img src="https://i.ibb.co.com/mVNvrhCP/Chat-GPT-Image-Jul-16-2026-05-26-14-PM.png" alt="স্মার্ট কেনাকাটা" style="width:100%; height:100%; object-fit:contain;"></div>
+                <div class="logo-icon" style="background:transparent; padding:0;"><img src="https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png" alt="স্মার্ট কেনাকাটা" style="width:100%; height:100%; object-fit:contain;"></div>
                 <div class="logo-text">
                     <h1>স্মার্ট কেনাকাটা</h1>
                     <span>Trusted Online Shop</span>
@@ -420,7 +424,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="site-core.js?v=3"></script>
+    <script src="site-core.js?v=4"></script>
 
     <script>
         const firebaseConfig = {
@@ -461,7 +465,7 @@
             statsBar.style.display = 'flex';
             document.getElementById('wishlistCount').textContent = wishlist.length;
 
-            container.innerHTML = '<div class="empty-state"><div class="spinner" style="width:50px; height:50px; border:4px solid #e2e8f0; border-top-color:#10b981; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 20px;"></div><p>লোড হচ্ছে...</p></div><style>@keyframes spin{to{transform:rotate(360deg);}}</style>';
+            container.innerHTML = '<div class="empty-state"><div class="spinner" style="width:50px; height:50px; border:4px solid #e2e8f0; border-top-color:#2563eb; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 20px;"></div><p>লোড হচ্ছে...</p></div><style>@keyframes spin{to{transform:rotate(360deg);}}</style>';
 
             try {
                 const products = [];
@@ -569,9 +573,10 @@
         loadWishlist();
     </script>
     
-    <script src="chatbot.js?v=2"></script>
-    <script src="theme.js?v=2"></script>
-    <script src="nav-drawer.js?v=1"></script>
+    <script src="chatbot.js?v=3"></script>
+    <script src="theme.js?v=4"></script>
+    <script src="nav-drawer.js?v=3"></script>
 
+    <script src="premium.js?v=3" defer></script>
 </body>
 </html>

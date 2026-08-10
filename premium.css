@@ -9,9 +9,9 @@
     --sk-radius: 16px;
     --sk-radius-sm: 10px;
     --sk-shadow: 0 1px 3px rgba(15,23,42,.06), 0 4px 14px rgba(15,23,42,.06);
-    --sk-shadow-hover: 0 8px 16px rgba(15,23,42,.10), 0 18px 40px rgba(15,23,42,.12);
-    --sk-grad: linear-gradient(135deg, #0ea47a, #047857);
-    --sk-grad-soft: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+    --sk-shadow-hover: 0 8px 20px rgba(30,64,175,.10), 0 18px 44px rgba(30,64,175,.14);
+    --sk-grad: linear-gradient(135deg, #3b82f6, #1e3a8a);
+    --sk-grad-soft: linear-gradient(135deg, #eff6ff, #f5f9ff);
     --sk-gold: #f59e0b;
     --sk-gold-light: #fbbf24;
     --sk-gold-grad: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
@@ -30,13 +30,13 @@ body {
     -webkit-font-smoothing: antialiased;
     background:
         radial-gradient(1200px 400px at 85% -60px, rgba(245,158,11,.05), transparent 60%),
-        radial-gradient(1000px 380px at 10% -80px, rgba(16,185,129,.06), transparent 60%),
+        radial-gradient(1000px 380px at 10% -80px, rgba(37,99,235,.06), transparent 60%),
         var(--sk-bg);
 }
 img { user-select: none; }
 
 :focus-visible {
-    outline: 3px solid rgba(16,185,129,.45);
+    outline: 3px solid rgba(37,99,235,.45);
     outline-offset: 2px;
     border-radius: 6px;
 }
@@ -57,7 +57,7 @@ img { user-select: none; }
     backdrop-filter: blur(16px) saturate(1.5);
     -webkit-backdrop-filter: blur(16px) saturate(1.5);
     border-bottom: 1px solid var(--sk-glass-border);
-    box-shadow: 0 6px 24px rgba(15,23,42,.05);
+    box-shadow: 0 4px 24px rgba(37,99,235,.10);
 }
 :root body.dark-mode .navbar {
     background: rgba(15,23,42,.88) !important;
@@ -107,15 +107,15 @@ img { user-select: none; }
     padding: 10px 18px;
     min-height: 44px;
     border-radius: 999px;
-    border: 2px solid #10b981;
+    border: 2px solid #2563eb;
     background: #fff;
-    color: #059669;
+    color: #1d4ed8;
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
     transition: all .35s var(--sk-ease);
     white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(16,185,129,.12);
+    box-shadow: 0 2px 8px rgba(37,99,235,.12);
 }
 .sk-view-all:hover {
     background: var(--sk-gold-grad);
@@ -154,7 +154,7 @@ img { user-select: none; }
     height: 66px;
     border-radius: 50%;
     background: linear-gradient(145deg, #ffffff, #eef2f7);
-    box-shadow: 0 4px 14px rgba(15,23,42,.08), inset 0 0 0 1.5px rgba(16,185,129,.16);
+    box-shadow: 0 4px 14px rgba(15,23,42,.08), inset 0 0 0 1.5px rgba(37,99,235,.16);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -205,7 +205,7 @@ img { user-select: none; }
     left: -5%;
     width: 420px;
     height: 420px;
-    background: radial-gradient(circle, rgba(16,185,129,.14) 0%, transparent 65%);
+    background: radial-gradient(circle, rgba(37,99,235,.14) 0%, transparent 65%);
     border-radius: 50%;
     pointer-events: none;
 }
@@ -290,7 +290,7 @@ img { user-select: none; }
     min-height: 2.7em; margin-bottom: 7px;
 }
 .sk-flash-card .sk-flash-price { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-.sk-flash-card .sk-flash-price b { font-size: 17px; font-weight: 800; color: #059669; }
+.sk-flash-card .sk-flash-price b { font-size: 17px; font-weight: 800; color: #1d4ed8; }
 .sk-flash-card .sk-flash-price s { font-size: 12px; color: #94a3b8; text-decoration: line-through; }
 
 /* ============ BANNER SHIMMER SKELETON ============ */
@@ -336,7 +336,7 @@ footer::before {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #10b981 100%);
+    background: linear-gradient(90deg, #2563eb 0%, #f59e0b 50%, #2563eb 100%);
 }
 footer .footer-brand .logo-icon,
 footer .logo-icon {
@@ -368,7 +368,7 @@ footer .social-links a {
 footer .social-links a:hover {
     background: var(--sk-grad) !important;
     transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(16,185,129,.35);
+    box-shadow: 0 8px 18px rgba(37,99,235,.35);
 }
 footer .payment-badge {
     background: rgba(255,255,255,.06);
@@ -399,7 +399,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     cursor: pointer;
     box-shadow: 2px 2px 5px #cbd5e1, -2px -2px 5px #ffffff;
     touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(16,185,129,.2);
+    -webkit-tap-highlight-color: rgba(37,99,235,.2);
     transition: transform 00.3s var(--sk-ease), box-shadow 0.3s var(--sk-ease);
 }
 .sk-hamburger:active { transform: scale(.92); box-shadow: inset 2px 2px 4px #cbd5e1, inset -2px -2px 4px #fff; }
@@ -478,8 +478,8 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     text-decoration: none;
     transition: background 00.3s var(--sk-ease), color 0.3s var(--sk-ease);
 }
-.sk-drawer-links a i { width: 20px; text-align: center; color: #10b981; font-size: 15px; }
-.sk-drawer-links a:hover, .sk-drawer-links a:active { background: #f0fdf4; color: #059669; }
+.sk-drawer-links a i { width: 20px; text-align: center; color: #2563eb; font-size: 15px; }
+.sk-drawer-links a:hover, .sk-drawer-links a:active { background: #f5f9ff; color: #1d4ed8; }
 .sk-drawer-cats-title {
     padding: 14px 16px 8px;
     font-size: 13px;
@@ -500,12 +500,12 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     transition: background 00.3s var(--sk-ease);
     border-bottom: 1px solid #f8fafc;
 }
-.sk-drawer-cat:hover, .sk-drawer-cat:active { background: #f0fdf4; }
+.sk-drawer-cat:hover, .sk-drawer-cat:active { background: #f5f9ff; }
 .sk-drawer-cat-icon {
     width: 36px; height: 36px;
     border-radius: 50%;
     background: linear-gradient(145deg, #ffffff, #eef2f7);
-    box-shadow: inset 0 0 0 1px rgba(16,185,129,.14);
+    box-shadow: inset 0 0 0 1px rgba(37,99,235,.14);
     display: flex; align-items: center; justify-content: center;
     font-size: 17px;
     overflow: hidden;
@@ -514,7 +514,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
 .sk-drawer-cat-icon img { width: 100%; height: 100%; object-fit: cover; }
 .sk-drawer-cat-name { flex: 1; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sk-drawer-cat-arrow { color: #cbd5e1; font-size: 12px; }
-.sk-drawer-cat:hover .sk-drawer-cat-arrow { color: #10b981; }
+.sk-drawer-cat:hover .sk-drawer-cat-arrow { color: #2563eb; }
 .sk-drawer-foot {
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
     border-top: 1px solid #f1f5f9;
@@ -525,7 +525,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     flex-shrink: 0;
 }
 .sk-drawer-foot span { font-size: 12.5px; color: #64748b; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-.sk-drawer-foot i { color: #10b981; width: 16px; }
+.sk-drawer-foot i { color: #2563eb; width: 16px; }
 .sk-drawer-cat-skel { pointer-events: none; }
 .sk-drawer-skel-line {
     height: 14px;
@@ -562,12 +562,12 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
 
 /* ফ্ল্যাশ/ক্যাটাগরি/সেকশন হেড ডার্ক মোড */
 :root body.dark-mode .sk-cat-name { color: #cbd5e1; }
-:root body.dark-mode .sk-cat-icon { background: linear-gradient(145deg, #1e293b, #334155); box-shadow: 0 4px 14px rgba(0,0,0,.35), inset 0 0 0 1.5px rgba(16,185,129,.25); }
-:root body.dark-mode .sk-view-all { background: #1e293b; color: #34d399; border-color: #10b981; }
+:root body.dark-mode .sk-cat-icon { background: linear-gradient(145deg, #1e293b, #334155); box-shadow: 0 4px 14px rgba(0,0,0,.35), inset 0 0 0 1.5px rgba(37,99,235,.25); }
+:root body.dark-mode .sk-view-all { background: #1e293b; color: #3b82f6; border-color: #2563eb; }
 :root body.dark-mode .sk-view-all:hover { background: var(--sk-grad); color: #fff; }
 :root body.dark-mode .sk-flash-card { background: #1e293b; border-color: #334155; }
 :root body.dark-mode .sk-flash-card .sk-flash-name { color: #f1f5f9; }
-:root body.dark-mode .sk-flash-card .sk-flash-price b { color: #34d399; }
+:root body.dark-mode .sk-flash-card .sk-flash-price b { color: #3b82f6; }
 :root body.dark-mode .sk-cd-cell { background: #0f172a; }
 :root body.dark-mode .sk-cd-cell span { color: #fbbf24; }
 :root body.dark-mode .sk-cd-cell small { color: #94a3b8; }
@@ -603,8 +603,8 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
 }
 .product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 14px 34px rgba(15,23,42,.14), 0 4px 14px rgba(245,158,11,.18) !important;
-    border-color: rgba(245,158,11,.5);
+    box-shadow: 0 14px 38px rgba(30,64,175,.18), 0 4px 16px rgba(37,99,235,.22) !important;
+    border-color: rgba(37,99,235,.45);
 }
 .product-card:active { transform: translateY(-2px) scale(.995); }
 
@@ -629,7 +629,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     min-height: 2.8em; margin: 0 0 6px;
 }
 .product-card .product-price { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.product-card .current-price { font-size: 18px; font-weight: 800; color: #059669; }
+.product-card .current-price { font-size: 18px; font-weight: 800; color: #1d4ed8; }
 .product-card .old-price { font-size: 13px; color: #94a3b8; text-decoration: line-through; }
 
 /* Add-to-cart বাটন — gradient + press feedback */
@@ -640,10 +640,10 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     font-size: 13.5px !important; font-weight: 700 !important;
     display: flex; align-items: center; justify-content: center; gap: 7px;
     cursor: pointer; min-height: 44px;
-    box-shadow: 0 3px 10px rgba(16,185,129,.30);
+    box-shadow: 0 3px 10px rgba(37,99,235,.30);
     transition: transform 00.3s var(--sk-ease), box-shadow 0.3s var(--sk-ease), filter 0.3s var(--sk-ease);
 }
-.add-cart-btn:hover { filter: brightness(1.06); box-shadow: 0 6px 20px rgba(16,185,129,.5); transform: translateY(-1px); }
+.add-cart-btn:hover { filter: brightness(1.06); box-shadow: 0 6px 20px rgba(37,99,235,.5); transform: translateY(-1px); }
 .add-cart-btn:active { transform: scale(.965); }
 .add-cart-btn:disabled { background: #cbd5e1 !important; box-shadow: none; cursor: not-allowed; }
 .add-cart-btn.variant-btn { background: linear-gradient(135deg, #f59e0b, #d97706) !important; box-shadow: 0 3px 10px rgba(245,158,11,.30); }
@@ -750,7 +750,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     color: #0f172a !important; text-decoration: none;
     border-bottom: 1px solid #f8fafc;
 }
-.sk-suggest-item:hover, .sk-suggest-item:active { background: #f0fdf4; }
+.sk-suggest-item:hover, .sk-suggest-item:active { background: #f5f9ff; }
 .sk-suggest-item img {
     width: 42px; height: 42px; border-radius: 10px; object-fit: cover;
     flex-shrink: 0; background: #f1f5f9; border: 1px solid #eef2f7;
@@ -774,12 +774,12 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     background: linear-gradient(135deg, #ef4444, #dc2626);
     padding: 2px 7px; border-radius: 999px;
 }
-.sk-suggest-item .s-price { font-size: 14px; color: #059669; font-weight: 800; flex-shrink: 0; }
+.sk-suggest-item .s-price { font-size: 14px; color: #1d4ed8; font-weight: 800; flex-shrink: 0; }
 .sk-suggest-item.sk-suggest-all {
-    justify-content: center; color: #059669 !important; font-weight: 700;
-    background: #f0fdf4; border-bottom: none; position: sticky; bottom: 0;
+    justify-content: center; color: #1d4ed8 !important; font-weight: 700;
+    background: #f5f9ff; border-bottom: none; position: sticky; bottom: 0;
 }
-.sk-suggest-item.sk-suggest-all:hover { background: #d1fae5; }
+.sk-suggest-item.sk-suggest-all:hover { background: #dbeafe; }
 .sk-suggest-empty { padding: 18px; text-align: center; color: #64748b; font-size: 13px; }
 :root body.dark-mode .sk-suggest { background: #1e293b; border-color: #334155; }
 :root body.dark-mode .sk-suggest-head { background: #0f172a; border-color: #334155; color: #94a3b8; }
@@ -787,7 +787,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
 :root body.dark-mode .sk-suggest-item:hover, :root body.dark-mode .sk-suggest-item:active { background: #334155; }
 :root body.dark-mode .sk-suggest-cat { background: #334155; color: #94a3b8; }
 :root body.dark-mode .sk-suggest-mark { background: #78350f; color: #fbbf24; }
-:root body.dark-mode .sk-suggest-item.sk-suggest-all { background: #0f172a; color: #34d399 !important; }
+:root body.dark-mode .sk-suggest-item.sk-suggest-all { background: #0f172a; color: #3b82f6 !important; }
 :root body.dark-mode .sk-suggest-item.sk-suggest-all:hover { background: #1e293b; }
 
 /* ============ FILTER BAR (category পেজ) ============ */
@@ -800,18 +800,18 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
     font-size: 13.5px; font-weight: 600; color: #334155; user-select: none; min-height: 44px;
 }
-.sk-chip-toggle input { width: 18px; height: 18px; accent-color: #10b981; cursor: pointer; }
+.sk-chip-toggle input { width: 18px; height: 18px; accent-color: #2563eb; cursor: pointer; }
 
 .sk-load-more {
     display: flex; justify-content: center; margin: 26px 0 10px;
 }
 .sk-load-more button {
-    padding: 13px 34px; border-radius: 999px; border: 2px solid #10b981;
-    background: #fff; color: #059669; font-weight: 700; font-size: 14.5px;
+    padding: 13px 34px; border-radius: 999px; border: 2px solid #2563eb;
+    background: #fff; color: #1d4ed8; font-weight: 700; font-size: 14.5px;
     cursor: pointer; min-height: 48px;
     transition: all .35s var(--sk-ease);
 }
-.sk-load-more button:hover { background: var(--sk-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 18px rgba(16,185,129,.35); }
+.sk-load-more button:hover { background: var(--sk-grad); color: #fff; border-color: transparent; box-shadow: 0 6px 18px rgba(37,99,235,.35); }
 .sk-load-more button:disabled { opacity: .55; cursor: not-allowed; }
 
 /* ============ VARIANT SELECTOR (product-details) ============ */
@@ -824,10 +824,10 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     background: #fff; font-size: 14px; font-weight: 600; color: #334155;
     cursor: pointer; transition: all 00.3s var(--sk-ease);
 }
-.sk-variant-opt:hover { border-color: #10b981; }
+.sk-variant-opt:hover { border-color: #2563eb; }
 .sk-variant-opt.selected {
-    border-color: #10b981; background: #ecfdf5; color: #059669;
-    box-shadow: 0 0 0 3px rgba(16,185,129,.15);
+    border-color: #2563eb; background: #eff6ff; color: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.15);
 }
 .sk-variant-error { color: #ef4444; font-size: 13px; font-weight: 600; margin-top: 6px; display: none; }
 .sk-variant-error.show { display: block; }
@@ -848,7 +848,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
 .sk-flash-timer .t-cell small { display: block; font-size: 9px; color: #94a3b8; font-weight: 600; }
 .sk-stock-line { font-size: 14px; font-weight: 700; margin: 8px 0; }
 .sk-stock-line.low { color: #dc2626; }
-.sk-stock-line.ok { color: #059669; }
+.sk-stock-line.ok { color: #1d4ed8; }
 .sk-stock-line.out { color: #ef4444; font-size: 15px; }
 
 /* ============ REVIEW PHOTO ============ */
@@ -872,7 +872,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
     text-align: center; color: #64748b; font-size: 13.5px; cursor: pointer;
     transition: all 0.3s; background: #f8fafc;
 }
-.sk-photo-drop:hover { border-color: #10b981; color: #059669; background: #f0fdf4; }
+.sk-photo-drop:hover { border-color: #2563eb; color: #1d4ed8; background: #f5f9ff; }
 
 /* ============ TRUST / FEATURE strip polish ============ */
 .features-grid > *, .payment-methods > * { transition: transform 00.3s var(--sk-ease), box-shadow 0.3s var(--sk-ease); }
@@ -894,7 +894,7 @@ footer .footer-bottom { border-top-color: rgba(255,255,255,.08) !important; }
 .bottom-nav-item { min-height: 48px; justify-content: center; }
 .bottom-nav-item.active::after {
     content: ''; position: absolute; top: 0; width: 22px; height: 3px;
-    border-radius: 0 0 4px 4px; background: #10b981;
+    border-radius: 0 0 4px 4px; background: #2563eb;
 }
 
 /* ============ মোবাইল ফাইনাল টাচ ============ */
@@ -923,7 +923,7 @@ body { animation: skPageIn .3s ease-out; }
     color: #e2e8f0 !important;
     border-color: #334155 !important;
 }
-:root body.dark-mode .subcat-chip:hover { border-color: #10b981 !important; color: #34d399 !important; }
+:root body.dark-mode .subcat-chip:hover { border-color: #2563eb !important; color: #3b82f6 !important; }
 :root body.dark-mode .subcat-chip.active {
     background: var(--sk-grad) !important;
     color: #fff !important;
@@ -981,7 +981,7 @@ body { animation: skPageIn .3s ease-out; }
 }
 .sk-banner-dots .banner-dot.active {
     width: 26px;
-    background: #10b981;
+    background: #2563eb;
     border-color: #fff;
 }
 /* arrows */
@@ -1008,7 +1008,7 @@ body { animation: skPageIn .3s ease-out; }
 .sk-banner-arrow:hover {
     transform: translateY(-50%) scale(1.06);
     background: #fff;
-    color: #059669;
+    color: #1d4ed8;
 }
 .sk-banner-arrow:active { transform: translateY(-50%) scale(.95); }
 .sk-banner-prev { left: 16px; }
@@ -1069,8 +1069,8 @@ body { animation: skPageIn .3s ease-out; }
 
 /* ============ 🚚 ডেলিভারি ইনফো বক্স ============ */
 .sk-delivery-box {
-    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-    border: 1.5px solid #a7f3d0;
+    background: linear-gradient(135deg, #f5f9ff, #eff6ff);
+    border: 1.5px solid #bfdbfe;
     border-radius: var(--sk-radius);
     padding: 14px 16px;
     margin: 16px 0;
@@ -1078,7 +1078,7 @@ body { animation: skPageIn .3s ease-out; }
 .sk-delivery-title {
     font-size: 14px;
     font-weight: 800;
-    color: #065f46;
+    color: #1e3a8a;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -1093,21 +1093,21 @@ body { animation: skPageIn .3s ease-out; }
     color: #334155;
     flex-wrap: wrap;
 }
-.sk-delivery-row b { color: #059669; font-weight: 700; }
+.sk-delivery-row b { color: #1d4ed8; font-weight: 700; }
 .sk-delivery-free {
     margin-top: 8px;
-    background: #d1fae5;
+    background: #dbeafe;
     border-radius: 8px;
     padding: 7px 10px;
     font-size: 12.5px;
     font-weight: 700;
-    color: #065f46;
+    color: #1e3a8a;
     text-align: center;
 }
-:root body.dark-mode .sk-delivery-box { background: #064e3b; border-color: #059669; }
-:root body.dark-mode .sk-delivery-title { color: #a7f3d0; }
-:root body.dark-mode .sk-delivery-row { color: #d1fae5; }
-:root body.dark-mode .sk-delivery-free { background: #065f46; color: #a7f3d0; }
+:root body.dark-mode .sk-delivery-box { background: #064e3b; border-color: #1d4ed8; }
+:root body.dark-mode .sk-delivery-title { color: #bfdbfe; }
+:root body.dark-mode .sk-delivery-row { color: #dbeafe; }
+:root body.dark-mode .sk-delivery-free { background: #1e3a8a; color: #bfdbfe; }
 
 /* ============ 🔍 সার্চ হিস্টোরি + ট্রেন্ডিং ============ */
 .sk-suggest-title {
@@ -1137,7 +1137,7 @@ body { animation: skPageIn .3s ease-out; }
 .sk-hist-icon { color: #94a3b8; font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
 .sk-hist-text { flex: 1; font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sk-hist-go { color: #cbd5e1; font-size: 12px; flex-shrink: 0; }
-.sk-hist-item:hover .sk-hist-go { color: #10b981; }
+.sk-hist-item:hover .sk-hist-go { color: #2563eb; }
 :root body.dark-mode .sk-hist-icon { color: #64748b; }
 :root body.dark-mode .sk-suggest-clear { border-color: #334155; }
 :root body.dark-mode .sk-suggest-clear:hover { background: #450a0a; }
@@ -1236,17 +1236,17 @@ body { animation: skPageIn .3s ease-out; }
 .sk-qv-cat { font-size: 11.5px; text-transform: uppercase; letter-spacing: .5px; color: #64748b; font-weight: 700; margin-bottom: 6px; }
 .sk-qv-info h3 { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1.35; margin-bottom: 10px; }
 .sk-qv-price { display: flex; align-items: baseline; gap: 10px; margin: 10px 0 16px; }
-.sk-qv-price .current-price { font-size: 26px; font-weight: 800; color: #059669; }
+.sk-qv-price .current-price { font-size: 26px; font-weight: 800; color: #1d4ed8; }
 .sk-qv-price .old-price { font-size: 15px; color: #94a3b8; text-decoration: line-through; }
 .sk-qv-actions { margin-top: auto; }
 .sk-qv-detail {
     width: 100%;
     margin-top: 10px;
     padding: 12px;
-    border: 2px solid #10b981;
+    border: 2px solid #2563eb;
     border-radius: var(--sk-radius-sm);
     background: #fff;
-    color: #059669;
+    color: #1d4ed8;
     font-family: inherit;
     font-size: 14px;
     font-weight: 700;
@@ -1254,7 +1254,7 @@ body { animation: skPageIn .3s ease-out; }
     display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: all 0.3s;
 }
-.sk-qv-detail:hover { background: #f0fdf4; }
+.sk-qv-detail:hover { background: #f5f9ff; }
 @media (max-width: 640px) {
     .sk-qv-body { flex-direction: column; }
     .sk-qv-img { min-height: 200px; }
@@ -1363,17 +1363,17 @@ body { animation: skPageIn .3s ease-out; }
     padding: 12px 22px;
     border: none;
     border-radius: 999px;
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
     color: #fff;
     font-family: inherit;
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
     display: flex; align-items: center; gap: 8px;
-    box-shadow: 0 6px 18px rgba(16,185,129,.4);
+    box-shadow: 0 6px 18px rgba(37,99,235,.4);
     transition: all .35s var(--sk-ease);
 }
-.sk-offer-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(16,185,129,.5); }
+.sk-offer-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(37,99,235,.5); }
 .sk-offer-btn:active { transform: scale(.96); }
 @media (max-width: 640px) {
     .sk-offer-content { flex-direction: column; }
@@ -1419,6 +1419,8 @@ body { animation: skPageIn .3s ease-out; }
     .product-card:hover .product-image img { transform: none !important; }
 }
 
+/* ============ MOBILE OVERRIDES (admin/tracking কার্ড — শুধু ছোট স্ক্রিনে) ============ */
+@media (max-width: 768px) {
     .product-item-image img { object-fit: cover; }
     .product-actions {
         display: flex !important;
@@ -1455,3 +1457,218 @@ body { animation: skPageIn .3s ease-out; }
     #flashGrid .sk-skeleton-card, .sk-flash-card { height: 242px; }
     #flashGrid .sk-skeleton-card { flex: 0 0 150px !important; }
 }
+
+/* ============================================================
+   ✨ TOP PREMIUM BUNDLE — white × shadow-blue premium layer
+   ============================================================ */
+
+/* ---------- 1) Custom brand scrollbar ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #eef2ff; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #3b82f6, #1d4ed8); border-radius: 8px; border: 2px solid #eef2ff; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #2563eb, #1e3a8a); }
+html { scrollbar-width: thin; scrollbar-color: #2563eb #eef2ff; }
+
+/* ---------- 2) Gradient logo text ---------- */
+.logo .logo-text h1, .nav-logo h1, footer .logo-text h1 {
+    background: linear-gradient(135deg, #2563eb 10%, #1e3a8a 60%, #3b82f6 110%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    letter-spacing: -.3px;
+}
+
+/* ---------- 3) Premium buttons — gradient + shine sweep + press ---------- */
+.add-cart-btn, .place-order-btn, .sk-offer-btn, .btn-order-now, button.checkout-btn {
+    position: relative; overflow: hidden; isolation: isolate;
+    box-shadow: 0 6px 18px rgba(37,99,235,.28), 0 2px 6px rgba(37,99,235,.18);
+    transition: transform .18s var(--sk-ease), box-shadow .25s var(--sk-ease), filter .2s;
+}
+.add-cart-btn::after, .place-order-btn::after, .sk-offer-btn::after, .btn-order-now::after, button.checkout-btn::after {
+    content: ""; position: absolute; top: -60%; bottom: -60%; left: -30%; width: 34%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
+    transform: translateX(-260%) skewX(-18deg); z-index: 1;
+    transition: transform .7s cubic-bezier(.22,.61,.36,1); pointer-events: none;
+}
+.add-cart-btn:hover, .place-order-btn:hover, .sk-offer-btn:hover, .btn-order-now:hover, button.checkout-btn:hover {
+    box-shadow: 0 10px 26px rgba(37,99,235,.38), 0 4px 10px rgba(37,99,235,.22);
+    filter: brightness(1.05); transform: translateY(-1px);
+}
+.add-cart-btn:hover::after, .place-order-btn:hover::after, .sk-offer-btn:hover::after, .btn-order-now:hover::after, button.checkout-btn:hover::after {
+    transform: translateX(460%) skewX(-18deg);
+}
+.add-cart-btn:active, .place-order-btn:active, .sk-offer-btn:active, .btn-order-now:active, button.checkout-btn:active {
+    transform: scale(.96); box-shadow: 0 3px 10px rgba(37,99,235,.30);
+}
+
+/* ---------- 4) Scroll reveal (JS 'sk-motion' class দিলেই কাজ করে — JS না থাকলে সব visible থাকে) ---------- */
+body.sk-motion .sk-reveal {
+    opacity: 0; transform: translateY(26px) scale(.985);
+    transition: opacity .65s var(--sk-ease), transform .65s var(--sk-ease);
+    will-change: opacity, transform;
+}
+body.sk-motion .sk-reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+    body.sk-motion .sk-reveal { opacity: 1; transform: none; transition: none; }
+    .add-cart-btn::after, .place-order-btn::after, .sk-offer-btn::after { display: none; }
+}
+
+/* ---------- 5) Branded preloader ---------- */
+.sk-loader {
+    position: fixed; inset: 0; z-index: 99999; background: #ffffff;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity .5s ease, visibility .5s;
+    animation: sk-loader-auto .6s ease 3.2s forwards; /* JS ব্যর্থ হলেও auto-hide */
+}
+body.dark-mode .sk-loader { background: #0f172a; }
+.sk-loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+.sk-loader-card { display: flex; flex-direction: column; align-items: center; gap: 18px; position: relative; }
+.sk-loader-card img { width: 92px; height: 92px; object-fit: contain; animation: sk-loader-pop 1.6s var(--sk-ease) infinite alternate; }
+.sk-loader-ring {
+    position: absolute; top: -8px; width: 108px; height: 108px; border-radius: 50%;
+    border: 3px solid rgba(37,99,235,.12); border-top-color: #2563eb;
+    animation: sk-loader-spin 1s linear infinite;
+}
+.sk-loader-card p {
+    margin: 0; font-weight: 700; font-size: 20px; letter-spacing: .5px;
+    background: linear-gradient(135deg, #2563eb, #1e3a8a);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+}
+@keyframes sk-loader-spin { to { transform: rotate(360deg); } }
+@keyframes sk-loader-pop { from { transform: scale(.94); } to { transform: scale(1.04); } }
+@keyframes sk-loader-auto { to { opacity: 0; visibility: hidden; } }
+
+/* ---------- 6) Back-to-top floating button ---------- */
+.sk-top-btn {
+    position: fixed; left: 22px; bottom: 25px; z-index: 998; width: 48px; height: 48px;
+    border-radius: 50%; border: none; cursor: pointer; color: #fff; font-size: 18px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    box-shadow: 0 8px 22px rgba(37,99,235,.40), 0 2px 8px rgba(37,99,235,.25);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; transform: translateY(16px) scale(.9);
+    transition: all .35s var(--sk-ease);
+}
+.sk-top-btn.show { opacity: 1; visibility: visible; transform: none; }
+.sk-top-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(37,99,235,.5); }
+.sk-top-btn:active { transform: scale(.92); }
+@media (max-width: 768px) { .sk-top-btn { bottom: 84px; } }
+
+/* ============================================================
+   🌫️ FOG LAYER — soft ambient depth (premium misty look)
+   ============================================================ */
+
+:root {
+    --sk-fog-sm: 0 10px 28px -10px rgba(30,64,175,.12), 0 2px 8px -2px rgba(30,64,175,.06);
+    --sk-fog-md: 0 20px 48px -12px rgba(30,64,175,.20), 0 5px 14px -4px rgba(30,64,175,.08);
+    --sk-fog-lg: 0 34px 80px -16px rgba(30,58,138,.28), 0 8px 22px -6px rgba(30,64,175,.10);
+}
+
+/* ---- 🌊 SKY DHEU: banner-এর মতো উপরে soft blue wave + sky-white base ---- */
+body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+        /* corner sky-glow (বাম + ডান উপরে) + ডান পাশে banner-style sweep */
+        radial-gradient(560px 380px at 6% -4%, rgba(147,197,253,.32), transparent 62%),
+        radial-gradient(720px 430px at 106% 8%, rgba(125,211,252,.28), transparent 60%),
+        radial-gradient(380px 720px at 109% 24%, rgba(191,219,254,.38), transparent 63%),
+        /* dheu — ২টা layered wave curve (banner-style) */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 300' preserveAspectRatio='none'%3E%3Cpath fill='%23dbeafe' fill-opacity='.55' d='M0,0H1440V150C1220,220 1030,105 770,128C510,151 270,235 0,178Z'/%3E%3Cpath fill='%23bfdbfe' fill-opacity='.38' d='M0,0H1440V95C1190,158 990,62 730,88C470,114 230,175 0,122Z'/%3E%3C/svg%3E") no-repeat top center / 100% auto,
+        /* নিচে halka fog + উপর থেকে নিচে sky-white blend */
+        radial-gradient(900px 620px at 50% 118%, rgba(29,78,216,.06), transparent 60%),
+        linear-gradient(180deg, #f4f9ff 0%, #f8fafc 36%, #f8fafc 100%);
+}
+/* ---- 🔵 Dotted dheu-grid (banner-এর top-left corner pattern) ---- */
+body::after {
+    content: "";
+    position: fixed; top: 0; left: 0; width: 240px; height: 185px;
+    z-index: -1; pointer-events: none;
+    background-image: radial-gradient(rgba(37,99,235,.20) 1.7px, transparent 1.9px);
+    background-size: 24px 24px;
+    -webkit-mask-image: linear-gradient(135deg, black 22%, transparent 76%);
+            mask-image: linear-gradient(135deg, black 22%, transparent 76%);
+}
+body.dark-mode::after {
+    background-image: radial-gradient(rgba(96,165,250,.24) 1.7px, transparent 1.9px);
+}
+@media (max-width: 768px) {
+    body::after { width: 130px; height: 100px; background-size: 20px 20px; }
+}
+
+body.dark-mode::before {
+    background:
+        radial-gradient(640px 440px at 10% -6%, rgba(37,99,235,.18), transparent 65%),
+        radial-gradient(760px 520px at 102% 10%, rgba(59,130,246,.13), transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 300' preserveAspectRatio='none'%3E%3Cpath fill='%231d4ed8' fill-opacity='.16' d='M0,0H1440V150C1220,220 1030,105 770,128C510,151 270,235 0,178Z'/%3E%3Cpath fill='%232563eb' fill-opacity='.12' d='M0,0H1440V95C1190,158 990,62 730,88C470,114 230,175 0,122Z'/%3E%3C/svg%3E") no-repeat top center / 100% auto,
+        radial-gradient(900px 620px at 50% 118%, rgba(30,58,138,.16), transparent 60%);
+}
+
+/* ---- cards: ডিফল্টে halka fog, hover-এ উঠে আসে ---- */
+.product-card { box-shadow: var(--sk-fog-sm) !important; }
+.product-card:hover {
+    box-shadow: var(--sk-fog-lg) !important;
+    border-color: rgba(37,99,235,.45);
+}
+.category-card, .feature-card { box-shadow: var(--sk-fog-sm); }
+.category-card:hover, .feature-card:hover { box-shadow: var(--sk-fog-md); }
+.order-summary, .checkout-form-card, .order-card, .stats-card, .contact-info, .contact-form {
+    box-shadow: var(--sk-fog-sm);
+}
+
+/* ---- navbar: নিচ থেকে soft fog ছড়ায় (glass-এর উপর) ---- */
+.navbar { box-shadow: 0 10px 34px -8px rgba(37,99,235,.14), 0 2px 8px rgba(37,99,235,.05) !important; }
+
+/* ---- popups/modals: গভীর floating fog ---- */
+.sk-offer-popup, .quick-view-modal .sk-qv-content, .modal-content, .cart-sidebar, .image-zoom-modal {
+    box-shadow: var(--sk-fog-lg) !important;
+}
+
+/* ---- toast: কালো ছায়ার বদলে brand fog ---- */
+.toast { box-shadow: var(--sk-fog-md) !important; }
+
+/* ---- search focus: নীল misty ring ---- */
+.search-box:focus-within {
+    box-shadow: 0 12px 30px -8px rgba(37,99,235,.22), 0 0 0 3px rgba(37,99,235,.12);
+}
+
+/* 🖼️ Dark-bg নতুন লোগো — পরিপাটি app-icon tile look */
+.logo-icon img, .logo img { border-radius: 10px; }
+.sk-loader-card img { border-radius: 22px; box-shadow: 0 10px 26px rgba(30,64,175,.22); }
+
+/* 🎬 পণ্যের ভিডিও সেকশন — YouTube/FB/Vimeo/direct সব ফরম্যাটে */
+.sk-video-section { margin: 26px 0; }
+.sk-video-section h3 { font-size: 20px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.sk-video-wrap {
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    border-radius: 18px; overflow: hidden; background: #0f172a;
+    box-shadow: var(--sk-fog-md);
+    border: 1px solid rgba(37,99,235,.12);
+}
+.sk-video-wrap iframe, .sk-video-wrap video {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block;
+}
+.sk-video-fb { background: #f0f2f5; }
+@media (max-width: 768px) { .sk-video-wrap { border-radius: 14px; } }
+
+/* 📢 Broadcast offER popup (admin থেকে পাঠানো নোটিফিকেশন) */
+#skBcPopup {
+    position: fixed; right: 18px; bottom: 92px; z-index: 99998;
+    width: min(360px, calc(100vw - 36px));
+    display: flex; gap: 12px; align-items: flex-start;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(37,99,235,.18); border-radius: 18px; padding: 14px 14px 14px 12px;
+    box-shadow: var(--sk-fog-lg);
+    transform: translateY(24px) scale(.96); opacity: 0; visibility: hidden;
+    transition: all .45s var(--sk-ease);
+}
+#skBcPopup.show { transform: none; opacity: 1; visibility: visible; }
+#skBcPopup.has-link { cursor: pointer; }
+#skBcPopup .sk-bc-icon img { width: 46px; height: 46px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(30,64,175,.25); }
+#skBcPopup .sk-bc-body { flex: 1; min-width: 0; }
+#skBcPopup .sk-bc-body b { font-size: 15px; color: #1e3a8a; }
+#skBcPopup .sk-bc-body p { margin: 3px 0 0; font-size: 13px; color: #475569; line-height: 1.5; }
+#skBcPopup .sk-bc-perm { margin-top: 8px; font-size: 12px; font-weight: 600; color: #fff; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: none; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+#skBcPopup .sk-bc-close { border: none; background: transparent; color: #94a3b8; font-size: 14px; cursor: pointer; padding: 2px 4px; }
+body.dark-mode #skBcPopup { background: rgba(15,23,42,.92); border-color: rgba(96,165,250,.25); }
+body.dark-mode #skBcPopup .sk-bc-body b { color: #bfdbfe; }
+body.dark-mode #skBcPopup .sk-bc-body p { color: #94a3b8; }
+@media (max-width: 768px) { #skBcPopup { bottom: 84px; right: 12px; width: calc(100vw - 24px); } }
