@@ -220,14 +220,15 @@
 
         setTimeout(function () {
             createCoupon(prize).then(function (code) {
-                showResult(prize, code);
-            }).catch(function () {
-                showResult(prize, null);
+                showResult(prize, code, null);
+            }).catch(function (e) {
+                console.error('Spin coupon create failed:', e);
+                showResult(prize, null, e);
             });
         }, 4400);
     }
 
-    function showResult(prize, code) {
+    function showResult(prize, code, err) {
         spinning = false;
         var btn = document.getElementById('skSpinGo');
         var res = document.getElementById('skSpinResult');
@@ -263,7 +264,15 @@
                 btn.style.display = 'none';
             }
         } else {
-            res.innerHTML = '<div style="color:#f87171;font-weight:700;">নেটওয়ার্ক সমস্যা — আবার চেষ্টা করুন 🙏</div>';
+            // কুপন সেভ ব্যর্থ — স্পিনটা ফেরত দিই (ইউজারের ক্ষতি নয়)
+            var s = getState();
+            if (s.spinsUsed > 0) { s.spinsUsed--; saveState(s); }
+            var isPerm = err && /permission|denied|insufficient/i.test(err.message || err.code || '');
+            res.innerHTML = '<div style="color:#f87171;font-weight:700;">'
+                + (isPerm
+                    ? '😔 কুপন তৈরি করা যাচ্ছে না (সেটআপ সমস্যা)। দোকানে জানানো হয়েছে — একটু পরে চেষ্টা করুন।'
+                    : 'নেটওয়ার্ক সমস্যা — আবার চেষ্টা করুন 🙏 (স্পিনটি ফেরত দেওয়া হয়েছে)')
+                + '</div>';
             res.classList.add('show');
             btn.style.display = '';
             btn.disabled = false;
