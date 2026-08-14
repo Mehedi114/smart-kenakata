@@ -458,8 +458,10 @@
             }
             try {
                 const doc = await db.collection('settings').doc('offerPages').get();
-                const pages = (doc.exists && doc.data() && doc.data().pages) || {};
-                const found = pages[offerId];
+                const raw = (doc.exists && doc.data()) || {};
+                const pages = raw.pages || {};
+                // 🔧 fallback: পুরনো ভাঙা ফরম্যাট ("pages.xxx" literal key) থেকেও পড়ি
+                const found = pages[offerId] || raw['pages.' + offerId];
                 if (!found) {
                     showOfferState('fas fa-search', 'অফারটি পাওয়া যায়নি 😔', 'হয়তো অফারটি মুছে ফেলা হয়েছে অথবা লিংক ভুল।', true);
                     return;

@@ -216,6 +216,14 @@
 
         .order-card { border: 1px solid var(--gray-200); border-radius: 12px; padding: 20px; margin-bottom: 15px; transition: all 0.3s; }
         .order-card:hover { border-color: var(--primary); }
+        /* 📂 ক্লিকে অর্ডার ডিটেইলস খোলা/বন্ধ */
+        .order-card .order-header { cursor: pointer; user-select: none; }
+        .order-details { display: none; }
+        .order-card.open .order-details { display: block; animation: fadeIn 0.25s ease; }
+        .order-toggle-hint { font-size: 12px; color: var(--gray-500, #64748b); margin-top: 6px; }
+        .order-card.open .order-toggle-hint .chev { transform: rotate(180deg); }
+        .order-toggle-hint .chev { display: inline-block; transition: transform 0.25s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
         .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .order-id { font-size: 12px; color: var(--gray-500); margin-bottom: 5px; }
         .order-customer h4 { font-size: 16px; margin-bottom: 3px; }
@@ -1779,11 +1787,14 @@ if (thumbField) {
                             itemsHtml += '<div class="order-item"><span>' + item.name + vtxt + ' × ' + item.quantity + '</span><span>৳' + (item.price * item.quantity) + '</span></div>';
                         });
                         
-                        html += '<div class="order-card">';
-                        html += '<div class="order-header"><div><div class="order-id">Order #' + o.id.substring(0,8).toUpperCase() + '</div>';
+                        const itemCount = (o.items || []).reduce((s, it) => s + (it.quantity || 1), 0);
+                        html += '<div class="order-card" id="ocard-' + o.id + '">';
+                        html += '<div class="order-header" onclick="toggleOrderCard(\'' + o.id + '\')"><div><div class="order-id">Order #' + o.id.substring(0,8).toUpperCase() + '</div>';
                         html += '<div class="order-customer"><h4>' + (o.customerName || 'N/A') + '</h4>';
-                        html += '<p><i class="fas fa-phone"></i> ' + (o.customerPhone || 'N/A') + ' | <i class="fas fa-clock"></i> ' + date + '</p></div></div>';
+                        html += '<p><i class="fas fa-phone"></i> ' + (o.customerPhone || 'N/A') + ' | <i class="fas fa-clock"></i> ' + date + '</p>';
+                        html += '<p class="order-toggle-hint">🛍️ ' + itemCount + ' টি পণ্য • মোট ৳' + (o.total || 0) + ' — <b>বিস্তারিত দেখতে ক্লিক করুন <span class="chev">▼</span></b></p></div></div>';
                         html += '<span class="order-status status-' + status + '">' + statusText[status] + '</span></div>';
+                        html += '<div class="order-details">';
                         html += '<div class="order-address"><strong>📍 ঠিকানা:</strong> ' + (o.customerAddress || 'N/A') + '</div>';
                         html += '<div class="order-body">' + itemsHtml + '<div class="order-total order-item"><span>মোট:</span><span>৳' + (o.total || 0) + '</span></div></div>';
 html += '<div class="order-address" style="background:#e0f2fe; border-color:#0284c7;">';
@@ -1802,13 +1813,19 @@ html += '</div>';                        html += '<div class="order-actions">';
                         html += '<a href="tel:' + o.customerPhone + '" class="btn btn-info btn-sm"><i class="fas fa-phone"></i> কল</a>';
                         html += '<a href="https://wa.me/88' + o.customerPhone + '" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp"></i> WhatsApp</a>';
                         html += '<button class="btn btn-secondary btn-sm" onclick="deleteOrder(\'' + o.id + '\')"><i class="fas fa-trash"></i></button>';
-                        html += '</div></div>';
+                        html += '</div></div></div>';
                     });
                     container.innerHTML = html;
                 })
                 .catch(error => {
                     container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Error</h3><p>' + error.message + '</p></div>';
                 });
+        }
+
+        // 📂 অর্ডার কার্ডে ক্লিক করলে বিস্তারিত (পণ্য, ঠিকানা, পেমেন্ট) খোলা/বন্ধ হয়
+        function toggleOrderCard(id) {
+            const card = document.getElementById('ocard-' + id);
+            if (card) card.classList.toggle('open');
         }
 
         function updateOrderStatus(id, status) {
@@ -2141,6 +2158,33 @@ function offerPagesRef() {
     return db.collection('settings').doc(OFFER_PAGES_DOC);
 }
 
+// 🔧 ডকের ডেটা normalize — nested pages map + পুরনো ভাঙা "pages.xxx" literal key দুটোই পড়ে
+function normalizeOfferPagesData(data) {
+    const pages = Object.assign({}, (data && data.pages) || {});
+    const legacyKeys = [];
+    Object.keys(data || {}).forEach(k => {
+        if (k.indexOf('pages.') === 0) {
+            legacyKeys.push(k);
+            const id = k.slice(6);
+            if (!pages[id]) pages[id] = data[k];
+        }
+    });
+    return { pages: pages, legacyKeys: legacyKeys };
+}
+
+// 🚑 এককালীন অটো-মাইগ্রেশন — পুরনো ভাঙা key গুলোকে সঠিক nested map-এ সরিয়ে দেয়
+function migrateLegacyOfferPages(data) {
+    const norm = normalizeOfferPagesData(data);
+    if (!norm.legacyKeys.length) return Promise.resolve(false);
+    const args = ['pages', norm.pages];
+    norm.legacyKeys.forEach(k => {
+        args.push(new firebase.firestore.FieldPath(k), firebase.firestore.FieldValue.delete());
+    });
+    return offerPagesRef().update.apply(offerPagesRef(), args)
+        .then(() => { console.log('✅ Offer pages migrated:', norm.legacyKeys.length); return true; })
+        .catch(e => { console.warn('Offer migration failed:', e.message); return false; });
+}
+
 function loadOfferPages() {
     loadOfferListPage();
     // পিকারের জন্য পণ্য আনি (একবারই যথেষ্ট)
@@ -2234,9 +2278,10 @@ function saveOfferPage(event) {
     const id = wasEditing || ('ofr_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
     if (!wasEditing) data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
 
-    // settings ডকের ভেতরে map হিসেবে সেভ — শুধু এই key-টা লিখবে, বাকিগুলো অক্ষত থাকবে
-    const patch = {};
-    patch['pages.' + id] = data;
+    // settings ডকের ভেতরে nested map হিসেবে সেভ — {merge:true} তে অন্য অফারগুলো অক্ষত থাকবে
+    // ⚠️ আগে 'pages.'+id স্ট্রিং key দেওয়া হতো — set() এ ডট literal ফিল্ডনেম হয়ে যায় (বাগ!)
+    const patch = { pages: {} };
+    patch.pages[id] = data;
     offerPagesRef().set(patch, { merge: true }).then(() => {
         restore();
         showToast('success', '✅ অফার পেজ সেভ হয়েছে!');
@@ -2288,7 +2333,11 @@ function loadOfferListPage() {
     const box = document.getElementById('offerPagesList');
     box.innerHTML = '<div class="loading"><div class="spinner"></div><p>লোড হচ্ছে...</p></div>';
     offerPagesRef().get().then(doc => {
-        const pages = (doc.exists && doc.data() && doc.data().pages) || {};
+        const raw = (doc.exists && doc.data()) || {};
+        const norm = normalizeOfferPagesData(raw);
+        const pages = norm.pages;
+        // পুরনো ভাঙা ডেটা থাকলে ব্যাকগ্রাউন্ডে ঠিক করে দিই (এককালীন)
+        if (norm.legacyKeys.length) migrateLegacyOfferPages(raw);
         const keys = Object.keys(pages);
         if (!keys.length) {
             offerCacheDocs = [];
@@ -2350,10 +2399,11 @@ function offerFallbackCopy(text, done) {
 }
 
 function toggleOfferPage(id, val) {
+    // update() এ ডট-নোটেশন সঠিকভাবে nested path বোঝে (set() বোঝে না!)
     const patch = {};
     patch['pages.' + id + '.active'] = val;
     patch['pages.' + id + '.updatedAt'] = firebase.firestore.FieldValue.serverTimestamp();
-    offerPagesRef().set(patch, { merge: true })
+    offerPagesRef().update(patch)
         .then(() => {
             showToast('success', val ? '✅ অফার পেজ চালু হয়েছে!' : '⏸️ অফার পেজ বন্ধ রাখা হয়েছে');
             loadOfferListPage();
@@ -2363,9 +2413,10 @@ function toggleOfferPage(id, val) {
 
 function deleteOfferPage(id) {
     if (!confirm('এই অফার পেজটি পুরোপুরি মুছে ফেলবেন? (প্রোডাক্ট মুছবে না, শুধু পেজটি)')) return;
+    // update() এ ডট-নোটেশন nested path হিসেবে কাজ করে
     const patch = {};
     patch['pages.' + id] = firebase.firestore.FieldValue.delete();
-    offerPagesRef().set(patch, { merge: true })
+    offerPagesRef().update(patch)
         .then(() => {
             showToast('success', '🗑️ অফার পেজ মুছে ফেলা হয়েছে');
             if (editingOfferId === id) resetOfferForm();
