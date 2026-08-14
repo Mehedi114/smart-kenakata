@@ -2028,7 +2028,7 @@ function loadCoupons() {
                             <div>
                                 <p style="font-size:11px; color:#64748b; text-transform:uppercase;">ডিসকাউন্ট</p>
                                 <p style="font-size:16px; font-weight:700; color:#2563eb;">
-                                    ${c.type === 'percentage' ? c.amount + '%' : '৳' + c.amount}
+                                    ${c.type === 'percentage' ? c.amount + '%' : c.type === 'freedelivery' ? '🚚 ফ্রি ডেলিভারি' : '৳' + c.amount}
                                 </p>
                             </div>
                             <div>

@@ -1,31 +1,40 @@
 // ============================================================
-// 🎡 স্মার্ট কেনাকাটা — লাকি স্পিন হুইল
+// 🎡 স্মার্ট কেনাকাটা — লাকি স্পিন হুইল (v2)
 // নিয়ম:
-//   • ~১০০ জন ভিজিটরে ১ জন ফ্রি স্পিন পায় (দৈবচয়ন, দিনে একবার চেক)
-//   • কেনাকাটা (অর্ডার সফল) করলে ১টা স্পিন নিশ্চিত
-//   • প্রতিদিন সর্বোচ্চ ২টা স্পিন
-//   • পুরস্কার: বেশিরভাগ ৫-১০ টাকা, কদাচিৎ ২০/৫০ টাকা
-//   • জেতা টাকা = কুপন কোড (৭ দিন মেয়াদ, ১ বার ব্যবহারযোগ্য)
+//   • প্রতিটি ইউজার প্রতিদিন ২টা স্পিন পায় (সবাই!)
+//   • হুইলে অপশন: ৳২ থেকে 🚚 ফ্রি ডেলিভারি পর্যন্ত
+//   • ফ্রি ডেলিভারি ওঠে ~১০০ স্পিনে ১ বার (১%)
+//   • বেশিরভাগ সময় ওঠে: ৳২ / ৳৫ / ৳৭
+//   • জেতা পুরস্কার = কুপন কোড (৭ দিন মেয়াদ, ১ বার ব্যবহারযোগ্য)
 // নির্ভরতা: firebase (compat) আগে লোড থাকতে হবে
 // ============================================================
 (function () {
     'use strict';
 
-    var LUCKY_CHANCE = 0.01;      // ১% ভিজিটর
     var MAX_SPINS_PER_DAY = 2;
     var COUPON_MIN_ORDER = 100;   // কুপন খাটবে ন্যূনতম ১০০ টাকার অর্ডারে
     var COUPON_DAYS_VALID = 7;
 
-    // পুরস্কার — ওজনসহ (মোট ১০০)
+    // পুরস্কার — ওজনসহ (মোট ১০০) — বেশিরভাগ ২/৫/৭ টাকা, ফ্রি ডেলিভারি মাত্র ১%
     var PRIZES = [
-        { amount: 5,  weight: 45, label: '৳৫ ছাড়' },
-        { amount: 10, weight: 40, label: '৳১০ ছাড়' },
-        { amount: 20, weight: 12, label: '৳২০ ছাড়' },
-        { amount: 50, weight: 3,  label: '৳৫০ ছাড়' }
+        { key: 'p2',  amount: 2,  type: 'fixed',        weight: 35, label: '৳২ ছাড়' },
+        { key: 'p5',  amount: 5,  type: 'fixed',        weight: 30, label: '৳৫ ছাড়' },
+        { key: 'p7',  amount: 7,  type: 'fixed',        weight: 24, label: '৳৭ ছাড়' },
+        { key: 'p10', amount: 10, type: 'fixed',        weight: 10, label: '৳১০ ছাড়' },
+        { key: 'fd',  amount: 0,  type: 'freedelivery', weight: 1,  label: '🚚 ফ্রি ডেলিভারি' }
     ];
-    // হুইলের ৮টা খোপ (দেখানোর জন্য — জয় নির্ধারণ হয় ওজন দিয়ে)
-    var SEGMENTS = ['৳৫', '৳১০', '৳৫', '৳২০', '৳১০', '৳৫', '৳৫০', '৳১০'];
-    var SEG_COLORS = ['#2563eb', '#f59e0b', '#3b82f6', '#16a34a', '#fbbf24', '#1d4ed8', '#dc2626', '#f97316'];
+    // হুইলের ৮টা খোপ (প্রতিটার সাথে prize-key ম্যাপ করা)
+    var SEGMENTS = [
+        { text: '৳২',  key: 'p2'  },
+        { text: '৳৫',  key: 'p5'  },
+        { text: '৳৭',  key: 'p7'  },
+        { text: '🚚',  key: 'fd'  },
+        { text: '৳২',  key: 'p2'  },
+        { text: '৳১০', key: 'p10' },
+        { text: '৳৫',  key: 'p5'  },
+        { text: '৳৭',  key: 'p7'  }
+    ];
+    var SEG_COLORS = ['#2563eb', '#f59e0b', '#16a34a', '#dc2626', '#3b82f6', '#7c3aed', '#fbbf24', '#0d9488'];
 
     function todayKey() {
         var d = new Date();
@@ -36,37 +45,18 @@
         var s = null;
         try { s = JSON.parse(localStorage.getItem('sk_spin_state') || 'null'); } catch (e) {}
         if (!s || s.date !== todayKey()) {
-            s = { date: todayKey(), spinsUsed: 0, luckyChecked: false, lucky: false };
+            s = { date: todayKey(), spinsUsed: 0 };
         }
         return s;
     }
     function saveState(s) {
         try { localStorage.setItem('sk_spin_state', JSON.stringify(s)); } catch (e) {}
     }
-    function earnedSpins() {
-        var n = 0;
-        try { n = parseInt(localStorage.getItem('sk_spin_earned') || '0', 10) || 0; } catch (e) {}
-        return n;
-    }
-    function useEarnedSpin() {
-        try { localStorage.setItem('sk_spin_earned', String(Math.max(0, earnedSpins() - 1))); } catch (e) {}
-    }
 
-    // কয়টা স্পিন বাকি?
+    // আজ কয়টা স্পিন বাকি? — সবাই দিনে ২টা পায়
     function availableSpins() {
         var s = getState();
-        if (s.spinsUsed >= MAX_SPINS_PER_DAY) return 0;
-        var avail = 0;
-        // ১) লাকি ভিজিটর? (দিনে একবারই লটারি হয়)
-        if (!s.luckyChecked) {
-            s.luckyChecked = true;
-            s.lucky = Math.random() < LUCKY_CHANCE;
-            saveState(s);
-        }
-        if (s.lucky && !s.luckyUsed) avail++;
-        // ২) কেনাকাটায় অর্জিত স্পিন
-        avail += earnedSpins();
-        return Math.min(avail, MAX_SPINS_PER_DAY - s.spinsUsed);
+        return Math.max(0, MAX_SPINS_PER_DAY - s.spinsUsed);
     }
 
     // ওজন অনুযায়ী পুরস্কার বাছাই
@@ -82,29 +72,29 @@
     }
 
     // কুপন কোড বানাই
-    function genCode(amount) {
+    function genCode(prize) {
         var chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
         var rnd = '';
         for (var i = 0; i < 4; i++) rnd += chars[Math.floor(Math.random() * chars.length)];
-        return 'SPIN' + amount + rnd;
+        return prize.type === 'freedelivery' ? ('SPINFD' + rnd) : ('SPIN' + prize.amount + rnd);
     }
 
     // Firestore-এ কুপন সেভ
-    function createCoupon(amount) {
-        var code = genCode(amount);
+    function createCoupon(prize) {
+        var code = genCode(prize);
         var expiry = new Date(Date.now() + COUPON_DAYS_VALID * 24 * 60 * 60 * 1000);
         var expStr = expiry.getFullYear() + '-' + String(expiry.getMonth() + 1).padStart(2, '0') + '-' + String(expiry.getDate()).padStart(2, '0');
         var db = firebase.firestore();
         return db.collection('coupons').add({
             code: code,
-            type: 'fixed',
-            amount: amount,
+            type: prize.type,               // 'fixed' বা 'freedelivery'
+            amount: prize.amount,
             minOrder: COUPON_MIN_ORDER,
             limit: 1,
             used: 0,
             active: true,
             expiry: expStr,
-            description: '🎡 স্পিন হুইল পুরস্কার',
+            description: '🎡 স্পিন হুইল পুরস্কার — ' + prize.label,
             source: 'spin-wheel',
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).then(function () { return code; });
@@ -159,7 +149,7 @@
         var labels = '';
         for (var i = 0; i < SEGMENTS.length; i++) {
             var ang = (i * per) + per / 2;
-            labels += '<span class="sk-spin-label" style="transform:rotate(' + (ang - 90) + 'deg) translate(78px,-9px);">' + SEGMENTS[i] + '</span>';
+            labels += '<span class="sk-spin-label" style="transform:rotate(' + (ang - 90) + 'deg) translate(78px,-9px);">' + SEGMENTS[i].text + '</span>';
         }
         var md = document.createElement('div');
         md.className = 'sk-spin-modal';
@@ -167,7 +157,7 @@
         md.innerHTML = ''
             + '<button class="sk-spin-close" onclick="skSpinClose()">✕</button>'
             + '<div class="sk-spin-title">🎡 লাকি স্পিন!</div>'
-            + '<div class="sk-spin-sub">ঘোরান আর জিতুন — ছাড় কুপন!</div>'
+            + '<div class="sk-spin-sub">ঘোরান আর জিতুন — ৳২ থেকে ফ্রি ডেলিভারি! 🚚</div>'
             + '<div class="sk-spin-stage">'
             + '  <div class="sk-spin-pointer"></div>'
             + '  <div class="sk-spin-wheel" id="skSpinWheel" style="background:' + conicGradient() + ';">' + labels + '</div>'
@@ -184,7 +174,7 @@
 
     function updateLeftText() {
         var el = document.getElementById('skSpinLeft');
-        if (el) el.textContent = 'আজ বাকি: ' + availableSpins() + ' টি স্পিন (দৈনিক সর্বোচ্চ ' + MAX_SPINS_PER_DAY + ' টি)';
+        if (el) el.textContent = 'আজ বাকি: ' + availableSpins() + ' টি স্পিন (প্রতিদিন ' + MAX_SPINS_PER_DAY + ' টি ফ্রি)';
     }
 
     window.skSpinOpen = function () {
@@ -204,7 +194,7 @@
     function doSpin() {
         if (spinning) return;
         if (availableSpins() <= 0) {
-            document.getElementById('skSpinLeft').textContent = '😔 আজকের স্পিন শেষ — কেনাকাটা করলে নতুন স্পিন পাবেন!';
+            document.getElementById('skSpinLeft').textContent = '😔 আজকের স্পিন শেষ — আগামীকাল আবার ২টা ফ্রি স্পিন পাবেন!';
             return;
         }
         spinning = true;
@@ -213,11 +203,10 @@
         btn.textContent = '🌀 ঘুরছে...';
 
         var prize = pickPrize();
-        // পুরস্কারের সাথে মেলে এমন একটা খোপ বাছি
-        var want = '৳' + (prize.amount === 5 ? '৫' : prize.amount === 10 ? '১০' : prize.amount === 20 ? '২০' : '৫০');
+        // পুরস্কারের সাথে মেলে এমন খোপ বাছি
         var idxs = [];
-        for (var i = 0; i < SEGMENTS.length; i++) if (SEGMENTS[i] === want) idxs.push(i);
-        var idx = idxs[Math.floor(Math.random() * idxs.length)] || 0;
+        for (var i = 0; i < SEGMENTS.length; i++) if (SEGMENTS[i].key === prize.key) idxs.push(i);
+        var idx = idxs.length ? idxs[Math.floor(Math.random() * idxs.length)] : 0;
         var per = 360 / SEGMENTS.length;
         // পয়েন্টার উপরে (0deg) — টার্গেট খোপের মাঝ পয়েন্টারের নিচে আনতে হুইল ঘোরাই
         var target = 360 * 6 + (360 - (idx * per + per / 2));
@@ -227,15 +216,12 @@
         // স্পিন খরচ করি
         var s = getState();
         s.spinsUsed++;
-        if (s.lucky && !s.luckyUsed) s.luckyUsed = true;
-        else useEarnedSpin();
         saveState(s);
 
         setTimeout(function () {
-            createCoupon(prize.amount).then(function (code) {
+            createCoupon(prize).then(function (code) {
                 showResult(prize, code);
             }).catch(function () {
-                // Firestore ব্যর্থ হলেও ইউজারকে কোড দিই — অ্যাডমিনে ম্যানুয়াল যোগ করা যাবে
                 showResult(prize, null);
             });
         }, 4400);
@@ -245,9 +231,12 @@
         spinning = false;
         var btn = document.getElementById('skSpinGo');
         var res = document.getElementById('skSpinResult');
-        btn.style.display = 'none';
         if (code) {
-            res.innerHTML = '<div style="color:#4ade80;font-weight:800;font-size:17px;">🎉 অভিনন্দন! আপনি জিতেছেন ' + prize.label + '!</div>'
+            var isFD = prize.type === 'freedelivery';
+            var big = isFD
+                ? '🎊🚚 জ্যাকপট! সম্পূর্ণ ফ্রি ডেলিভারি জিতেছেন!'
+                : '🎉 অভিনন্দন! আপনি জিতেছেন ' + prize.label + '!';
+            res.innerHTML = '<div style="color:#4ade80;font-weight:800;font-size:17px;">' + big + '</div>'
                 + '<div class="sk-spin-code" id="skSpinCode" title="কপি করতে ক্লিক করুন">' + code + '</div>'
                 + '<div style="color:#94a3b8;font-size:12px;">কোডে ক্লিক করে কপি করুন — চেকআউটে ব্যবহার করুন<br>মেয়াদ ' + COUPON_DAYS_VALID + ' দিন • ন্যূনতম অর্ডার ৳' + COUPON_MIN_ORDER + '</div>';
             res.classList.add('show');
@@ -257,7 +246,22 @@
                 if (navigator.clipboard) navigator.clipboard.writeText(code).then(done).catch(function () {});
                 else done();
             });
-            try { localStorage.setItem('sk_spin_last_win', JSON.stringify({ code: code, amount: prize.amount, t: Date.now() })); } catch (e) {}
+            try { localStorage.setItem('sk_spin_last_win', JSON.stringify({ code: code, amount: prize.amount, type: prize.type, t: Date.now() })); } catch (e) {}
+            // আরেকটা স্পিন বাকি থাকলে বাটন আবার দেখাই
+            if (availableSpins() > 0) {
+                btn.style.display = '';
+                btn.disabled = false;
+                btn.textContent = '🎯 আবার স্পিন করুন';
+                // হুইল রিসেট (transition ছাড়া)
+                var wheel = document.getElementById('skSpinWheel');
+                setTimeout(function () {
+                    wheel.style.transition = 'none';
+                    wheel.style.transform = 'rotate(0deg)';
+                    setTimeout(function () { wheel.style.transition = ''; }, 60);
+                }, 600);
+            } else {
+                btn.style.display = 'none';
+            }
         } else {
             res.innerHTML = '<div style="color:#f87171;font-weight:700;">নেটওয়ার্ক সমস্যা — আবার চেষ্টা করুন 🙏</div>';
             res.classList.add('show');
@@ -268,7 +272,7 @@
         updateLeftText();
     }
 
-    // ===== ভাসমান বাটন — শুধু স্পিন available থাকলেই দেখায় =====
+    // ===== ভাসমান বাটন — স্পিন বাকি থাকলেই দেখায় =====
     function syncFab() {
         var fab = document.getElementById('skSpinFab');
         if (availableSpins() > 0) {
@@ -289,17 +293,8 @@
     function init() {
         if (typeof firebase === 'undefined') return; // firebase ছাড়া কুপন বানানো যাবে না
         buildWheelCSS();
-        // 🧪 টেস্ট মোড: ?spin=test দিলে ১টা ফ্রি স্পিন + হুইল খোলে (অ্যাডমিন টেস্টের জন্য)
-        try {
-            if (new URLSearchParams(location.search).get('spin') === 'test') {
-                var ts = getState();
-                ts.lucky = true; ts.luckyChecked = true; ts.luckyUsed = false; ts.spinsUsed = 0;
-                saveState(ts);
-                setTimeout(window.skSpinOpen, 800);
-            }
-        } catch (e) {}
         syncFab();
-        // অর্ডার শেষে চেকআউট পেজ sk_spin_show_after_order সেট করে — হোমে এলে অটো খোলে
+        // অর্ডার শেষে চেকআউট পেজ ফ্ল্যাগ সেট করে — হোমে এলে হুইল অটো খোলে
         try {
             if (localStorage.getItem('sk_spin_show_after_order') === '1' && availableSpins() > 0) {
                 localStorage.removeItem('sk_spin_show_after_order');

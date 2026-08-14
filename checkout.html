@@ -180,10 +180,10 @@
                 <i class="fas fa-info-circle"></i> অর্ডার কনফার্মেশনের জন্য আমরা আপনাকে ফোন করব
             </p>
 
-            <!-- 🎡 কেনাকাটার পুরস্কার — ফ্রি স্পিন -->
+            <!-- 🎡 লাকি স্পিন মনে করিয়ে দিই -->
             <div style="margin:18px auto 0; max-width:340px; background:linear-gradient(135deg,#fef3c7,#fde68a); border:2px dashed #f59e0b; border-radius:14px; padding:14px 16px;">
-                <p style="font-weight:800; color:#92400e; font-size:15px; margin:0 0 4px;">🎡 অভিনন্দন! আপনি ১টি ফ্রি স্পিন জিতেছেন!</p>
-                <p style="font-size:12.5px; color:#78350f; margin:0;">হোমপেজে গেলেই লাকি হুইল ঘুরিয়ে ছাড় কুপন জিতে নিন 🎁</p>
+                <p style="font-weight:800; color:#92400e; font-size:15px; margin:0 0 4px;">🎡 লাকি স্পিন ঘোরাতে ভুলবেন না!</p>
+                <p style="font-size:12.5px; color:#78350f; margin:0;">প্রতিদিন ২টি ফ্রি স্পিন — ৳২ থেকে ফ্রি ডেলিভারি পর্যন্ত জিতুন 🎁</p>
             </div>
             
             <div class="success-buttons">
@@ -500,6 +500,10 @@
             if (appliedCoupon) {
                 if (appliedCoupon.type === 'percentage') {
                     discountAmount = Math.round((subtotal * appliedCoupon.amount) / 100);
+                } else if (appliedCoupon.type === 'freedelivery') {
+                    // 🎡 স্পিন হুইলের ফ্রি ডেলিভারি কুপন — ডেলিভারি চার্জ ০
+                    discountAmount = 0;
+                    effectiveDelivery = 0;
                 } else {
                     discountAmount = appliedCoupon.amount;
                 }
@@ -611,9 +615,11 @@
                 appliedCoupon = coupon;
                 updateTotals();
                 
-                const discountText = coupon.type === 'percentage' 
-                    ? coupon.amount + '% ছাড়' 
-                    : '৳' + coupon.amount + ' ছাড়';
+                const discountText = coupon.type === 'percentage'
+                    ? coupon.amount + '% ছাড়'
+                    : coupon.type === 'freedelivery'
+                        ? '🚚 ফ্রি ডেলিভারি!'
+                        : '৳' + coupon.amount + ' ছাড়';
                 
                 showCouponMessage('✅ কুপন প্রয়োগ হয়েছে! ' + discountText, 'success');
                 input.disabled = true;
@@ -774,12 +780,8 @@ ${transactionId ? `🔢 *TrxID:* \`${transactionId}\`\n` : ''}
                 document.getElementById('successPage').classList.add('show');
                 document.getElementById('orderIdDisplay').textContent = '#' + docRef.id.substring(0, 8).toUpperCase();
 
-                // 🎡 কেনাকাটার পুরস্কার: ১টা স্পিন — হোমপেজে গেলে হুইল অটো খুলবে
-                try {
-                    const earned = parseInt(localStorage.getItem('sk_spin_earned') || '0', 10) || 0;
-                    localStorage.setItem('sk_spin_earned', String(earned + 1));
-                    localStorage.setItem('sk_spin_show_after_order', '1');
-                } catch (e) {}
+                // 🎡 অর্ডার সফল — হোমপেজে গেলে লাকি হুইল অটো খুলবে (দৈনিক ফ্রি স্পিন থাকলে)
+                try { localStorage.setItem('sk_spin_show_after_order', '1'); } catch (e) {}
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 
