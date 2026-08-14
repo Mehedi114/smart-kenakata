@@ -1103,6 +1103,8 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        // 🔧 iframe/প্রক্সি/কর্পোরেট নেটওয়ার্কে Firestore আটকে যাওয়া ঠেকায়
+        try { db.settings({ experimentalAutoDetectLongPolling: true, merge: true }); } catch (e) {}
         // note: enablePersistence এখন site-core.js-এ synchronizeTabs:true সহ আছে
 
         // প্রোডাক্ট বদলালে হোমপেজ ক্যাশ invalidate করতে catalogVersion বাম্প

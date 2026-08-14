@@ -769,6 +769,8 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        // 🔧 iframe/প্রক্সি/কর্পোরেট নেটওয়ার্কে Firestore আটকে যাওয়া ঠেকায়
+        try { db.settings({ experimentalAutoDetectLongPolling: true, merge: true }); } catch (e) {}
        
 
         // Category icons mapping
