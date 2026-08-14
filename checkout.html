@@ -179,6 +179,12 @@
             <p style="font-size: 14px; color: var(--gray-500);">
                 <i class="fas fa-info-circle"></i> অর্ডার কনফার্মেশনের জন্য আমরা আপনাকে ফোন করব
             </p>
+
+            <!-- 🎡 কেনাকাটার পুরস্কার — ফ্রি স্পিন -->
+            <div style="margin:18px auto 0; max-width:340px; background:linear-gradient(135deg,#fef3c7,#fde68a); border:2px dashed #f59e0b; border-radius:14px; padding:14px 16px;">
+                <p style="font-weight:800; color:#92400e; font-size:15px; margin:0 0 4px;">🎡 অভিনন্দন! আপনি ১টি ফ্রি স্পিন জিতেছেন!</p>
+                <p style="font-size:12.5px; color:#78350f; margin:0;">হোমপেজে গেলেই লাকি হুইল ঘুরিয়ে ছাড় কুপন জিতে নিন 🎁</p>
+            </div>
             
             <div class="success-buttons">
                 <a href="index.html" class="btn-success primary">
@@ -767,6 +773,13 @@ ${transactionId ? `🔢 *TrxID:* \`${transactionId}\`\n` : ''}
                 document.getElementById('checkoutContent').style.display = 'none';
                 document.getElementById('successPage').classList.add('show');
                 document.getElementById('orderIdDisplay').textContent = '#' + docRef.id.substring(0, 8).toUpperCase();
+
+                // 🎡 কেনাকাটার পুরস্কার: ১টা স্পিন — হোমপেজে গেলে হুইল অটো খুলবে
+                try {
+                    const earned = parseInt(localStorage.getItem('sk_spin_earned') || '0', 10) || 0;
+                    localStorage.setItem('sk_spin_earned', String(earned + 1));
+                    localStorage.setItem('sk_spin_show_after_order', '1');
+                } catch (e) {}
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 
