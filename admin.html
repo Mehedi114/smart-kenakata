@@ -1784,7 +1784,13 @@ if (thumbField) {
                         (o.items || []).forEach(item => {
                             let vtxt = '';
                             if (item.size || item.color) vtxt = ' <span style="background:#fef3c7;color:#92400e;font-size:11px;padding:2px 7px;border-radius:999px;font-weight:700;">' + (item.size ? '📏 ' + item.size : '') + (item.size && item.color ? ' · ' : '') + (item.color ? '🎨 ' + item.color : '') + '</span>';
-                            itemsHtml += '<div class="order-item"><span>' + item.name + vtxt + ' × ' + item.quantity + '</span><span>৳' + (item.price * item.quantity) + '</span></div>';
+                            // 🖼️ পণ্যের ছবি + নাম ক্লিক করলে প্রোডাক্ট পেজে যাবে
+                            const pimg = item.image ? '<img src="' + item.image + '" onerror="this.style.display=\'none\'" style="width:52px; height:52px; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0; background:#f8fafc; flex-shrink:0; cursor:pointer;" onclick="window.open(\'product-details.html?id=' + (item.id || '') + '\',\'_blank\')">' : '<div style="width:52px; height:52px; border-radius:8px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8; flex-shrink:0;"><i class="fas fa-image"></i></div>';
+                            itemsHtml += '<div class="order-item" style="align-items:center; gap:10px; padding:8px 0; border-bottom:1px dashed #e2e8f0;">'
+                                + '<span style="display:flex; align-items:center; gap:10px; flex:1; min-width:0;">' + pimg
+                                + '<span style="min-width:0;"><a href="product-details.html?id=' + (item.id || '') + '" target="_blank" style="color:#1e293b; text-decoration:none; font-weight:600;">' + item.name + '</a>' + vtxt
+                                + '<br><small style="color:#64748b;">৳' + item.price + ' × ' + item.quantity + '</small></span></span>'
+                                + '<span style="font-weight:700; white-space:nowrap;">৳' + (item.price * item.quantity) + '</span></div>';
                         });
                         
                         const itemCount = (o.items || []).reduce((s, it) => s + (it.quantity || 1), 0);
@@ -1795,8 +1801,16 @@ if (thumbField) {
                         html += '<p class="order-toggle-hint">🛍️ ' + itemCount + ' টি পণ্য • মোট ৳' + (o.total || 0) + ' — <b>বিস্তারিত দেখতে ক্লিক করুন <span class="chev">▼</span></b></p></div></div>';
                         html += '<span class="order-status status-' + status + '">' + statusText[status] + '</span></div>';
                         html += '<div class="order-details">';
-                        html += '<div class="order-address"><strong>📍 ঠিকানা:</strong> ' + (o.customerAddress || 'N/A') + '</div>';
-                        html += '<div class="order-body">' + itemsHtml + '<div class="order-total order-item"><span>মোট:</span><span>৳' + (o.total || 0) + '</span></div></div>';
+                        html += '<div class="order-address"><strong>📍 ঠিকানা:</strong> ' + (o.customerAddress || 'N/A');
+                        if (o.customerPhone2) html += '<br><strong>📞 বিকল্প নম্বর:</strong> ' + o.customerPhone2;
+                        html += '</div>';
+                        // 📝 কাস্টমার নোট — কাস্টমার চেকআউটে যা লিখেছে
+                        if (o.customerNote) html += '<div class="order-address" style="background:#fefce8; border-color:#eab308;"><strong>📝 কাস্টমারের নোট:</strong> ' + String(o.customerNote).replace(/</g, '&lt;') + '</div>';
+                        html += '<div class="order-body">' + itemsHtml;
+                        html += '<div class="order-item" style="color:#64748b;"><span>সাবটোটাল:</span><span>৳' + (o.subtotal !== undefined ? o.subtotal : (o.total || 0)) + '</span></div>';
+                        if (o.deliveryCharge !== undefined) html += '<div class="order-item" style="color:#64748b;"><span>🚚 ডেলিভারি (' + (o.deliveryArea || '') + '):</span><span>' + (o.deliveryCharge === 0 ? 'ফ্রি 🎉' : '৳' + o.deliveryCharge) + '</span></div>';
+                        if (o.couponDiscount) html += '<div class="order-item" style="color:#16a34a;"><span>🎁 ছাড়:</span><span>-৳' + o.couponDiscount + '</span></div>';
+                        html += '<div class="order-total order-item"><span>মোট:</span><span>৳' + (o.total || 0) + '</span></div></div>';
 html += '<div class="order-address" style="background:#e0f2fe; border-color:#0284c7;">';
 html += '<strong>💳 পেমেন্ট মেথড:</strong> ' + (o.paymentMethod || 'COD');
 if (o.transactionId) {

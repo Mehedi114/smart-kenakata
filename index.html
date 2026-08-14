@@ -301,7 +301,21 @@
         <div class="sk-banner-card" id="bannerCard">
             <div id="bannerSlider" style="position:relative; width:100%;">
                                 <div class="banner-slide active" id="skBannerInstant">
-                    <img src="https://res.cloudinary.com/smartkenakata/image/upload/f_auto,q_auto,w_800/v1785490094/o7fovecppmguifywpwtq.png" srcset="https://res.cloudinary.com/smartkenakata/image/upload/f_auto,q_auto,w_800/v1785490094/o7fovecppmguifywpwtq.png 800w, https://res.cloudinary.com/smartkenakata/image/upload/f_auto,q_auto,w_1200/v1785490094/o7fovecppmguifywpwtq.png 1200w" sizes="100vw" fetchpriority="high" decoding="async" alt="স্মার্ট কেনাকাটা" onerror="this.onerror=null;this.src='https://i.ibb.co.com/1tqfvKxj/Chat-GPT-Image-Jul-15-2026-11-33-06-PM.png';">
+                    <img id="skBannerInstantImg" src="https://res.cloudinary.com/smartkenakata/image/upload/f_auto,q_auto,w_800/v1786275561/j5ruhphhhqqyg8ug0gyi.png" srcset="https://res.cloudinary.com/smartkenakata/image/upload/f_auto,q_auto,w_800/v1786275561/j5ruhphhhqqyg8ug0gyi.png 800w, https://res.cloudinary.com/smartkenakata/image/upload/f_auto,q_auto,w_1200/v1786275561/j5ruhphhhqqyg8ug0gyi.png 1200w" sizes="100vw" fetchpriority="high" decoding="async" alt="স্মার্ট কেনাকাটা">
+                    <script>
+                    // 🖼️ আগের ভিজিটে দেখা সর্বশেষ ব্যানার মনে রাখি — অ্যাডমিন ব্যানার বদলালেও
+                    // পুরনো hardcoded ব্যানার আর দেখাবে না (স্থায়ী সমাধান)
+                    (function () {
+                        try {
+                            var last = JSON.parse(localStorage.getItem('sk_banner_last') || 'null');
+                            var img = document.getElementById('skBannerInstantImg');
+                            if (last && last.src && img && img.src.indexOf(last.src) === -1) {
+                                img.removeAttribute('srcset');
+                                img.src = last.src;
+                            }
+                        } catch (e) {}
+                    })();
+                    </script>
                 </div>
             </div>
             <div id="bannerDots" class="sk-banner-dots"></div>
@@ -1674,6 +1688,8 @@ function loadBanners() {
             updateBannerArrows();
             restartBannerTimer();
             measureBannerRatio(banners);
+            // 🖼️ প্রথম ব্যানারটা মনে রাখি — পরের ভিজিটে শুরু থেকেই সঠিক ব্যানার দেখাবে
+            try { localStorage.setItem('sk_banner_last', JSON.stringify({ src: skImg(banners[0].image, 800), t: Date.now() })); } catch (e) {}
         })
         .catch((error) => {
             console.error('ব্যানার লোড করতে সমস্যা:', error);
