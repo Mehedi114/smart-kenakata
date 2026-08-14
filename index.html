@@ -526,8 +526,8 @@
     <div class="sk-offer-popup" id="offerPopup" role="dialog" aria-modal="true" style="display:none;">
         <button class="sk-offer-close" onclick="closeOfferPopup()" aria-label="বন্ধ করুন">✕</button>
         <div class="sk-offer-content">
-            <div class="sk-offer-img" id="offerImgWrap" style="display:none;">
-                <img id="offerImg" src="" alt="">
+            <div class="sk-offer-img" id="offerImgWrap" style="display:none; cursor:pointer;" onclick="goOfferLink()">
+                <img id="offerImg" src="" alt="অফার">
             </div>
             <div class="sk-offer-body">
                 <span class="sk-offer-badge">🎁 অফার</span>
@@ -976,10 +976,13 @@
             if (!end) return false;
             return end > Date.now();
         }
-        // ===== 🎁 অফার পপআপ (প্রতি ইউজারে একবার) =====
+        // ===== 🎁 অফার পপআপ (প্রতি অফারে একবার) =====
+        // আগে 'একবার দেখলেই চিরতরে বন্ধ' ছিল — অ্যাডমিন নতুন অফার দিলেও পুরনো ভিজিটররা দেখত না।
+        // এখন পপআপের updatedAt মনে রাখি — অফার বদলালে সবাই আবার একবার দেখবে ✅
         let offerLink = '';
-        let offerSeen = false;
-        try { offerSeen = localStorage.getItem('sk_offer_popup_seen') === 'true'; } catch (e) {}
+        let offerPopupStamp = '';
+        let offerSeenStamp = '';
+        try { offerSeenStamp = localStorage.getItem('sk_offer_popup_seen_v2') || ''; } catch (e) {}
 
         // 🔗 নিজের সাইটের ফুল লিংক আসলে রিলেটিভে রূপান্তর — প্রিভিউ/লাইভ দুই জায়গায়ই কাজ করবে (404 আটকায়)
         function skSelfLink(u) {
@@ -989,8 +992,12 @@
 
         function goOfferLink() {
             const target = skSelfLink(offerLink);
-            if (target) { try { window.open(target, '_blank'); } catch (e) { window.location.href = target; } }
             closeOfferPopup();
+            if (!target) return;
+            // ⚠️ আগে window.open('_blank') ছিল — মোবাইল/ফেসবুক ব্রাউজারের popup blocker
+            // নীরবে ব্লক করত (null রিটার্ন, error throw করে না) — তাই কোথাও যেত না!
+            // এখন একই ট্যাবে নেভিগেট — সব ব্রাউজারে ১০০% কাজ করে
+            window.location.href = target;
         }
 
         function closeOfferPopup() {
@@ -999,17 +1006,19 @@
             if (pop) pop.classList.remove('show');
             if (ov) ov.classList.remove('show');
             setTimeout(() => { if (pop) pop.style.display = 'none'; }, 350);
-            try { localStorage.setItem('sk_offer_popup_seen', 'true'); } catch (e) {}
+            try { if (offerPopupStamp) localStorage.setItem('sk_offer_popup_seen_v2', offerPopupStamp); } catch (e) {}
         }
 
         function loadOfferPopup() {
-            if (offerSeen) return;
             try {
                 if (typeof firebase === 'undefined' || !firebase.firestore) return;
                 firebase.firestore().collection('settings').doc('offerPopup').get()
                     .then(doc => {
                         if (!doc.exists || doc.data().enabled === false) return;
                         const v = doc.data();
+                        // এই অফার ভার্সনটা কি আগে দেখা হয়ে গেছে? — হলে আর দেখাই না
+                        offerPopupStamp = (v.updatedAt && v.updatedAt.seconds) ? String(v.updatedAt.seconds) : 'static';
+                        if (offerSeenStamp === offerPopupStamp) return;
                         const pop = document.getElementById('offerPopup');
                         const ov = document.getElementById('offerOverlay');
                         if (!pop || !ov) return;
