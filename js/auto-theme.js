@@ -94,6 +94,11 @@
         + 'body.dark-mode .section-subtitle{color:#a8a29e !important;}'
         + 'body.dark-mode .sk-view-all{background:transparent !important;color:#fbbf24 !important;border-color:rgba(251,191,36,.5) !important;}'
         + 'body.dark-mode .sk-view-all:hover{background:linear-gradient(135deg,#fbbf24,#d97706) !important;color:#0b1120 !important;}'
+        // === 🧭 হোমের উপরের ক্যাটাগরি মেনু (হোম | ইলেকট্রনিক্স | ফ্যাশন...) — গোল্ডেন ===
+        + 'body.dark-mode .nav-menu{background:#0b1120 !important;border-top-color:rgba(251,191,36,.2) !important;border-bottom-color:rgba(251,191,36,.2) !important;}'
+        + 'body.dark-mode .nav-menu a{color:#fbbf24 !important;font-weight:600 !important;}'
+        + 'body.dark-mode .nav-menu a:hover{color:#fde68a !important;text-shadow:0 0 12px rgba(251,191,36,.45);}'
+        + 'body.dark-mode .nav-menu a.active{color:#fde68a !important;border-bottom:2px solid #fbbf24;padding-bottom:3px;}'
         // === কালো/গাঢ় inline টেক্সট ফিক্স — ডার্কে অদৃশ্য হয়ে যেত ===
         + 'body.dark-mode [style*="color:#0f172a"],body.dark-mode [style*="color:#1e293b"],body.dark-mode [style*="color:#334155"],'
         + 'body.dark-mode [style*="color: #0f172a"],body.dark-mode [style*="color: #1e293b"],body.dark-mode [style*="color: #334155"],'
