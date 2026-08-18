@@ -135,8 +135,7 @@
         + '@keyframes skFlashLight{0%{width:10px;height:10px;opacity:1}100%{width:340vmax;height:340vmax;opacity:0}}'
         + '@keyframes skFlashDark{0%{width:10px;height:10px;opacity:1}100%{width:340vmax;height:340vmax;opacity:0}}'
         + '.sk-bulb-text{margin-top:14px;font-weight:800;font-size:15px;color:#fbbf24;text-shadow:0 2px 8px rgba(0,0,0,.5);opacity:0;animation:skTextIn .4s ease .75s forwards;}'
-        + '@keyframes skTextIn{to{opacity:1}}'
-        + '@media (prefers-reduced-motion:reduce){#skBulbOverlay{display:none !important;}}';
+        + '@keyframes skTextIn{to{opacity:1}}';
         var st = document.createElement('style');
         st.id = 'sk-auto-theme-css';
         st.textContent = css;
