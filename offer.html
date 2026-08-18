@@ -3,7 +3,7 @@
 <head>
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png">
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/smartkenakata/image/fetch/f_auto,q_auto,w_64/https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png">
     <title id="pageTitle">🎯 বিশেষ অফার - স্মার্ট কেনাকাটা</title>
     <meta name="description" id="metaDesc" content="স্মার্ট কেনাকাটা বিশেষ অফার — নির্বাচিত পণ্যে দারুণ সব দাম। সীমিত সময়ের জন্য!">
     <meta name="robots" content="index, follow">
@@ -215,8 +215,8 @@
             .current-price { font-size: 17px; }
         }
     </style>
-       <link rel="stylesheet" href="mobile-fix.css?v=8">
-    <link rel="stylesheet" href="premium.css?v=16">
+       <link rel="stylesheet" href="css/mobile-fix.css?v=9">
+    <link rel="stylesheet" href="css/premium.css?v=17">
 </head>
 <body>
 
@@ -224,7 +224,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <div class="logo-icon" style="background:transparent; padding:0;"><img src="https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png" alt="স্মার্ট কেনাকাটা" style="width:100%; height:100%; object-fit:contain;"></div>
+                <div class="logo-icon" style="background:transparent; padding:0;"><img src="https://res.cloudinary.com/smartkenakata/image/fetch/f_auto,q_auto,w_120/https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png" width="45" height="45" alt="স্মার্ট কেনাকাটা" style="width:100%; height:100%; object-fit:contain;"></div>
                 <div class="logo-text">
                     <h1>স্মার্ট কেনাকাটা</h1>
                     <span>Trusted Online Shop</span>
@@ -292,7 +292,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="site-core.js?v=4"></script>
+    <script src="js/site-core.js?v=5"></script>
 
     <script>
         const firebaseConfig = {
@@ -306,6 +306,8 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        // 🔧 iframe/প্রক্সি পরিবেশে Firestore কানেকশন আটকে যাওয়া ঠেকায়
+        try { db.settings({ experimentalAutoDetectLongPolling: true, merge: true }); } catch (e) {}
 
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let currentOffer = null;
@@ -357,7 +359,9 @@
         }
 
         // ===== RENDER =====
+        let offerRendered = false; // watchdog-এর জন্য — রেন্ডার হয়ে গেলে fallback আর চলবে না
         function renderOffer(offer, fromCache) {
+            offerRendered = true;
             const products = offer._products || [];
             // হিরো
             document.getElementById('offerTitle').textContent = offer.title || 'বিশেষ অফার';
@@ -407,6 +411,7 @@
         }
 
         function showOfferState(icon, title, msg, showCta) {
+            offerRendered = true;
             const grid = document.getElementById('offerGrid');
             grid.innerHTML = `
                 <div class="empty-state">
@@ -449,6 +454,44 @@
             } catch (e) {}
         }
 
+        // ===== 🚑 REST FALLBACK — Firestore SDK আটকে গেলে সরাসরি HTTP দিয়ে ডেটা আনি =====
+        async function initViaRest() {
+            const base = 'https://firestore.googleapis.com/v1/projects/' + firebaseConfig.projectId + '/databases/(default)/documents';
+            const key = '?key=' + firebaseConfig.apiKey;
+            const fv = f => {
+                if (!f) return null;
+                if (f.stringValue !== undefined) return f.stringValue;
+                if (f.integerValue !== undefined) return Number(f.integerValue);
+                if (f.doubleValue !== undefined) return f.doubleValue;
+                if (f.booleanValue !== undefined) return f.booleanValue;
+                if (f.nullValue !== undefined) return null;
+                if (f.arrayValue) return (f.arrayValue.values || []).map(fv);
+                if (f.mapValue) { const o = {}; Object.keys(f.mapValue.fields || {}).forEach(k => o[k] = fv(f.mapValue.fields[k])); return o; }
+                return null;
+            };
+            const parseDoc = d => { const o = {}; Object.keys(d.fields || {}).forEach(k => o[k] = fv(d.fields[k])); return o; };
+
+            const res = await fetch(base + '/settings/offerPages' + key);
+            if (!res.ok) throw new Error('offerPages fetch failed');
+            const raw = parseDoc(await res.json());
+            const pages = raw.pages || {};
+            const found = pages[offerId] || raw['pages.' + offerId];
+            if (!found) { showOfferState('fas fa-search', 'অফারটি পাওয়া যায়নি 😔', 'হয়তো অফারটি মুছে ফেলা হয়েছে অথবা লিংক ভুল।', true); return; }
+            currentOffer = { id: offerId, ...found };
+            if (currentOffer.active === false) {
+                showOfferState('fas fa-clock', 'এই অফারটি এখন চলছে না', 'অফারটি বর্তমানে নিষ্ক্রিয় আছে।', false);
+                return;
+            }
+            const ids = Array.isArray(currentOffer.productIds) ? currentOffer.productIds : [];
+            // প্রতিটা পণ্য আলাদাভাবে আনি (batchGet POST প্রয়োজন হয় না, সংখ্যা কম)
+            const prods = await Promise.all(ids.map(id =>
+                fetch(base + '/products/' + id + key).then(r => r.ok ? r.json() : null).then(d => d && d.fields ? { id: id, ...parseDoc(d) } : null).catch(() => null)
+            ));
+            currentOffer._products = prods.filter(Boolean);
+            renderOffer(currentOffer, false);
+            applyOfferSEO(currentOffer);
+        }
+
         // ===== LOAD =====
         async function init() {
             updateCartCount();
@@ -456,10 +499,22 @@
                 showOfferState('fas fa-link-slash', 'অফার লিংক সঠিক নয়', 'লিংকে অফার আইডি নেই। আবার ব্যানার/বিজ্ঞাপন থেকে আসার চেষ্টা করুন।', true);
                 return;
             }
+            // ⏱️ Watchdog: ৬ সেকেন্ডেও কিছু রেন্ডার না হলে SDK আটকে গেছে ধরে REST দিয়ে চেষ্টা
+            setTimeout(() => {
+                if (!offerRendered) {
+                    console.warn('Firestore SDK timeout — REST fallback চালু হচ্ছে');
+                    initViaRest().catch(e => {
+                        console.error('REST fallbackও ব্যর্থ:', e);
+                        if (!offerRendered) showOfferState('fas fa-wifi', 'লোড করা যাচ্ছে না', 'ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।', true);
+                    });
+                }
+            }, 6000);
             try {
                 const doc = await db.collection('settings').doc('offerPages').get();
-                const pages = (doc.exists && doc.data() && doc.data().pages) || {};
-                const found = pages[offerId];
+                const raw = (doc.exists && doc.data()) || {};
+                const pages = raw.pages || {};
+                // 🔧 fallback: পুরনো ভাঙা ফরম্যাট ("pages.xxx" literal key) থেকেও পড়ি
+                const found = pages[offerId] || raw['pages.' + offerId];
                 if (!found) {
                     showOfferState('fas fa-search', 'অফারটি পাওয়া যায়নি 😔', 'হয়তো অফারটি মুছে ফেলা হয়েছে অথবা লিংক ভুল।', true);
                     return;
@@ -496,6 +551,9 @@
                 applyOfferSEO(currentOffer);
                 skTrack('ViewContent', { content_name: 'offer:' + (currentOffer.title || offerId), content_ids: products.map(p => p.id) });
             } catch (e) {
+                console.error('অফার লোড error:', e);
+                // SDK ব্যর্থ — REST fallback দিয়ে শেষ চেষ্টা
+                try { await initViaRest(); return; } catch (e2) { console.error('REST fallbackও ব্যর্থ:', e2); }
                 if (!currentOffer || !currentOffer._products) {
                     showOfferState('fas fa-wifi', 'লোড করা যাচ্ছে না', 'ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।', true);
                 }
@@ -562,10 +620,11 @@
 
         init();
     </script>
-    <script src="chatbot.js?v=3"></script>
-    <script src="theme.js?v=4"></script>
-    <script src="nav-drawer.js?v=3"></script>
+    <script src="js/chatbot.js?v=5" defer></script>
+    <script src="js/theme.js?v=5" defer></script>
+    <script src="js/nav-drawer.js?v=4" defer></script>
 
-    <script src="premium.js?v=3" defer></script>
+    <script src="js/premium.js?v=4" defer></script>
+    <script src="js/auto-theme.js?v=6" defer></script>
 </body>
 </html>

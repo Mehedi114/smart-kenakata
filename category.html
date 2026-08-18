@@ -3,7 +3,7 @@
 <head>
         <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png">
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/smartkenakata/image/fetch/f_auto,q_auto,w_64/https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png">
     <title id="pageTitle">ক্যাটাগরি - স্মার্ট কেনাকাটা | Best Price BD</title>
     <meta name="description" id="metaDesc" content="স্মার্ট কেনাকাটা ক্যাটাগরি - সেরা পণ্য সেরা দামে। ঢাকায় ২৪ ঘন্টায় ডেলিভারি।">
     <meta name="robots" content="index, follow">
@@ -619,9 +619,9 @@
             .category-title { flex-direction: column; text-align: center; }
         }
     </style>
-       <link rel="stylesheet" href="mobile-fix.css?v=8">
-    <script src="seo.js?v=1"></script>
-    <link rel="stylesheet" href="premium.css?v=16">
+       <link rel="stylesheet" href="css/mobile-fix.css?v=9">
+    <script src="js/seo.js?v=2"></script>
+    <link rel="stylesheet" href="css/premium.css?v=17">
 </head>
 <body>
 
@@ -629,7 +629,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <div class="logo-icon" style="background:transparent; padding:0;"><img src="https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png" alt="স্মার্ট কেনাকাটা" style="width:100%; height:100%; object-fit:contain;"></div>
+                <div class="logo-icon" style="background:transparent; padding:0;"><img src="https://res.cloudinary.com/smartkenakata/image/fetch/f_auto,q_auto,w_120/https://i.postimg.cc/7h0NpL4w/Chat-GPT-Image-Aug-9-2026-05-28-09-PM.png" width="45" height="45" alt="স্মার্ট কেনাকাটা" style="width:100%; height:100%; object-fit:contain;"></div>
                 <div class="logo-text">
                     <h1>স্মার্ট কেনাকাটা</h1>
                     <span>Trusted Online Shop</span>
@@ -755,7 +755,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="site-core.js?v=4"></script>
+    <script src="js/site-core.js?v=5"></script>
 
     <script>
         const firebaseConfig = {
@@ -769,6 +769,8 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        // 🔧 iframe/প্রক্সি/কর্পোরেট নেটওয়ার্কে Firestore আটকে যাওয়া ঠেকায়
+        try { db.settings({ experimentalAutoDetectLongPolling: true, merge: true }); } catch (e) {}
        
 
         // Category icons mapping
@@ -1645,10 +1647,11 @@
 
         init();
     </script>
-    <script src="chatbot.js?v=3"></script>
-    <script src="theme.js?v=4"></script>
-    <script src="nav-drawer.js?v=3"></script>
+    <script src="js/chatbot.js?v=5" defer></script>
+    <script src="js/theme.js?v=5" defer></script>
+    <script src="js/nav-drawer.js?v=4" defer></script>
    
-    <script src="premium.js?v=3" defer></script>
+    <script src="js/premium.js?v=4" defer></script>
+    <script src="js/auto-theme.js?v=6" defer></script>
 </body>
 </html>
