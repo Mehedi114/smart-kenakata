@@ -862,8 +862,12 @@
                         <input type="text" id="bcLink" placeholder="offer.html?id=... বা category.html?cat=গ্যাজেট বা product-details.html?id=...">
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary" onclick="sendBroadcast()"><i class="fas fa-paper-plane"></i> এখনই পাঠান</button>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button type="button" class="btn btn-primary" onclick="sendBroadcast()"><i class="fas fa-paper-plane"></i> এখনই পাঠান</button>
+                    <button type="button" class="btn btn-danger" onclick="stopBroadcast()"><i class="fas fa-stop-circle"></i> নোটিফিকেশন বন্ধ করুন</button>
+                </div>
                 <small id="bcStatus" style="display:block; margin-top:10px; font-weight:600; color:#2563eb;"></small>
+                <div id="bcCurrent" style="margin-top:12px; font-size:13px; color:#334155;"></div>
             </div>
         </div>
 
@@ -1257,7 +1261,7 @@
             if (sectionName === 'coupons') loadCoupons();
             if (sectionName === 'reviews') loadAdminReviews();
             if (sectionName === 'banners') loadBanners();
-            if (sectionName === 'offer-popup') loadOfferPopup();
+            if (sectionName === 'offer-popup') { loadOfferPopup(); loadCurrentBroadcast(); }
             if (sectionName === 'offerpages') loadOfferPages();
             if (sectionName === 'categories') loadCategoryManager();
             if (sectionName === 'settings') loadSettingsForm();
@@ -3037,10 +3041,47 @@ function deleteReview(id) {
                 st.textContent = '✅ পাঠানো হয়েছে! ইউজাররা নোটিফিকেশন পাবে 🎉';
                 document.getElementById('bcTitle').value = '';
                 document.getElementById('bcBody').value = '';
+                loadCurrentBroadcast();
             } catch (e) {
                 st.style.color = '#dc2626';
                 st.textContent = '❌ সমস্যা হয়েছে: ' + (e.message || e);
             }
+        }
+
+        // ===== 🛑 Broadcast বন্ধ করা — যারা এখনো দেখেনি তারা আর পাবে না =====
+        async function stopBroadcast() {
+            const st = document.getElementById('bcStatus');
+            if (!confirm('নোটিফিকেশনটি বন্ধ করবেন? যারা এখনো দেখেনি তারা আর পাবে না।')) return;
+            try {
+                await db.collection('settings').doc('broadcast').set({
+                    title: '', body: '', link: '', ts: null, stoppedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                st.style.color = '#059669';
+                st.textContent = '🛑 নোটিফিকেশন বন্ধ করা হয়েছে — আর কেউ পাবে না।';
+                loadCurrentBroadcast();
+            } catch (e) {
+                st.style.color = '#dc2626';
+                st.textContent = '❌ সমস্যা হয়েছে: ' + (e.message || e);
+            }
+        }
+
+        // ===== 👁️ বর্তমান চালু broadcast দেখাই =====
+        function loadCurrentBroadcast() {
+            const box = document.getElementById('bcCurrent');
+            if (!box) return;
+            db.collection('settings').doc('broadcast').get().then(doc => {
+                const d = (doc.exists && doc.data()) || {};
+                if (d.title && d.ts) {
+                    const when = d.ts.seconds ? new Date(d.ts.seconds * 1000).toLocaleString('bn-BD') : '';
+                    box.innerHTML = '<div style="background:#fff; border:1.5px solid #bfdbfe; border-radius:10px; padding:10px 14px;">'
+                        + '📢 <b>এখন চালু:</b> ' + String(d.title).replace(/</g, '&lt;')
+                        + (d.body ? ' — ' + String(d.body).replace(/</g, '&lt;') : '')
+                        + (when ? '<br><small style="color:#64748b;">পাঠানো হয়েছে: ' + when + '</small>' : '')
+                        + '</div>';
+                } else {
+                    box.innerHTML = '<small style="color:#94a3b8;">কোনো নোটিফিকেশন এখন চালু নেই।</small>';
+                }
+            }).catch(() => {});
         }
 
         async function saveOfferPopup(event) {
