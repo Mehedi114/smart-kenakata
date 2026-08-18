@@ -2,6 +2,7 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/seo.js?v=2"></script>
     <title>অ্যাডমিন ড্যাশবোর্ড - স্মার্ট কেনাকাটা</title>
@@ -1894,16 +1895,18 @@ html += '</div>';                        html += '<div class="order-actions">';
                         html += '<div class="message-card ' + status + '">';
                         html += '<div class="message-header">';
                         html += '<div class="message-sender">';
+                        // 🛡️ XSS প্রতিরোধ — কাস্টমারের লেখা HTML হিসেবে চলবে না
+                        const esc = (t) => String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         html += '<div class="message-avatar">' + initial + '</div>';
                         html += '<div class="message-sender-info">';
-                        html += '<h4>' + (m.name || 'Unknown') + '</h4>';
-                        html += '<p><i class="fas fa-phone"></i> ' + (m.phone || 'N/A');
-                        if (m.email) html += ' | <i class="fas fa-envelope"></i> ' + m.email;
+                        html += '<h4>' + esc(m.name || 'Unknown') + '</h4>';
+                        html += '<p><i class="fas fa-phone"></i> ' + esc(m.phone || 'N/A');
+                        if (m.email) html += ' | <i class="fas fa-envelope"></i> ' + esc(m.email);
                         html += '</p></div></div>';
                         html += '<span class="order-status status-' + status + '">' + (status === 'unread' ? '🔴 নতুন' : '✅ পড়া হয়েছে') + '</span>';
                         html += '</div>';
-                        html += '<div class="message-subject">📋 ' + (m.subject || 'সাধারণ') + '</div>';
-                        html += '<div class="message-body">' + (m.message || '') + '</div>';
+                        html += '<div class="message-subject">📋 ' + esc(m.subject || 'সাধারণ') + '</div>';
+                        html += '<div class="message-body">' + esc(m.message || '') + '</div>';
                         html += '<div class="message-time"><i class="fas fa-clock"></i> ' + date + '</div>';
                         html += '<div class="message-actions">';
                         if (status === 'unread') html += '<button class="btn btn-primary btn-sm" onclick="markAsRead(\'' + m.id + '\')"><i class="fas fa-check"></i> পড়া হয়েছে</button>';

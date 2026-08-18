@@ -2,9 +2,7 @@
 (function() {
     'use strict';
     const GROQ_API_KEYS = [
-        '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',
-        'gsk_2nd_KEY_HERE',
-        'gsk_3rd_KEY_HERE'
+        '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'
     ];
     let currentKeyIndex = parseInt(localStorage.getItem('groq_key_index') || '0');
     const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
@@ -20,7 +18,7 @@ WEBSITE INFO:
 - Website: Smart Kenakata (স্মার্ট কেনাকাটা)
 - Type: Bangladesh trusted online shop
 - Categories: Electronics, Fashion, Beauty, Home & Living, Toys, Books, Grocery
-- Delivery: Inside Dhaka ৳60 (24h), Outside ৳120 (3-5 days), Free delivery on ৳500+
+- Delivery: Inside Dhaka ৳60 (24h), Outside ৳120 (3-5 days)
 - Payment: bKash, Nagad, Rocket, Cash on Delivery
 - Address: Mirpur-10, Dhaka
 - Hours: 9 AM - 11 PM
