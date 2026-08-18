@@ -108,34 +108,7 @@
         + 'body.dark-mode [style*="background:white"],body.dark-mode [style*="background: white"],body.dark-mode [style*="background:#fff"],body.dark-mode [style*="background: #fff"],body.dark-mode [style*="background:#f8fafc"],body.dark-mode [style*="background: #f8fafc"]{background:#1e293b !important;color:#e2e8f0 !important;}'
         + 'body.dark-mode p,body.dark-mode li,body.dark-mode label,body.dark-mode small{color:inherit;}'
         + 'body.dark-mode ::placeholder{color:#64748b !important;}'
-        + 'body.dark-mode{color-scheme:dark;}'
-        // === 💡 বাল্ব টগল অ্যানিমেশন ===
-        + '#skBulbOverlay{position:fixed;inset:0;z-index:999999;display:flex;align-items:flex-start;justify-content:center;pointer-events:none;opacity:0;}'
-        + '#skBulbOverlay.show{opacity:1;pointer-events:auto;}'
-        + '#skBulbOverlay .sk-bulb-bg{position:absolute;inset:0;transition:background .5s ease;}'
-        + '#skBulbOverlay.to-dark .sk-bulb-bg{background:rgba(2,6,23,0);animation:skBgDark 1.5s ease forwards;}'
-        + '#skBulbOverlay.to-light .sk-bulb-bg{background:rgba(255,251,235,0);animation:skBgLight 1.5s ease forwards;}'
-        + '@keyframes skBgDark{0%{background:rgba(2,6,23,0)}45%{background:rgba(2,6,23,.35)}70%{background:rgba(2,6,23,.92)}100%{background:rgba(2,6,23,0)}}'
-        + '@keyframes skBgLight{0%{background:rgba(255,251,235,0)}45%{background:rgba(255,251,235,.4)}70%{background:rgba(255,251,235,.95)}100%{background:rgba(255,251,235,0)}}'
-        + '.sk-bulb-rig{position:relative;display:flex;flex-direction:column;align-items:center;transform:translateY(-140px);animation:skRigDrop .6s cubic-bezier(.34,1.56,.64,1) forwards;}'
-        + '@keyframes skRigDrop{to{transform:translateY(0)}}'
-        + '#skBulbOverlay.leaving .sk-bulb-rig{animation:skRigUp .45s ease-in forwards;}'
-        + '@keyframes skRigUp{to{transform:translateY(-160px);opacity:0}}'
-        + '.sk-bulb-wire{width:3px;height:70px;background:linear-gradient(#475569,#64748b);border-radius:2px;}'
-        + '.sk-bulb{font-size:64px;line-height:1;filter:drop-shadow(0 0 26px rgba(251,191,36,.9));transform-origin:top center;animation:skBulbSway 1.6s ease-in-out infinite;transition:filter .35s;}'
-        + '.sk-bulb.off{filter:grayscale(1) brightness(.45) drop-shadow(0 0 0 transparent);}'
-        + '@keyframes skBulbSway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}'
-        + '.sk-bulb-cord{width:2.5px;height:46px;background:#94a3b8;border-radius:2px;position:relative;}'
-        + '.sk-bulb-cord::after{content:"";position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;background:#f59e0b;box-shadow:0 2px 6px rgba(0,0,0,.4);}'
-        + '#skBulbOverlay .sk-cord-pull{animation:skCordPull .55s ease .35s;}'
-        + '@keyframes skCordPull{0%{transform:translateY(0)}40%{transform:translateY(16px)}70%{transform:translateY(-4px)}100%{transform:translateY(0)}}'
-        + '.sk-bulb-flash{position:absolute;top:130px;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;pointer-events:none;}'
-        + '#skBulbOverlay.to-light .sk-bulb-flash{animation:skFlashLight .9s ease .55s forwards;background:radial-gradient(circle,rgba(253,230,138,.95),rgba(253,230,138,0) 70%);}'
-        + '#skBulbOverlay.to-dark .sk-bulb-flash{animation:skFlashDark .9s ease .55s forwards;background:radial-gradient(circle,rgba(15,23,42,.9),rgba(15,23,42,0) 70%);}'
-        + '@keyframes skFlashLight{0%{width:10px;height:10px;opacity:1}100%{width:340vmax;height:340vmax;opacity:0}}'
-        + '@keyframes skFlashDark{0%{width:10px;height:10px;opacity:1}100%{width:340vmax;height:340vmax;opacity:0}}'
-        + '.sk-bulb-text{margin-top:14px;font-weight:800;font-size:15px;color:#fbbf24;text-shadow:0 2px 8px rgba(0,0,0,.5);opacity:0;animation:skTextIn .4s ease .75s forwards;}'
-        + '@keyframes skTextIn{to{opacity:1}}';
+        + 'body.dark-mode{color-scheme:dark;}';
         var st = document.createElement('style');
         st.id = 'sk-auto-theme-css';
         st.textContent = css;
@@ -154,48 +127,9 @@
         document.getElementById('skGreetToggle').addEventListener('click', function () {
             var nowDark = document.body.classList.contains('dark-mode');
             setManual(nowDark ? 'light' : 'dark');
-            playBulbAnimation(!nowDark);
+            applyMode(!nowDark);
         });
         tick();
-    }
-
-    // ---------- 💡 বাল্ব অন/অফ অ্যানিমেশন ----------
-    var bulbBusy = false;
-    function playBulbAnimation(goDark) {
-        if (bulbBusy) return;
-        bulbBusy = true;
-        var ov = document.createElement('div');
-        ov.id = 'skBulbOverlay';
-        ov.className = goDark ? 'to-dark' : 'to-light';
-        ov.innerHTML = ''
-            + '<div class="sk-bulb-bg"></div>'
-            + '<div class="sk-bulb-rig">'
-            + '  <div class="sk-bulb-wire"></div>'
-            + '  <div class="sk-bulb ' + (goDark ? '' : 'off') + '" id="skBulbIcon">💡</div>'
-            + '  <div class="sk-bulb-cord sk-cord-pull"></div>'
-            + '  <div class="sk-bulb-text">' + (goDark ? '🌙 লাইট অফ...' : '☀️ লাইট অন...') + '</div>'
-            + '</div>'
-            + '<div class="sk-bulb-flash"></div>';
-        document.body.appendChild(ov);
-        requestAnimationFrame(function () { ov.classList.add('show'); });
-
-        // দড়ি টানার পরে টুস — বাল্ব জ্বলে/নিভে
-        setTimeout(function () {
-            var bulb = document.getElementById('skBulbIcon');
-            if (bulb) bulb.classList.toggle('off', goDark);
-        }, 620);
-
-        // আলোর ঢেউয়ের মাঝপথে থিম বদলাই — সবচেয়ে মসৃণ মুহূর্ত
-        setTimeout(function () {
-            applyMode(goDark);
-        }, 950);
-
-        // বাল্ব উপরে উঠে বিদায়
-        setTimeout(function () { ov.classList.add('leaving'); }, 1450);
-        setTimeout(function () {
-            if (ov.parentNode) ov.parentNode.removeChild(ov);
-            bulbBusy = false;
-        }, 2000);
     }
 
     function bnNum(s) { return String(s).replace(/[0-9]/g, function (d) { return '০১২৩৪৫৬৭৮৯'[+d]; }); }
