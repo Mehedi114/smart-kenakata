@@ -79,6 +79,21 @@
         + 'body.dark-mode .section-title::after{background:linear-gradient(135deg,#fbbf24,#d97706) !important;}'
         + 'body.dark-mode .product-card,body.dark-mode .category-card{box-shadow:0 4px 18px rgba(0,0,0,.45) !important;border:1px solid rgba(148,163,184,.12) !important;}'
         + 'body.dark-mode .product-card:hover{border-color:rgba(251,191,36,.35) !important;box-shadow:0 10px 30px rgba(251,191,36,.12) !important;}'
+        // === 🗂️ ক্যাটাগরি লাইন — ডার্ক মোডে গোল্ডেন থিম ===
+        + 'body.dark-mode .sk-cat-icon{background:linear-gradient(145deg,#1c1917,#292524) !important;'
+        + 'box-shadow:0 4px 16px rgba(0,0,0,.5),inset 0 0 0 2px rgba(251,191,36,.45) !important;}'
+        + 'body.dark-mode .sk-cat-name{color:#fbbf24 !important;font-weight:700 !important;}'
+        + 'body.dark-mode .sk-cat-item:hover .sk-cat-icon{box-shadow:0 10px 26px rgba(251,191,36,.28),inset 0 0 0 2.5px #fbbf24 !important;transform:translateY(-3px);}'
+        + 'body.dark-mode .sk-cat-item:hover .sk-cat-name{color:#fde68a !important;}'
+        // ক্যাটাগরি কার্ড (গ্রিড ভার্সন) — সোনালি বর্ডার+টেক্সট
+        + 'body.dark-mode .category-card{border:1px solid rgba(251,191,36,.22) !important;}'
+        + 'body.dark-mode .category-card:hover{border-color:rgba(251,191,36,.55) !important;box-shadow:0 10px 28px rgba(251,191,36,.15) !important;}'
+        + 'body.dark-mode .category-card h3,body.dark-mode .category-card .cat-name{color:#fbbf24 !important;}'
+        // সেকশন টাইটেল/সাবটাইটেল — সোনালি ছোঁয়া
+        + 'body.dark-mode .section-title{color:#fde68a !important;}'
+        + 'body.dark-mode .section-subtitle{color:#a8a29e !important;}'
+        + 'body.dark-mode .sk-view-all{background:transparent !important;color:#fbbf24 !important;border-color:rgba(251,191,36,.5) !important;}'
+        + 'body.dark-mode .sk-view-all:hover{background:linear-gradient(135deg,#fbbf24,#d97706) !important;color:#0b1120 !important;}'
         // === কালো/গাঢ় inline টেক্সট ফিক্স — ডার্কে অদৃশ্য হয়ে যেত ===
         + 'body.dark-mode [style*="color:#0f172a"],body.dark-mode [style*="color:#1e293b"],body.dark-mode [style*="color:#334155"],'
         + 'body.dark-mode [style*="color: #0f172a"],body.dark-mode [style*="color: #1e293b"],body.dark-mode [style*="color: #334155"],'
