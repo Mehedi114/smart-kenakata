@@ -1,7 +1,7 @@
 // Smart Kenakata Service Worker — স্মার্ট ক্যাশিং
 // HTML: network-first (সবসময় তাজা কন্টেন্ট), অফলাইনে ক্যাশ ফলব্যাক
 // Static assets (CSS/JS/ছবি/font): cache-first (দ্রুত লোড)
-const VERSION = 'v15'; // v15: offline fallback + network resilience
+const VERSION = 'v16'; // v16: comprehensive dark-mode fixes for category/navpages
 const STATIC_CACHE = 'sk-static-' + VERSION;
 const PAGE_CACHE = 'sk-pages-' + VERSION;
 
