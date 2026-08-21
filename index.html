@@ -552,7 +552,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="js/site-core.js?v=5"></script>
+    <script src="js/site-core.js?v=6"></script>
 
     <script>
         const firebaseConfig = {
@@ -647,32 +647,44 @@
             const renderHome = (list) => {
                 allProducts = buildBalancedHomeList(list);
                 if (!allProducts.length) {
-                    grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
+                    // ক্যাশ করা পণ্য নষ্ট হয়ে গেলে (cache corrupt) — empty state না দেখিয়ে
+                    // Firestore fallback try করাই (অফলাইনে থাকলে তবেই খালি দেখায়)
+                    if (!navigator.onLine) {
+                        grid.innerHTML = '<div class="empty-state"><i class="fas fa-wifi"></i><h3>অফলাইন আছেন</h3><p>ইন্টারনেট সংযোগ চালু হলে অটো-আপডেট হবে</p></div>';
+                    } else {
+                        grid.innerHTML = '<div class="empty-state"><i class="fas fa-box-open"></i><h3>এখনো কোন পণ্য নেই</h3><p>অ্যাডমিন প্যানেল থেকে পণ্য যোগ করুন</p></div>';
+                    }
                     return;
                 }
                 displayProducts(allProducts);
+                // পণ্য লোড হয়ে গেলে ফ্ল্যাশ সেলও একই তালিকা থেকে আপডেট হয় (আলাদা query লাগে না)
+                try { refreshFlashFromList(allProducts); } catch (e) {}
             };
 
-            // ১) প্রথমে ক্যাশ দেখান (instant render) — balanced করে
+            // ১) ⚡ CACHE-FIRST: যেকোনো ক্যাশ (তাজা/পুরনো) সাথে সাথেই দেখাই — নেটওয়ার্ক ছাড়াই পেজ ভরে যায়
+            let cachedList = null;
             if (!forceRefresh) {
                 try {
                     const cached = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
-                    if (cached && cached.v === 3 && cached.t && (Date.now() - cached.t < HOME_CACHE_TTL) && cached.list.length) {
-                        renderHome(cached.list);
-                        return;
+                    if (cached && cached.v === 3 && cached.list && cached.list.length) {
+                        cachedList = cached.list;
+                        renderHome(cachedList);
+                        // ২) ক্যাশ তাজা হলে (১৫ মিনিটের মধ্যে) Firestore query-ই বাদ — রিড + নেটওয়ার্ক দুটোই বাঁচে
+                        if (cached.t && (Date.now() - cached.t < HOME_CACHE_TTL)) return;
+                        // পুরনো ক্যাশ দেখিয়েছি — পটভূমিতে refresh হবে (error হলে ক্যাশই থাকবে)
                     }
                 } catch (e) {}
             }
 
-            // ২) Firestore — featured query + সাম্প্রতিক ৩০টা (balanced করতে)
-            // ৩.৫ সেকেন্ডের মধ্যে লোড না হলে পুরনো ক্যাশ দেখাই — স্পিনার বেশি ঘোরে না
+            // ৩) Firestore — featured query + সাম্প্রতিক ৪০টা (balanced করতে)
+            // মাত্র ১.২ সেকেন্ডে Firestore না এলে — ক্যাশ/খালি state-র উপরে আর চাপ নেই, তবে স্পিনার যেন বেশি না ঘোরে
             const slowTimer = setTimeout(() => {
                 if (!grid.querySelector('.sk-skeleton-card')) return;
                 try {
                     const stale = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
                     if (stale && stale.v === 3 && stale.list && stale.list.length) renderHome(stale.list);
                 } catch (e) {}
-            }, 3500);
+            }, 1200);
 
             // সিম্পল + robust: একটা query-ই যথেষ্ট — featured প্রথমে sort করা হয় client-side
             const loadOrdered = () => db.collection('products').orderBy('createdAt','desc').limit(40).get();
@@ -687,6 +699,8 @@
                     if (!snapshot) throw new Error('empty');
                     // offline হলে Firestore cache থেকেও ফলাফল আসে — খালি ফলাফল + offline = মিথ্যা "পণ্য নেই" দেখাবো না
                     if (snapshot.empty && (snapshot.metadata.fromCache || !navigator.onLine)) {
+                        // 🔒 ক্যাশে ডেটা আগে থেকেই আছে (উপরে render হয়েছে)? — তাহলে error দিয়ে ক্যাশ ঢেকে ফেলব না
+                        if (grid.querySelector('.product-card')) return;
                         grid.innerHTML = '<div class="empty-state"><i class="fas fa-wifi"></i><h3>নেটওয়ার্ক সমস্যা</h3><p>ইন্টারনেট সংযোগ নেই — আবার চেষ্টা করুন</p><button onclick="loadProducts(true)" style="margin-top:12px;padding:8px 16px;background:#2563eb;color:white;border:none;border-radius:8px;cursor:pointer;">আবার চেষ্টা করুন</button></div>';
                         return;
                     }
@@ -707,6 +721,8 @@
                 .catch((error) => {
                     clearTimeout(slowTimer);
                     console.error('Error loading products:', error);
+                    // 🔒 ক্যাশে ডেটা আগে থেকে দেখানো হয়েছে? তাহলে error state দেখাবো না — নীরবে স্টে করে থাকি
+                    if (grid.querySelector('.product-card')) return;
                     // কারণ বোঝার জন্য আলাদা মেসেজ — rules/API key ব্লক vs নেটওয়ার্ক
                     const code = (error && (error.code || error.message)) || '';
                     const isBlocked = /permission|denied|unauthorized|forbidden/i.test(code);
@@ -721,6 +737,8 @@
         // হোমপেজ লোডের পর ব্যাকগ্রাউন্ডে সব পণ্য শেয়ার্ড ক্যাশে রাখি (sk_cat_cache_all) —
         // এরপর যেকোনো ক্যাটাগরি (বিউটি/গ্যাজেট/হোম ও কিচেন...) খুললেই INSTANT render হবে
         function warmCategoryCache() {
+            // 🔒 অফলাইনে এই ভারী query বাদ — ক্যাশ আগের ডেটাই রাখে
+            if (!navigator.onLine) return;
             try {
                 const c = JSON.parse(localStorage.getItem('sk_cat_cache_all') || 'null');
                 if (c && c.v === 3 && c.t && (Date.now() - c.t < 15 * 60 * 1000) && c.list && c.list.length) return; // তাজা ক্যাশ আছে
@@ -733,9 +751,10 @@
             }).catch(() => {});
         }
         window.addEventListener('load', function () {
-            const run = function () { setTimeout(warmCategoryCache, 1800); };
-            if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 5000 });
-            else run();
+            // ৩.৫ সেকেন্ড পরে + ব্রাউজার idle — মূল কন্টেন্ট আগে আঁকা শেষ হোক
+            const run = function () { setTimeout(warmCategoryCache, 3500); };
+            if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 7000 });
+            else setTimeout(run, 3500);
         });
 
                 // ===== শেয়ার্ড লাইভ ক্যাটাগরি লোডার (১টা Firestore read — হোম, নেভ-মেনু, ড্রয়ার সবাই এটা ব্যবহার করে) =====
@@ -1019,8 +1038,10 @@
 
         function loadOfferPopup() {
             try {
-                if (typeof firebase === 'undefined' || !firebase.firestore) return;
-                firebase.firestore().collection('settings').doc('offerPopup').get()
+                // 🔒 অফলাইন/দুর্বল নেটে এই query বাদ — অফার পপআপ কোনো জরুরি কন্টেন্ট না
+                const fs = window.skFs ? window.skFs() : null;
+                if (!fs) return;
+                fs.collection('settings').doc('offerPopup').get()
                     .then(doc => {
                         if (!doc.exists || doc.data().enabled === false) return;
                         const v = doc.data();
@@ -1117,6 +1138,41 @@
             try { ids = JSON.parse(localStorage.getItem('sk_recent') || '[]'); } catch (e) {}
             ids = ids.slice(0, 10);
             if (!ids.length) { section.style.display = 'none'; return; }
+            const renderList = (list) => {
+                if (!list.length) { section.style.display = 'none'; return; }
+                window._recentProducts = list;
+                grid.innerHTML = list.map(p => {
+                    const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    let h = '<div class="sk-flash-card" data-pid="' + p.id + '" onclick="viewProduct(\'' + p.id + '\')">';
+                    h += '<div class="sk-flash-img"><img src="' + skImg(p.image, 400) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'"></div>';
+                    h += '<div class="sk-flash-info"><div class="sk-flash-name">' + escapeHtml(p.name) + '</div>';
+                    h += '<div class="sk-flash-price"><b>৳' + p.price + '</b>';
+                    if (p.oldPrice) h += '<s>৳' + p.oldPrice + '</s>';
+                    h += '</div></div></div>';
+                    return h;
+                }).join('');
+                section.style.display = 'block';
+                injectFlashRatings(list); // রেটিং inject
+            };
+            // ১) ⚡ CACHE-FIRST: ক্যাশ করা পণ্য থেকেই বের করি — জিরো নেটওয়ার্ক কল
+            const pickFrom = (list) => {
+                const map = {};
+                (list || []).forEach(p => { map[p.id] = p; });
+                return ids.map(id => map[id]).filter(Boolean);
+            };
+            let found = [];
+            try {
+                const c1 = JSON.parse(localStorage.getItem('sk_cat_cache_all') || 'null');
+                if (c1 && c1.list && c1.list.length) found = pickFrom(c1.list);
+            } catch (e) {}
+            if (!found.length) {
+                try {
+                    const c2 = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
+                    if (c2 && c2.list && c2.list.length) found = pickFrom(c2.list);
+                } catch (e) {}
+            }
+            if (found.length) { renderList(found); return; }
+            // ২) ক্যাশে না মিললে তবেই Firestore (নেটওয়ার্ক দুর্বল হলে চুপচাপ লুকিয়ে থাকবে — error দেখাবে না)
             try {
                 const db2 = firebase.firestore();
                 const idField = firebase.firestore.FieldPath.documentId();
@@ -1127,53 +1183,45 @@
                 Promise.all(pending).then(results => {
                     const map = {};
                     results.forEach(snap => snap.forEach(doc => { map[doc.id] = { id: doc.id, ...doc.data() }; }));
-                    const list = ids.map(id => map[id]).filter(Boolean);
-                    if (!list.length) { section.style.display = 'none'; return; }
-                    window._recentProducts = list;
-                    grid.innerHTML = list.map(p => {
-                        const safeName = (p.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                        let h = '<div class="sk-flash-card" data-pid="' + p.id + '" onclick="viewProduct(\'' + p.id + '\')">';
-                        h += '<div class="sk-flash-img"><img src="' + skImg(p.image, 400) + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/300\'"></div>';
-                        h += '<div class="sk-flash-info"><div class="sk-flash-name">' + escapeHtml(p.name) + '</div>';
-                        h += '<div class="sk-flash-price"><b>৳' + p.price + '</b>';
-                        if (p.oldPrice) h += '<s>৳' + p.oldPrice + '</s>';
-                        h += '</div></div></div>';
-                        return h;
-                    }).join('');
-                    section.style.display = 'block';
-                    injectFlashRatings(list); // রেটিং inject
+                    renderList(ids.map(id => map[id]).filter(Boolean));
                 }).catch(() => { section.style.display = 'none'; });
             } catch (e) { section.style.display = 'none'; }
+        }
+
+        // ⚡ ফ্ল্যাশ সেল — মূল পণ্য তালিকা থেকেই client-side ফিল্টার (আলাদা Firestore query লাগে না → ১টা নেটওয়ার্ক কল কম)
+        function refreshFlashFromList(list) {
+            if (!list || !list.length) return;
+            const source = list.filter(p => isFlashVisible(p));
+            if (source.length || flashProductsCache.length) {
+                flashProductsCache = source.slice(0, 10);
+                renderFlashSection();
+            }
         }
 
         function loadFlashProducts() {
             const section = document.getElementById('flashSection');
             if (!section) return;
-            const queryNow = Date.now();
-            db.collection('products').where('flashEnd', '>', queryNow).limit(10).get()
-                .then(snap => {
-                    flashProductsCache = [];
-                    snap.forEach(doc => {
-                        const d = doc.data();
-                        if (isFlashVisible(d)) flashProductsCache.push({ id: doc.id, ...d });
-                    });
-                    renderFlashSection();
-                })
-                .catch(err => {
-                    console.log('flash query failed, using fallback:', err.code || err.message);
-                    // Index/টাইপ সমস্যা হলে: সাম্প্রতিক ৫০টা পণ্য এনে client-side ফিল্টার
-                    db.collection('products').limit(50).get().then(snap => {
-                        flashProductsCache = [];
-                        snap.forEach(doc => {
-                            const d = doc.data();
-                            if (isFlashVisible(d)) flashProductsCache.push({ id: doc.id, ...d });
-                        });
-                        renderFlashSection();
-                    }).catch(() => {
-                        flashProductsCache = [];
-                        renderFlashSection();
-                    });
-                });
+            // ১) client-side: already-loaded পণ্য বা ক্যাশ থেকে — জিরো নেটওয়ার্ক খরচ, জিরো wait
+            let source = (allProducts && allProducts.length) ? allProducts : null;
+            if (source) { refreshFlashFromList(source); return; }
+            try {
+                const cached = JSON.parse(localStorage.getItem(HOME_CACHE_KEY) || 'null');
+                if (cached && cached.v === 3 && cached.list && cached.list.length) {
+                    refreshFlashFromList(cached.list);
+                    return;
+                }
+            } catch (e) {}
+            // ২) কিছুই না পেলে — তবেই একটাই ছোট query (limit 30 → client-side filter)
+            db.collection('products').limit(30).get().then(snap => {
+                const list = [];
+                snap.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+                flashProductsCache = list.filter(p => isFlashVisible(p)).slice(0, 10);
+                renderFlashSection();
+            }).catch(() => {
+                // অফলাইন/নেটওয়ার্ক সমস্যা — ভাঙা state নয়, শুধু সেকশন লুকিয়ে রাখি (ক্যাশে ফ্ল্যাশ থাকলে সেটাই দেখানো হয়েছে)
+                flashProductsCache = [];
+                renderFlashSection();
+            });
         }
 
         function escapeHtml(text) {
@@ -1661,10 +1709,39 @@ function loadBanners() {
         if (dots) dots.innerHTML = '';
         updateBannerArrows();
     };
-    // ৩ সেকেন্ড পরও ব্যানার না এলে ডিফল্ট দেখাই — shimmer বেশি ঘোরে না
+    // 🖼️ ব্যানার রেন্ডার হেল্পার — একই HTML দুই জায়গায় (cache + live) ব্যবহার হয়
+    const renderBanners = (banners) => {
+        const list = (banners || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+        if (!list.length) { showDefaultBanner(); return; }
+        bannerList = list;
+        let sliderHtml = '';
+        let dotsHtml = '';
+        list.forEach((b, i) => {
+            const onclick = b.link ? 'window.location.href=\'' + skSelfLink(b.link) + '\'' : '';
+            const fp = i === 0 ? ' fetchpriority="high" decoding="async"' : ' loading="lazy" decoding="async"';
+            sliderHtml += '<div class="banner-slide ' + (i === 0 ? 'active' : '') + '"><img src="' + skImg(b.image, 1200) + '"' + fp + ' onclick="' + onclick + '" alt="' + (b.title || '') + '"></div>';
+            dotsHtml += '<div class="banner-dot ' + (i === 0 ? 'active' : '') + '" onclick="showBannerSlide(' + i + ')"></div>';
+        });
+        slider.innerHTML = sliderHtml;
+        if (dots) dots.innerHTML = dotsHtml;
+        updateBannerArrows();
+        restartBannerTimer();
+        measureBannerRatio(list);
+        try {
+            if (list[0]) localStorage.setItem('sk_banner_last', JSON.stringify({ src: skImg(list[0].image, 800), t: Date.now() }));
+        } catch (e) {}
+    };
+    // ১) ⚡ CACHE-FIRST: আগের ভিজিটের ব্যানার সাথে সাথেই দেখাই — নেটওয়ার্ক ছাড়াই
+    try {
+        const cb = JSON.parse(localStorage.getItem('sk_banners_cache') || 'null');
+        if (cb && cb.list && cb.list.length && cb.t && (Date.now() - cb.t < 24 * 60 * 60 * 1000)) {
+            renderBanners(cb.list);
+        }
+    } catch (e) {}
+    // ২.৫ সেকেন্ড পরও ব্যানার না এলে ডিফল্ট দেখাই — shimmer বেশি ঘোরে না
     setTimeout(() => {
         if (slider.querySelector('.sk-banner-skeleton')) showDefaultBanner();
-    }, 3000);
+    }, 2500);
 
     // আগের ভিজিট থেকে ব্যানারের আসল অনুপাত মনে থাকলে — ছবি লোডের আগেই ratio বসিয়ে CLS ঠেকাই
     (function () {
@@ -1678,39 +1755,23 @@ function loadBanners() {
         } catch (e) {}
     })();
 
+    // ৩) Firestore লাইভ ব্যানার — সফল হলে ক্যাশে রেখে দিই (অফলাইনে পরে দেখাবে)
     db.collection('banners').where('active', '==', true).get()
         .then(snapshot => {
             const banners = [];
             snapshot.forEach(doc => banners.push({ id: doc.id, ...doc.data() }));
-            banners.sort((a, b) => (a.order || 0) - (b.order || 0));
-            
             if (banners.length === 0) {
                 showDefaultBanner();
                 return;
             }
-            
-            bannerList = banners;
-            let sliderHtml = '';
-            let dotsHtml = '';
-            banners.forEach((b, i) => {
-                const onclick = b.link ? 'window.location.href=\'' + skSelfLink(b.link) + '\'' : '';
-                // প্রথম স্লাইড: LCP-র জন্য fetchpriority="high"
-                const fp = i === 0 ? ' fetchpriority="high" decoding="async"' : ' loading="lazy" decoding="async"';
-                sliderHtml += '<div class="banner-slide ' + (i === 0 ? 'active' : '') + '"><img src="' + skImg(b.image, 1200) + '"' + fp + ' onclick="' + onclick + '" alt="' + (b.title || '') + '"></div>';
-                dotsHtml += '<div class="banner-dot ' + (i === 0 ? 'active' : '') + '" onclick="showBannerSlide(' + i + ')"></div>';
-            });
-            
-            slider.innerHTML = sliderHtml;
-            dots.innerHTML = dotsHtml;
-            updateBannerArrows();
-            restartBannerTimer();
-            measureBannerRatio(banners);
-            // 🖼️ প্রথম ব্যানারটা মনে রাখি — পরের ভিজিটে শুরু থেকেই সঠিক ব্যানার দেখাবে
-            try { localStorage.setItem('sk_banner_last', JSON.stringify({ src: skImg(banners[0].image, 800), t: Date.now() })); } catch (e) {}
+            // ক্যাশে সেভ — ২৪ ঘণ্টা পর্যন্ত অফলাইনে/দুর্বল নেটে আগের ব্যানার দেখাবে
+            try { localStorage.setItem('sk_banners_cache', JSON.stringify({ t: Date.now(), list: banners.slice(0, 6) })); } catch (e) {}
+            renderBanners(banners);
         })
         .catch((error) => {
             console.error('ব্যানার লোড করতে সমস্যা:', error);
-            showDefaultBanner();
+            // 🔒 ক্যাশ থেকে ব্যানার আগে দেখানো হয়েছে? তাহলে default দিয়ে ঢাকব না
+            if (!slider.querySelector('.banner-slide') && !slider.querySelector('img')) showDefaultBanner();
         });
 }
 
@@ -1773,6 +1834,35 @@ loadBanners();
         loadRecentProducts();
         updateCartCount();
         updateWishlistCount();
+
+        // ===== 📶 অফলাইন ইন্ডিকেটর + সংযোগ ফিরলে অটো-রিফ্রেশ =====
+        // দুর্বল নেটে সাইট "মৃত" মনে না হয় — ছোট্ট ব্যাজ দেখায় "অফলাইন — ক্যাশ ডেটা দেখানো হচ্ছে"
+        (function () {
+            const badge = document.createElement('div');
+            badge.id = 'skOfflineBadge';
+            badge.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(90deg,#f59e0b,#d97706);color:#fff;text-align:center;font-size:12.5px;font-weight:700;padding:7px 12px;font-family:inherit;display:none;box-shadow:0 4px 14px rgba(0,0,0,.2);';
+            badge.textContent = '📶 ইন্টারনেট সংযোগ দুর্বল/বন্ধ — ক্যাশ ডেটা দেখানো হচ্ছে। সংযোগ ফিরলে অটো-আপডেট হবে';
+            document.body.appendChild(badge);
+            let refreshTimer = null;
+            const showOffline = () => { badge.style.display = 'block'; };
+            const hideOffline = () => { badge.style.display = 'none'; };
+            // সব সেকশন রিফ্রেশ — একসাথে, কিন্তু overload না করে
+            const refreshAll = () => {
+                try { loadProducts(true); } catch (e) {}
+                try { loadHomeCategories(); } catch (e) {}
+                try { loadNavMenu(); } catch (e) {}
+                try { loadFlashProducts(); } catch (e) {}
+                try { loadBanners(); } catch (e) {}
+                try { loadRecentProducts(); } catch (e) {}
+            };
+            window.addEventListener('offline', showOffline);
+            window.addEventListener('online', function () {
+                hideOffline();
+                clearTimeout(refreshTimer);
+                refreshTimer = setTimeout(refreshAll, 800); // ছোট delay — সংযোগ স্থির হোক
+            });
+            if (navigator.onLine === false) showOffline();
+        })();
     </script>
     <script src="js/chatbot.js?v=5" defer></script>
     <script src="js/theme.js?v=5" defer></script>
