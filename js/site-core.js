@@ -47,17 +47,17 @@
     }
 
     function fetchSettings() {
-        try {
-            if (typeof firebase === 'undefined' || !firebase.firestore) return;
-            firebase.firestore().collection('settings').doc('siteConfig').get()
-                .then(function (doc) {
-                    if (doc.exists) {
-                        const v = doc.data();
-                        applySettings(v);
-                        try { localStorage.setItem('sk_settings', JSON.stringify({ t: Date.now(), v: v })); } catch (e) {}
-                    }
-                }).catch(function () {});
-        } catch (e) {}
+        // 🔒 অফলাইন/দুর্বল নেটে Firestore query বাদ — ক্যাশ করা settings-ই যথেষ্ট
+        const fs = window.skFs && window.skFs();
+        if (!fs) return;
+        fs.collection('settings').doc('siteConfig').get()
+            .then(function (doc) {
+                if (doc.exists) {
+                    const v = doc.data();
+                    applySettings(v);
+                    try { localStorage.setItem('sk_settings', JSON.stringify({ t: Date.now(), v: v })); } catch (e) {}
+                }
+            }).catch(function () {});
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', fetchSettings);
@@ -77,6 +77,20 @@
                 });
         }
     } catch (e) {}
+
+    // ===== ⚡ অনলাইন/অফলাইন হেল্পার — দুর্বল নেটওয়ার্কে সাইট কখনো "মৃত" দেখাবে না =====
+    // সব query ফায়ারের আগে এটা দিয়ে চেক: অফলাইন হলে ক্যাশ/আগের ডেটাই দেখানো হয়
+    window.skIsOffline = function () {
+        return navigator.onLine === false;
+    };
+    // ছোট ইউটিলিটি: firebase + network দুটোই চেক করে নিরাপদ query
+    window.skFs = function () {
+        try {
+            if (window.skIsOffline()) return null;
+            if (typeof firebase === 'undefined' || !firebase.firestore) return null;
+            return firebase.firestore();
+        } catch (e) { return null; }
+    };
 
     // ===== ১.৫) skImg() — Cloudinary ছবির সাইজ/ফরম্যাট অপটিমাইজার =====
     // res.cloudinary.com-এর URL-এ /upload/f_auto,q_auto,w_XXX/ বসায়।

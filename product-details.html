@@ -794,7 +794,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    <script src="js/site-core.js?v=5"></script>
+    <script src="js/site-core.js?v=6"></script>
 
     <script>
         const firebaseConfig = {
@@ -869,10 +869,39 @@
                 skTrack('ViewContent', { value: Number(currentProduct.price) || 0, currency: 'BDT', content_name: currentProduct.name, content_ids: [currentProduct.id] });
             } catch (error) {
                 console.error(error);
+                // 🔒 নেটওয়ার্ক দুর্বল/অফলাইন — ক্যাশ থেকে পণ্য খুঁজে দেখাই (ভাঙা Error স্ক্রিন নয়)
+                let fromCache = null;
+                try {
+                    const c1 = JSON.parse(localStorage.getItem('sk_cat_cache_all') || 'null');
+                    const c2 = JSON.parse(localStorage.getItem('sk_home_products_v2') || 'null');
+                    const lists = [(c1 && c1.list) || [], (c2 && c2.list) || []];
+                    for (const list of lists) {
+                        const found = (list || []).find(p => p.id === productId);
+                        if (found) { fromCache = found; break; }
+                    }
+                } catch (e) {}
+                if (fromCache) {
+                    currentProduct = fromCache;
+                    renderProduct();
+                    startFlashTimer(currentProduct);
+                    loadRelated();
+                    try {
+                        let recent = JSON.parse(localStorage.getItem('sk_recent') || '[]');
+                        recent = recent.filter(id => id !== productId);
+                        recent.unshift(productId);
+                        recent = recent.slice(0, 10);
+                        localStorage.setItem('sk_recent', JSON.stringify(recent));
+                    } catch (e) {}
+                    // ক্যাশ থেকে দেখালেও রেটিং/রিভিউ আলাদা করে লোড করার দরকার নেই — নেটওয়ার্ক দুর্বল
+                    return;
+                }
+                // কিছুই না পেলে — বন্ধুত্বপূর্ণ বার্তা (কাঁচা error না)
                 document.getElementById('productContent').innerHTML = `
                     <div class="loading">
-                        <i class="fas fa-exclamation-triangle" style="font-size:60px; color:#ef4444;"></i>
-                        <h2>Error: ${error.message}</h2>
+                        <i class="fas fa-wifi" style="font-size:60px; color:#f59e0b; margin-bottom:20px;"></i>
+                        <h2>সংযোগ সমস্যা</h2>
+                        <p style="margin:12px 0; color:#64748b;">পণ্যটি লোড করা যায়নি। ইন্টারনেট সংযোগ চেক করে আবার চেষ্টা করুন।</p>
+                        <button onclick="location.reload()" style="padding:10px 22px; border:none; border-radius:10px; background:#2563eb; color:#fff; font-family:inherit; font-weight:600; cursor:pointer;">আবার চেষ্টা করুন</button>
                     </div>
                 `;
             }
@@ -1222,6 +1251,28 @@
                 startRelatedSlider();
             } catch (error) {
                 console.error(error);
+                // 🔒 নেটওয়ার্ক দুর্বল/অফলাইন — ক্যাশ থেকে related পণ্য দেখাই (সেকশন খালি থাকে না)
+                try {
+                    const c1 = JSON.parse(localStorage.getItem('sk_cat_cache_all') || 'null');
+                    const all = (c1 && c1.list) || [];
+                    const related = all.filter(p => p.id !== productId && p.category === currentProduct.category).slice(0, 12);
+                    if (related.length) {
+                        document.getElementById('relatedSection').style.display = 'block';
+                        document.getElementById('relatedGrid').innerHTML = related.map(p => `
+                            <a href="product-details.html?id=${p.id}" class="related-card">
+                                <div class="related-card-img">
+                                    <img src="${skImg(p.image, 400) || 'https://via.placeholder.com/200'}" alt="${p.name}" loading="lazy" decoding="async">
+                                </div>
+                                <div class="related-card-info">
+                                    <h4>${p.name}</h4>
+                                    <p class="price">৳${p.price}</p>
+                                </div>
+                            </a>
+                        `).join('');
+                        relatedPerView = window.innerWidth < 768 ? 2 : 4;
+                        startRelatedSlider();
+                    }
+                } catch (e) {}
             }
         }
 
